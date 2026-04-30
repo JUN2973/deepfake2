@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kopo.poly.mapper.IEmailAuthRepository">
+
+    <insert id="insertEmailAuth"
+            parameterType="kopo.poly.entity.EmailAuthEntity"
+            useGeneratedKeys="true"
+            keyProperty="id"
+            keyColumn="id">
+        INSERT INTO email_auth (
+            email,
+            auth_code,
+            verified,
+            expires_at,
+            updated_at
+        ) VALUES (
+            #{email},
+            #{authCode},
+            #{verified},
+            #{expiresAt},
+            NOW()
+        )
+    </insert>
+
+    <select id="selectLatestByEmail"
+            resultType="kopo.poly.entity.EmailAuthEntity">
+        SELECT
+            id,
+            email,
+            auth_code AS authCode,
+            verified,
+            DATE_FORMAT(expires_at, '%Y-%m-%d %H:%i:%s') AS expiresAt,
+            DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS createdAt,
+            DATE_FORMAT(updated_at, '%Y-%m-%d %H:%i:%s') AS updatedAt
+        FROM email_auth
+        WHERE email = #{email}
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+
+    <update id="expireAllByEmail">
+        UPDATE email_auth
+        SET verified = 'N',
+            updated_at = NOW()
+        WHERE email = #{email}
+    </update>
+
+    <update id="markVerified">
+        UPDATE email_auth
+        SET verified = 'Y',
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+</mapper>

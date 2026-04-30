@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kopo.poly.mapper.ICommunityMapper">
+
+    <select id="selectPosts" resultType="kopo.poly.dto.CommunityPostDTO">
+        SELECT
+            p.id,
+            p.user_id AS userId,
+            p.author,
+            COALESCE(NULLIF(p.topic, ''), 'discussion') AS topic,
+            p.title,
+            p.content,
+            p.views,
+            COUNT(DISTINCT pl.user_id) AS likeCount,
+            CASE
+                WHEN #{currentUserId} IS NULL THEN FALSE
+                WHEN MAX(CASE WHEN pl.user_id = #{currentUserId} THEN 1 ELSE 0 END) = 1 THEN TRUE
+                ELSE FALSE
+            END AS likedByCurrentUser,
+            COUNT(DISTINCT c.id) AS commentCount,
+            DATE_FORMAT(p.created_at, '%Y-%m-%d %H:%i:%s') AS createdAt,
+            DATE_FORMAT(p.updated_at, '%Y-%m-%d %H:%i:%s') AS updatedAt
+        FROM community_post p
+        LEFT JOIN community_post_like pl ON pl.post_id = p.id
+        LEFT JOIN community_comment c ON c.post_id = p.id
+        <where>
+            <if test="keyword != null and keyword != ''">
+                (p.title LIKE CONCAT('%', #{keyword}, '%')
+                OR p.content LIKE CONCAT('%', #{keyword}, '%')
+                OR p.author LIKE CONCAT('%', #{keyword}, '%'))
+            </if>
+        </where>
+        GROUP BY p.id, p.user_id, p.author, p.topic, p.title, p.content, p.views, p.created_at, p.updated_at
+        ORDER BY p.id DESC
+    </select>
+
+    <select id="selectPostById" resultType="kopo.poly.dto.CommunityPostDTO">
+        SELECT
+            p.id,
+            p.user_id AS userId,
+            p.author,
+            COALESCE(NULLIF(p.topic, ''), 'discussion') AS topic,
+            p.title,
+            p.content,
+            p.views,
+            COUNT(DISTINCT pl.user_id) AS likeCount,
+            CASE
+                WHEN #{currentUserId} IS NULL THEN FALSE
+                WHEN MAX(CASE WHEN pl.user_id = #{currentUserId} THEN 1 ELSE 0 END) = 1 THEN TRUE
+                ELSE FALSE
+            END AS likedByCurrentUser,
+            COUNT(DISTINCT c.id) AS commentCount,
+            DATE_FORMAT(p.created_at, '%Y-%m-%d %H:%i:%s') AS createdAt,
+            DATE_FORMAT(p.updated_at, '%Y-%m-%d %H:%i:%s') AS updatedAt
+        FROM community_post p
+        LEFT JOIN community_post_like pl ON pl.post_id = p.id
+        LEFT JOIN community_comment c ON c.post_id = p.id
+        WHERE p.id = #{id}
+        GROUP BY p.id, p.user_id, p.author, p.topic, p.title, p.content, p.views, p.created_at, p.updated_at
+    </select>
+
+    <insert id="insertPost">
+        INSERT INTO community_post(user_id, author, topic, title, content, views, created_at, updated_at)
+        VALUES (#{userId}, #{author}, #{topic}, #{title}, #{content}, 0, NOW(), NOW())
+    </insert>
+
+    <update id="updatePost">
+        UPDATE community_post
+        SET topic = #{topic},
+            title = #{title},
+            content = #{content},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deletePost">
+        DELETE FROM community_post
+        WHERE id = #{id}
+    </delete>
+
+    <select id="countPostLike" resultType="int">
+        SELECT COUNT(*)
+        FROM community_post_like
+        WHERE post_id = #{postId}
+    </select>
+
+    <select id="existsPostLike" resultType="int">
+        SELECT COUNT(*)
+        FROM community_post_like
+        WHERE post_id = #{postId}
+          AND user_id = #{userId}
+    </select>
+
+    <insert id="insertPostLike">
+        INSERT INTO community_post_like(post_id, user_id, created_at)
+        VALUES (#{postId}, #{userId}, NOW())
+    </insert>
+
+    <delete id="deletePostLike">
+        DELETE FROM community_post_like
+        WHERE post_id = #{postId}
+          AND user_id = #{userId}
+    </delete>
+
+    <select id="selectLastInsertId" resultType="long">
+        SELECT LAST_INSERT_ID()
+    </select>
+
+    <update id="increaseViews">
+        UPDATE community_post
+        SET views = views + 1,
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <select id="selectCommentsByPostId" resultType="kopo.poly.dto.CommunityCommentDTO">
+        SELECT
+            c.id,
+            c.post_id AS postId,
+            c.user_id AS userId,
+            c.parent_id AS parentId,
+            c.author,
+            c.content,
+            COUNT(l.user_id) AS likeCount,
+            CASE
+                WHEN #{currentUserId} IS NULL THEN FALSE
+                WHEN MAX(CASE WHEN l.user_id = #{currentUserId} THEN 1 ELSE 0 END) = 1 THEN TRUE
+                ELSE FALSE
+            END AS likedByCurrentUser,
+            DATE_FORMAT(c.created_at, '%Y-%m-%d %H:%i:%s') AS createdAt,
+            DATE_FORMAT(c.updated_at, '%Y-%m-%d %H:%i:%s') AS updatedAt
+        FROM community_comment c
+        LEFT JOIN community_comment_like l ON l.comment_id = c.id
+        WHERE c.post_id = #{postId}
+        GROUP BY c.id, c.post_id, c.user_id, c.parent_id, c.author, c.content, c.created_at, c.updated_at
+        ORDER BY COALESCE(c.parent_id, c.id) ASC, CASE WHEN c.parent_id IS NULL THEN 0 ELSE 1 END ASC, c.id ASC
+    </select>
+
+    <select id="selectCommentById" resultType="kopo.poly.dto.CommunityCommentDTO">
+        SELECT
+            c.id,
+            c.post_id AS postId,
+            c.user_id AS userId,
+            c.parent_id AS parentId,
+            c.author,
+            c.content,
+            COUNT(l.user_id) AS likeCount,
+            CASE
+                WHEN #{currentUserId} IS NULL THEN FALSE
+                WHEN MAX(CASE WHEN l.user_id = #{currentUserId} THEN 1 ELSE 0 END) = 1 THEN TRUE
+                ELSE FALSE
+            END AS likedByCurrentUser,
+            DATE_FORMAT(c.created_at, '%Y-%m-%d %H:%i:%s') AS createdAt,
+            DATE_FORMAT(c.updated_at, '%Y-%m-%d %H:%i:%s') AS updatedAt
+        FROM community_comment c
+        LEFT JOIN community_comment_like l ON l.comment_id = c.id
+        WHERE c.id = #{id}
+        GROUP BY c.id, c.post_id, c.user_id, c.parent_id, c.author, c.content, c.created_at, c.updated_at
+    </select>
+
+    <insert id="insertComment">
+        INSERT INTO community_comment(post_id, user_id, parent_id, author, content, created_at, updated_at)
+        VALUES (#{postId}, #{userId}, #{parentId}, #{author}, #{content}, NOW(), NOW())
+    </insert>
+
+    <update id="updateComment">
+        UPDATE community_comment
+        SET content = #{content},
+            updated_at = NOW()
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteComment">
+        DELETE FROM community_comment
+        WHERE id = #{id}
+    </delete>
+
+    <select id="countCommentLike" resultType="int">
+        SELECT COUNT(*)
+        FROM community_comment_like
+        WHERE comment_id = #{commentId}
+    </select>
+
+    <select id="existsCommentLike" resultType="int">
+        SELECT COUNT(*)
+        FROM community_comment_like
+        WHERE comment_id = #{commentId}
+          AND user_id = #{userId}
+    </select>
+
+    <insert id="insertCommentLike">
+        INSERT INTO community_comment_like(comment_id, user_id, created_at)
+        VALUES (#{commentId}, #{userId}, NOW())
+    </insert>
+
+    <delete id="deleteCommentLike">
+        DELETE FROM community_comment_like
+        WHERE comment_id = #{commentId}
+          AND user_id = #{userId}
+    </delete>
+
+</mapper>

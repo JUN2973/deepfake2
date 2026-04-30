@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kopo.poly.mapper.IVerifyMapper">
+
+    <insert id="insertVerification" parameterType="kopo.poly.dto.VerifyDTO" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO verification (
+        user_id, original_name, mime_type, file_size,
+        object_key, public_url,
+        verdict, score,
+        api_provider, api_raw
+        ) VALUES (
+        #{userId}, #{originalName}, #{mimeType}, #{fileSize},
+        #{objectKey}, #{publicUrl},
+        #{verdict}, #{score},
+        #{apiProvider}, #{apiRaw}
+        )
+    </insert>
+
+    <select id="selectVerification" parameterType="long" resultType="kopo.poly.dto.VerifyDTO">
+        SELECT
+        id,
+        user_id AS userId,
+        original_name AS originalName,
+        mime_type AS mimeType,
+        file_size AS fileSize,
+        object_key AS objectKey,
+        public_url AS publicUrl,
+        verdict,
+        score,
+        api_provider AS apiProvider,
+        api_raw AS apiRaw,
+        DATE_FORMAT(reg_dt, '%Y-%m-%d %H:%i:%s') AS regDt
+        FROM verification
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectVerificationByIdAndUserId" resultType="kopo.poly.dto.VerifyDTO">
+        SELECT
+        id,
+        user_id AS userId,
+        original_name AS originalName,
+        mime_type AS mimeType,
+        file_size AS fileSize,
+        object_key AS objectKey,
+        public_url AS publicUrl,
+        verdict,
+        score,
+        api_provider AS apiProvider,
+        api_raw AS apiRaw,
+        DATE_FORMAT(reg_dt, '%Y-%m-%d %H:%i:%s') AS regDt
+        FROM verification
+        WHERE id = #{id}
+          AND user_id = #{userId}
+    </select>
+
+    <select id="selectVerificationList" resultType="kopo.poly.dto.VerifyDTO">
+        SELECT
+        id,
+        user_id AS userId,
+        original_name AS originalName,
+        public_url AS publicUrl,
+        verdict,
+        score,
+        DATE_FORMAT(reg_dt, '%Y-%m-%d %H:%i:%s') AS regDt
+        FROM verification
+        <where>
+            <if test="verdict != null and verdict != ''">
+                verdict = #{verdict}
+            </if>
+        </where>
+        ORDER BY id DESC
+        LIMIT #{size} OFFSET #{offset}
+    </select>
+
+    <delete id="deleteVerificationByIdAndUserId">
+        DELETE FROM verification
+        WHERE id = #{id}
+          AND user_id = #{userId}
+    </delete>
+
+</mapper>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kopo.poly.mapper.IHistoryMapper">
+
+    <select id="selectHistoryByUserId" parameterType="long" resultType="kopo.poly.dto.HistoryDTO">
+        SELECT
+        id,
+        original_name AS originalName,
+        public_url AS publicUrl,
+        verdict,
+        score,
+        DATE_FORMAT(reg_dt, '%Y-%m-%d %H:%i:%s') AS regDt
+        FROM verification
+        WHERE user_id = #{userId}
+        ORDER BY id DESC
+    </select>
+
+</mapper>

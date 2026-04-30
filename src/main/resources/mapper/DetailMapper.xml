@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kopo.poly.mapper.IDetailMapper">
+
+    <select id="selectDetail" parameterType="long" resultType="kopo.poly.dto.DetailDTO">
+        SELECT
+        id,
+        original_name AS originalName,
+        public_url AS savedPath,
+        verdict,
+        score,
+        api_raw AS apiRaw,
+        DATE_FORMAT(reg_dt, '%Y-%m-%d %H:%i:%s') AS regDt
+        FROM verification
+        WHERE id = #{id}
+    </select>
+
+</mapper>

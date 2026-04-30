@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kopo.poly.mapper.IRealityDefenderMapper">
+
+    <insert id="insertVerificationRecord"
+            parameterType="kopo.poly.dto.VerificationRecordDto"
+            useGeneratedKeys="true"
+            keyProperty="id"
+            keyColumn="id">
+        INSERT INTO verification_record (
+            user_id,
+            original_filename,
+            saved_path,
+            detect_status,
+            final_score,
+            explanation_text,
+            detailed_reason,
+            not_applicable_reason,
+            overlay_source
+        ) VALUES (
+            #{userId},
+            #{originalFilename},
+            #{savedPath},
+            #{detectStatus},
+            #{finalScore},
+            #{explanationText},
+            #{detailedReason},
+            #{notApplicableReason},
+            #{overlaySource}
+        )
+    </insert>
+
+    <select id="selectVerificationRecordById"
+            parameterType="long"
+            resultType="kopo.poly.dto.VerificationRecordDto">
+        SELECT
+            id,
+            user_id AS userId,
+            original_filename AS originalFilename,
+            saved_path AS savedPath,
+            detect_status AS detectStatus,
+            final_score AS finalScore,
+            explanation_text AS explanationText,
+            detailed_reason AS detailedReason,
+            not_applicable_reason AS notApplicableReason,
+            overlay_source AS overlaySource,
+            DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS createdAt
+        FROM verification_record
+        WHERE id = #{id}
+    </select>
+
+    <select id="selectVerificationRecordList"
+            resultType="kopo.poly.dto.VerificationRecordDto">
+        SELECT
+            id,
+            user_id AS userId,
+            original_filename AS originalFilename,
+            saved_path AS savedPath,
+            detect_status AS detectStatus,
+            final_score AS finalScore,
+            explanation_text AS explanationText,
+            detailed_reason AS detailedReason,
+            not_applicable_reason AS notApplicableReason,
+            overlay_source AS overlaySource,
+            DATE_FORMAT(created_at, '%Y-%m-%d %H:%i:%s') AS createdAt
+        FROM verification_record
+        WHERE user_id = #{userId}
+        ORDER BY id DESC
+    </select>
+
+</mapper>
