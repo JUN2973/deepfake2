@@ -2,8 +2,7 @@
 
 > **Reality Defender API와 IMD 분석 모델을 활용한 AI 기반 딥페이크 이미지 탐지 및 검증 이력 관리 서비스**
 
-이미지 업로드만으로 딥페이크 의심 여부를 분석하고,
-의심 영역 시각화와 검증 이력을 함께 제공하도록 개발한 개인 프로젝트입니다.
+이미지 업로드만으로 딥페이크 의심 여부를 분석하고, 의심 영역 시각화와 검증 이력을 함께 제공하도록 개발한 개인 프로젝트입니다.
 
 🔗 배포 URL 입력
 
@@ -120,30 +119,47 @@ Spring Boot
          ├── IMD FastAPI Service
          ├── Naver News API
          └── Google OAuth
-🔑 Key Implementations
-Reality Defender + IMD Analysis Flow
-이미지 업로드 후 서버 측 파일 검증
-Reality Defender API를 통한 딥페이크 분석
-IMD 서비스로 히트맵 시각화 데이터 생성
-API 응답과 히트맵 결과 병합
-분석 결과를 DB와 JSON 스냅샷으로 저장
-Image Preflight Validation
-이미지 파일 여부 확인
-파일 크기 제한
-얼굴 영역이 부족한 이미지 필터링
-분석 불가 결과를 별도 상태로 관리
-News Cache System
-Naver News API 호출
-MongoDB 캐시 저장
-로컬 메모리 캐시 적용
-제목 유사도 기반 중복 기사 제거
-API 호출량 감소 및 응답 속도 개선
-Object Storage
-로컬 업로드 저장소 지원
-AWS S3 저장소 지원
-환경 설정에 따라 저장 방식 전환
-업로드 파일 public URL 관리
-📂 Project Structure
+```
+
+---
+
+## 🔑 Key Implementations
+
+### Reality Defender + IMD Analysis Flow
+
+* 이미지 업로드 후 서버 측 파일 검증
+* Reality Defender API를 통한 딥페이크 분석
+* IMD 서비스로 히트맵 시각화 데이터 생성
+* API 응답과 히트맵 결과 병합
+* 분석 결과를 DB와 JSON 스냅샷으로 저장
+
+### Image Preflight Validation
+
+* 이미지 파일 여부 확인
+* 파일 크기 제한
+* 얼굴 영역이 부족한 이미지 필터링
+* 분석 불가 결과를 별도 상태로 관리
+
+### News Cache System
+
+* Naver News API 호출
+* MongoDB 캐시 저장
+* 로컬 메모리 캐시 적용
+* 제목 유사도 기반 중복 기사 제거
+* API 호출량 감소 및 응답 속도 개선
+
+### Object Storage
+
+* 로컬 업로드 저장소 지원
+* AWS S3 저장소 지원
+* 환경 설정에 따라 저장 방식 전환
+* 업로드 파일 public URL 관리
+
+---
+
+## 📂 Project Structure
+
+```text
 src/main/java/kopo/poly
 ├── config
 ├── controller
@@ -169,29 +185,43 @@ imd-service
 ├── app.py
 ├── Dockerfile
 └── requirements.txt
+```
 
-🛠 Trouble Shooting
-Issue	Solution
-외부 API 응답 실패	mock mode 및 예외 처리로 분석 흐름 유지
-분석 불가 이미지 처리	얼굴 영역 / 이미지 크기 사전 검증 로직 추가
-뉴스 API 중복 기사 문제	제목 정규화 및 유사도 기반 중복 제거 적용
-업로드 파일 관리 문제	Local / S3 저장소 전략 분리
-JSP null 데이터 오류	분석 결과 기본값 보정 및 JSON 스냅샷 저장
-DB 환경 차이 문제	H2 기본값과 MariaDB 환경변수 설정 분리
+---
 
-📚 What I Learned
-Spring Boot MVC 기반 웹 서비스 구조
-MyBatis를 활용한 DB 연동
-외부 AI 분석 API 연동 방식
-FastAPI 기반 Python 분석 서비스 연동
-이미지 업로드 및 파일 검증 처리
-MongoDB 캐시와 메모리 캐시 활용
-AWS EC2 / RDS / S3 기반 배포 구성
-사용자 인증, 이메일 인증, OAuth 흐름 구현
-예외 처리와 장애 상황 fallback 설계
+## 🛠 Trouble Shooting
 
-👨‍💻 Developer
-JUN2973
+| Issue                    | Solution                                      |
+| ------------------------ | --------------------------------------------- |
+| 외부 API 응답 실패        | mock mode 및 예외 처리로 분석 흐름 유지 |
+| 분석 불가 이미지 처리     | 얼굴 영역 / 이미지 크기 사전 검증 로직 추가 |
+| 뉴스 API 중복 기사 문제   | 제목 정규화 및 유사도 기반 중복 제거 적용 |
+| 업로드 파일 관리 문제     | Local / S3 저장소 전략 분리 |
+| JSP null 데이터 오류      | 분석 결과 기본값 보정 및 JSON 스냅샷 저장 |
+| DB 환경 차이 문제         | H2 기본값과 MariaDB 환경변수 설정 분리 |
+
+---
+
+## 📚 What I Learned
+
+* Spring Boot MVC 기반 웹 서비스 구조
+* MyBatis를 활용한 DB 연동
+* 외부 AI 분석 API 연동 방식
+* FastAPI 기반 Python 분석 서비스 연동
+* 이미지 업로드 및 파일 검증 처리
+* MongoDB 캐시와 메모리 캐시 활용
+* AWS EC2 / RDS / S3 기반 배포 구성
+* 사용자 인증, 이메일 인증, OAuth 흐름 구현
+* 예외 처리와 장애 상황 fallback 설계
+
+---
+
+## 👨‍💻 Developer
+
+**JUN2973**
+
 Backend Developer
+
 GitHub : https://github.com/JUN2973
-Email : 이메일 입력
+
+Email : wnsdud2973@gmail.com
