@@ -1,5 +1,9 @@
-﻿package kopo.poly.config;
+package kopo.poly.config;
 
+
+/**
+ * 체크리스트 기준 주석: 개발환경 세팅/설계: 보안, MVC, DB 스키마, 공통 Bean 설정을 담당한다.
+ */
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationRunner;

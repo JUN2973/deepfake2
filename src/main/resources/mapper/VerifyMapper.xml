@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!-- 체크리스트 기준 주석: 테이블 명세서(RDBMS)/구현(딥페이크 판별): 검증 결과와 파일 메타데이터 접근 SQL을 정의한다. -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+<!--
+  기본 이미지 검증 결과를 저장/조회/삭제하는 매퍼다.
+  VerifyService가 파일 업로드 후 판정 결과와 원본 API 응답을 verification 테이블에 기록한다.
+-->
 <mapper namespace="kopo.poly.mapper.IVerifyMapper">
 
     <insert id="insertVerification" parameterType="kopo.poly.dto.VerifyDTO" useGeneratedKeys="true" keyProperty="id">
@@ -66,8 +71,9 @@
         DATE_FORMAT(reg_dt, '%Y-%m-%d %H:%i:%s') AS regDt
         FROM verification
         <where>
+            user_id = #{userId}
             <if test="verdict != null and verdict != ''">
-                verdict = #{verdict}
+                AND verdict = #{verdict}
             </if>
         </where>
         ORDER BY id DESC

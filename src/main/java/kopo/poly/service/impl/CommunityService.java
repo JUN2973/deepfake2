@@ -1,5 +1,15 @@
-﻿package kopo.poly.service.impl;
+package kopo.poly.service.impl;
 
+
+/**
+ * 체크리스트 기준 주석: 구현(커뮤니티): 게시글/댓글 조회, 작성, 수정, 좋아요 비즈니스 로직을 담당한다.
+ */
+
+/**
+ * 발표용 설명: 커뮤니티 게시글과 댓글의 핵심 비즈니스 로직입니다.
+ * 게시글 작성/수정/삭제는 작성자 본인만 가능하도록 userId를 비교합니다.
+ * 댓글 목록은 DB의 평면 데이터를 부모-자식 트리 구조로 바꿔 대댓글 UI에 맞게 반환합니다.
+ */
 import kopo.poly.dto.CommunityCommentDTO;
 import kopo.poly.dto.CommunityCommentLikeResponseDTO;
 import kopo.poly.dto.CommunityPostDTO;
@@ -114,6 +124,11 @@ public class CommunityService implements ICommunityService {
     public List<CommunityCommentDTO> getComments(Long postId, Long currentUserId) {
         // Mapper는 평면 목록을 반환하므로 서비스에서 부모 댓글/답글 구조로 변환한다.
         return buildCommentTree(communityMapper.selectCommentsByPostId(postId, currentUserId));
+    }
+
+    @Override
+    public List<CommunityCommentDTO> getCommentsByUser(Long userId) {
+        return communityMapper.selectCommentsByUserId(userId, userId);
     }
 
     @Override

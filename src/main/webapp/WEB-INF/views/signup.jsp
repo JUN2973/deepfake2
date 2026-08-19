@@ -21,7 +21,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-white py-12 px-4 relative overflow-x-hidden">
+<body class="min-h-screen bg-slate-950 text-white relative overflow-x-hidden">
   <!-- 회원가입 화면의 배경 효과 영역이다. 실제 회원가입 로직과는 분리되어 있다. -->
   <div class="absolute inset-0 pointer-events-none">
     <div class="absolute top-20 left-1/4 w-96 h-96 bg-sky-600/30 rounded-full blur-3xl"></div>
@@ -29,13 +29,17 @@
   </div>
 
   <!-- 로그인 화면으로 돌아가는 버튼이다. contextPath를 붙여 배포 경로 차이를 흡수한다. -->
-  <button type="button" onclick="goPage('<%= contextPath %>/login')" class="fixed top-6 left-6 z-40 flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 backdrop-blur-xl rounded-full transition-all text-sm font-medium border border-white/20">
-    <i data-lucide="arrow-left" class="w-4 h-4"></i>
-    로그인으로
-  </button>
+  <nav class="fixed top-0 left-0 right-0 z-50 h-16 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
+    <div class="mx-auto flex h-full max-w-7xl items-center px-4 sm:px-6 lg:px-8">
+      <button type="button" onclick="goPage('<%= contextPath %>/login')" class="inline-flex h-10 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 text-sm font-semibold text-white shadow-lg shadow-black/20 transition-all hover:bg-white/15">
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        로그인으로
+      </button>
+    </div>
+  </nav>
 
-  <main class="w-full max-w-2xl mx-auto relative">
-    <section class="text-center mb-12">
+  <main class="w-full max-w-2xl mx-auto relative z-10 pt-24 pb-12 px-4">
+    <section class="text-center mb-8">
       <div class="relative inline-block mb-6">
         <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-3xl blur-xl opacity-75"></div>
         <div class="relative w-20 h-20 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-3xl flex items-center justify-center mx-auto">

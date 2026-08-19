@@ -1,5 +1,9 @@
-﻿package kopo.poly.controller;
+package kopo.poly.controller;
 
+
+/**
+ * 체크리스트 기준 주석: 구현(신고): 신고 페이지 진입과 경찰서/지도 안내 화면을 담당한다.
+ */
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 

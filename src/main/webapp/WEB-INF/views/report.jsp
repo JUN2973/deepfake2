@@ -1,4 +1,12 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%--
+  체크리스트 기준 주석: 구현(신고): 신고 안내, 지도 API 호출, 경찰서 마커 표시 화면을 구성한다.
+--%>
+
+<%--
+  발표용 설명: 신고 안내 화면입니다.
+  Kakao Map API로 주변 경찰서 위치를 표시하고 사용자가 신고 절차를 확인할 수 있게 합니다.
+--%>
 <%
   String contextPath = request.getContextPath();
   request.setAttribute("activePage", "report");

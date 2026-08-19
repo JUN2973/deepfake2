@@ -1,5 +1,9 @@
-﻿package kopo.poly.controller;
+package kopo.poly.controller;
 
+
+/**
+ * 체크리스트 기준 주석: 구현(결과 상세): 검증 결과 상세 조회와 상세 보기 화면을 담당한다.
+ */
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;

@@ -1,5 +1,9 @@
-﻿package kopo.poly.config;
+package kopo.poly.config;
 
+
+/**
+ * 체크리스트 기준 주석: 개발환경 세팅/설계: 보안, MVC, DB 스키마, 공통 Bean 설정을 담당한다.
+ */
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationRunner;
@@ -20,8 +24,35 @@ public class VerificationSchemaInitializer {
         return args -> {
             try {
                 jdbcTemplate.execute("""
+                        CREATE TABLE IF NOT EXISTS verification (
+                            id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                            user_id BIGINT NULL,
+                            original_name VARCHAR(255) NOT NULL,
+                            mime_type VARCHAR(100) NULL,
+                            file_size BIGINT NULL,
+                            object_key VARCHAR(500) NULL,
+                            public_url VARCHAR(1000) NULL,
+                            verdict VARCHAR(40) NULL,
+                            score DOUBLE NULL,
+                            api_provider VARCHAR(50) NULL,
+                            api_raw LONGTEXT NULL,
+                            reg_dt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+                        )
+                        """);
+
+                jdbcTemplate.execute("""
                         ALTER TABLE verification
                         ADD COLUMN IF NOT EXISTS user_id BIGINT NULL
+                        """);
+
+                jdbcTemplate.execute("""
+                        ALTER TABLE verification
+                        MODIFY COLUMN api_raw LONGTEXT NULL
+                        """);
+
+                jdbcTemplate.execute("""
+                        ALTER TABLE verification
+                        MODIFY COLUMN score DOUBLE NULL
                         """);
 
                 jdbcTemplate.execute("""

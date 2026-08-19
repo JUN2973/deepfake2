@@ -1,6 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page isELIgnored="false" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%--
+  체크리스트 기준 주석: 구현(뉴스): 뉴스 상세 보기와 관련 링크 이동 화면을 구성한다.
+--%>
 <%
   String contextPath = request.getContextPath();
   request.setAttribute("activePage", "news");
@@ -112,24 +115,24 @@
               <div class="mb-6 flex flex-wrap items-center gap-4 text-sm text-slate-400">
                 <div class="flex items-center gap-2">
                   <i data-lucide="calendar" class="h-4 w-4"></i>
-                  <span id="newsDate"><c:out value="${news.pubDate}"/></span>
+                  <span id="newsDate"><c:out value="${news.displayDate}"/></span>
                 </div>
                 <span class="text-slate-600">|</span>
-                <span id="newsSource">뉴스 서비스</span>
+                <span id="newsSource"><c:out value="${news.displayProvider}"/></span>
               </div>
 
-              <h1 id="newsTitle" class="mb-6 text-3xl font-bold text-white md:text-4xl"><c:out value="${news.title}"/></h1>
-              <p id="newsSummary" class="mb-6 border-b border-white/10 pb-6 text-lg text-slate-300"><c:out value="${news.description}"/></p>
+              <h1 id="newsTitle" class="mb-6 text-3xl font-bold text-white md:text-4xl"><c:out value="${news.displayTitle}"/></h1>
+              <p id="newsSummary" class="mb-6 border-b border-white/10 pb-6 text-lg text-slate-300"><c:out value="${news.displaySummary}"/></p>
               <div id="newsTags" class="mb-8 flex flex-wrap items-center gap-2"></div>
 
               <div class="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-sky-400/80">
                 <c:choose>
-                  <c:when test="${empty news.articleContent}">요약</c:when>
+                  <c:when test="${empty news.displaySummary}">요약</c:when>
                   <c:otherwise>본문</c:otherwise>
                 </c:choose>
               </div>
               <div class="prose prose-lg prose-invert max-w-none">
-                <div id="newsContent" class="whitespace-pre-line leading-relaxed text-slate-300"><c:out value="${empty news.articleContent ? news.description : news.articleContent}"/></div>
+                <div id="newsContent" class="whitespace-pre-line leading-relaxed text-slate-300"><c:out value="${news.displaySummary}"/></div>
               </div>
 
               <div class="mt-8 flex flex-wrap items-center gap-4 border-t border-white/10 pt-8">
@@ -297,8 +300,8 @@
       const titleElement = document.getElementById("newsTitle");
       const summaryElement = document.getElementById("newsSummary");
       const dateElement = document.getElementById("newsDate");
-      const originalLink = "<c:out value='${news.originallink}'/>";
-      const link = "<c:out value='${news.link}'/>";
+      const originalLink = "<c:out value='${news.originalUrl}'/>";
+      const link = "";
 
       if (!newsId) {
         return null;
@@ -429,8 +432,8 @@
       const category = detectCategory(title + " " + summary);
       const icon = categoryIcons[category] || "newspaper";
       const color = categoryColors[category] || "bg-gradient-to-r from-sky-500 to-cyan-500";
-      const originalLink = "<c:out value='${news.originallink}'/>";
-      const link = "<c:out value='${news.link}'/>";
+      const originalLink = "<c:out value='${news.originalUrl}'/>";
+      const link = "";
 
       document.title = title ? title + " - DeepScan" : "뉴스 상세 - DeepScan";
       sourceElement.textContent = "뉴스 서비스";

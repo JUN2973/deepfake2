@@ -1,0 +1,17 @@
+# 체크리스트 기준 주석: 개발환경 세팅: IMD 분석 서비스를 로컬 컨테이너로 실행하기 위한 구성을 정의한다.
+services:
+  imd-service:
+    build:
+      context: ./imd-service
+    image: deepfake2-imd:latest
+    container_name: deepfake2-imd
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${IMD_HOST_PORT:-8000}:8000"
+    environment:
+      IMD_REPO: /opt/IMD
+      IMD_DEVICE: cpu
+      IMD_ENABLE_BUSTERNET: "false"
+      IMD_HEATMAP_THRESHOLD: "0.6"
+      IMD_MIN_REGION_AREA_RATIO: "0.003"
+      IMD_MAX_IMAGE_SIZE: "768"

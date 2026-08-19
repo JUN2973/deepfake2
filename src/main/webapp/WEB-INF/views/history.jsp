@@ -641,7 +641,7 @@
       fetch(contextPath + "/api/v1/verifications/" + encodeURIComponent(id))
         .then(function(response) {
           if (!response.ok) {
-            throw new Error("detail request failed");
+            throw new Error("상세 요청에 실패했습니다.");
           }
           return response.json();
         })
@@ -680,7 +680,7 @@
       })
         .then(function(response) {
           if (!response.ok) {
-            throw new Error("delete failed");
+            throw new Error("삭제에 실패했습니다.");
           }
           window.location.reload();
         })

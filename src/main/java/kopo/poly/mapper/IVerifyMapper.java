@@ -1,5 +1,9 @@
-﻿package kopo.poly.mapper;
+package kopo.poly.mapper;
 
+
+/**
+ * 체크리스트 기준 주석: 테이블 명세서(RDBMS)/구현(딥페이크 판별): 검증 결과와 파일 메타데이터 접근 SQL을 정의한다.
+ */
 import kopo.poly.dto.VerifyDTO;
 import org.apache.ibatis.annotations.Param;
 
@@ -15,7 +19,8 @@ public interface IVerifyMapper {
                                               @Param("userId") Long userId);
     List<VerifyDTO> selectVerificationList(@Param("offset") int offset,
                                            @Param("size") int size,
-                                           @Param("verdict") String verdict);
+                                           @Param("verdict") String verdict,
+                                           @Param("userId") Long userId);
     int deleteVerificationByIdAndUserId(@Param("id") Long id,
                                         @Param("userId") Long userId);
 }

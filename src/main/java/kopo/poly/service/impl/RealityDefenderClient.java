@@ -1,5 +1,14 @@
-﻿package kopo.poly.service.impl;
+package kopo.poly.service.impl;
 
+
+/**
+ * 체크리스트 기준 주석: 구현(딥페이크 판별): Reality Defender 외부 API 요청과 응답 변환을 담당한다.
+ */
+
+/**
+ * 발표용 설명: Reality Defender 외부 API와 직접 통신하는 어댑터입니다.
+ * 서비스 내부 로직이 API 세부 규격에 의존하지 않도록 요청/응답 변환을 이 파일에 모았습니다.
+ */
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kopo.poly.dto.DeepfakeResultDTO;
@@ -8,15 +17,13 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-import org.springframework.web.client.HttpStatusCodeException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
+import org.springframework.web.client.RestClientResponseException;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -38,7 +45,13 @@ public class RealityDefenderClient implements IDeepfakeClient {
     @Value("${rd.apiKey:}")
     private String apiKey;
 
-    private final RestTemplate rt = new RestTemplate();
+    @Value("${rd.poll.max-attempts:100}")
+    private int pollMaxAttempts;
+
+    @Value("${rd.poll.interval-ms:3000}")
+    private long pollIntervalMs;
+
+    private final RestClient restClient = RestClient.create();
     private final ObjectMapper om = new ObjectMapper();
 
     @Override
@@ -96,12 +109,13 @@ public class RealityDefenderClient implements IDeepfakeClient {
                 "/data/reason",
                 "/error/message"
         );
-        Double finalScore100 = doubleValue(result, "/resultsSummary/metadata/finalScore");
         String verdict = normalizeVerdict(status, reason);
+        Double finalScore100 = extractFinalScore(result);
+        Double riskScore = toManipulationRiskScore(verdict, finalScore100);
 
         return new DeepfakeResultDTO(
                 verdict,
-                isNotApplicable(verdict) || finalScore100 == null ? null : clamp(finalScore100 / 100.0),
+                isNotApplicable(verdict) ? null : riskScore,
                 om.writeValueAsString(result)
         );
     }
@@ -115,14 +129,14 @@ public class RealityDefenderClient implements IDeepfakeClient {
         String payload = om.writeValueAsString(Map.of("fileName", originalName));
 
         try {
-            ResponseEntity<String> response = rt.exchange(
-                    url,
-                    HttpMethod.POST,
-                    new HttpEntity<>(payload, headers),
-                    String.class
-            );
+            ResponseEntity<String> response = restClient.post()
+                    .uri(url)
+                    .headers(requestHeaders -> requestHeaders.addAll(headers))
+                    .body(payload)
+                    .retrieve()
+                    .toEntity(String.class);
             return parseBody(response.getBody(), "presigned URL");
-        } catch (HttpStatusCodeException e) {
+        } catch (RestClientResponseException e) {
             throw new IllegalStateException("Reality Defender presigned URL request failed: "
                     + e.getStatusCode() + " " + e.getResponseBodyAsString(), e);
         }
@@ -134,16 +148,16 @@ public class RealityDefenderClient implements IDeepfakeClient {
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
         try {
-            ResponseEntity<String> response = rt.exchange(
-                    URI.create(uploadUrl),
-                    HttpMethod.PUT,
-                    new HttpEntity<>(bytes, headers),
-                    String.class
-            );
+            ResponseEntity<String> response = restClient.put()
+                    .uri(URI.create(uploadUrl))
+                    .headers(requestHeaders -> requestHeaders.addAll(headers))
+                    .body(bytes)
+                    .retrieve()
+                    .toEntity(String.class);
             if (!response.getStatusCode().is2xxSuccessful()) {
                 throw new IllegalStateException("Reality Defender upload failed: " + response.getStatusCode());
             }
-        } catch (HttpStatusCodeException e) {
+        } catch (RestClientResponseException e) {
             throw new IllegalStateException("Reality Defender upload failed: "
                     + e.getStatusCode() + " " + e.getResponseBodyAsString(), e);
         }
@@ -151,27 +165,47 @@ public class RealityDefenderClient implements IDeepfakeClient {
 
     private JsonNode pollResult(String requestId) throws Exception {
         String url = trimTrailingSlash(baseUrl) + "/api/media/users/" + requestId;
-        HttpEntity<Void> entity = new HttpEntity<>(apiHeaders());
+        HttpHeaders headers = apiHeaders();
 
         // Reality Defender 분석은 비동기이므로 최종 상태가 될 때까지 반복 조회한다.
-        for (int i = 0; i < 60; i++) {
+        JsonNode lastBody = null;
+        String lastStatus = null;
+
+        for (int i = 0; i < pollMaxAttempts; i++) {
             try {
-                ResponseEntity<String> response = rt.exchange(url, HttpMethod.GET, entity, String.class);
+                ResponseEntity<String> response = restClient.get()
+                        .uri(url)
+                        .headers(requestHeaders -> requestHeaders.addAll(headers))
+                        .retrieve()
+                        .toEntity(String.class);
                 JsonNode body = parseBody(response.getBody(), "media detail");
-                String status = text(body, "/resultsSummary/status");
+                lastBody = body;
+                String status = firstText(
+                        body,
+                        "/resultsSummary/status",
+                        "/status",
+                        "/result/status",
+                        "/data/status"
+                );
+                lastStatus = status;
                 if (isTerminalStatus(status)) {
                     log.info("Reality Defender result ready. requestId={}, status={}", requestId, status);
                     return body;
                 }
-            } catch (HttpStatusCodeException e) {
+                log.info("Reality Defender result pending. requestId={}, attempt={}/{}, status={}",
+                        requestId, i + 1, pollMaxAttempts, status);
+            } catch (RestClientResponseException e) {
                 throw new IllegalStateException("Reality Defender result request failed: "
                         + e.getStatusCode() + " " + e.getResponseBodyAsString(), e);
             }
 
-            Thread.sleep(1000);
+            Thread.sleep(pollIntervalMs);
         }
 
-        throw new IllegalStateException("Reality Defender result polling timeout for requestId=" + requestId);
+        String lastBodyText = lastBody == null ? "null" : lastBody.toString();
+        throw new IllegalStateException("Reality Defender result polling timeout for requestId="
+                + requestId + ", attempts=" + pollMaxAttempts + ", intervalMs=" + pollIntervalMs
+                + ", lastStatus=" + lastStatus + ", lastBody=" + lastBodyText);
     }
 
     private static boolean isTerminalStatus(String status) {
@@ -222,6 +256,7 @@ public class RealityDefenderClient implements IDeepfakeClient {
             case "AUTHENTIC" -> "REAL";
             case "REAL" -> "REAL";
             case "FAKE" -> "FAKE";
+            case "MANIPULATED" -> "FAKE";
             case "SUSPICIOUS" -> "SUSPICIOUS";
             case "NOT_APPLICABLE" -> "NOT_APPLICABLE";
             case "UNABLE_TO_EVALUATE" -> "UNABLE_TO_EVALUATE";
@@ -250,6 +285,37 @@ public class RealityDefenderClient implements IDeepfakeClient {
 
     private static boolean isNotApplicable(String verdict) {
         return "NOT_APPLICABLE".equals(verdict) || "UNABLE_TO_EVALUATE".equals(verdict);
+    }
+
+    private static Double extractFinalScore(JsonNode result) {
+        return firstNumber(
+                result,
+                "/resultsSummary/metadata/finalScore",
+                "/resultsSummary/finalScore",
+                "/finalScore",
+                "/score",
+                "/data/finalScore",
+                "/data/score",
+                "/result/finalScore",
+                "/result/score"
+        );
+    }
+
+    private static Double toManipulationRiskScore(String verdict, Double finalScore100) {
+        if (finalScore100 == null) {
+            return null;
+        }
+
+        double normalized = finalScore100 > 1.0 ? finalScore100 / 100.0 : finalScore100;
+        normalized = clamp(normalized);
+
+        // detail.jsp는 score를 "조작 판단률"로 표시한다.
+        // API가 AUTHENTIC/REAL 신뢰도에 높은 점수를 주면 그대로 쓰면 REAL 이미지가 고위험처럼 보이므로 위험도로 뒤집는다.
+        if ("REAL".equals(verdict)) {
+            return clamp(1.0 - normalized);
+        }
+
+        return normalized;
     }
 
     private static String trimTrailingSlash(String value) {
@@ -288,6 +354,16 @@ public class RealityDefenderClient implements IDeepfakeClient {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    private static Double firstNumber(JsonNode node, String... pointers) {
+        for (String pointer : pointers) {
+            Double value = doubleValue(node, pointer);
+            if (value != null) {
+                return value;
+            }
+        }
+        return null;
     }
 
     private static Double clamp(Double value) {

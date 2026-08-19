@@ -1,5 +1,9 @@
-﻿package kopo.poly.service.impl;
+package kopo.poly.service.impl;
 
+
+/**
+ * 체크리스트 기준 주석: 구현(검증기록): 검증기록 목록과 상세 데이터를 조회한다.
+ */
 import java.util.List;
 import kopo.poly.dto.HistoryDTO;
 import kopo.poly.mapper.IHistoryMapper;

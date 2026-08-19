@@ -690,27 +690,17 @@
       }
 
       try {
-        const localPosts = JSON.parse(localStorage.getItem("community_posts") || "[]");
-        const localComments = [];
-        localPosts.forEach(function (post) {
-          (post.comments || []).forEach(function (comment) {
-            if (String(comment.authorId) === String(sessionUser.id)) {
-              localComments.push({
-                postId: post.id,
-                postTitle: post.title,
-                content: comment.content,
-                createdAt: comment.createdAt
-              });
-            }
-          });
+        const response = await fetch(contextPath + "/api/v1/community/posts/my-comments", {
+          credentials: "same-origin"
         });
-        myComments = localComments;
+        const json = await response.json().catch(function () { return null; });
+        myComments = json && json.success && Array.isArray(json.data) ? json.data : [];
       } catch (error) {
         myComments = [];
       }
 
-      document.getElementById("postCount").textContent = myPosts.length + "개";
-      document.getElementById("commentCount").textContent = myComments.length + "개";
+      document.getElementById("postCount").textContent = myPosts.length + "\uAC1C";
+      document.getElementById("commentCount").textContent = myComments.length + "\uAC1C";
       renderMyPosts();
       renderMyComments();
     }

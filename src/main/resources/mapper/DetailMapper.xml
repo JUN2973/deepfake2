@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!-- 체크리스트 기준 주석: 테이블 명세서(RDBMS)/구현(결과 상세): 분석 상세 결과 조회 SQL을 정의한다. -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+<!--
+  단건 분석 결과 상세 조회용 매퍼다.
+  DetailService에서 검증 ID로 저장된 이미지와 판정 결과를 가져올 때 사용한다.
+-->
 <mapper namespace="kopo.poly.mapper.IDetailMapper">
 
     <select id="selectDetail" parameterType="long" resultType="kopo.poly.dto.DetailDTO">

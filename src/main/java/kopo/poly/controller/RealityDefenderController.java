@@ -1,7 +1,12 @@
-﻿package kopo.poly.controller;
+package kopo.poly.controller;
 
+
+/**
+ * 체크리스트 기준 주석: 구현(딥페이크 판별): Reality Defender API 연동 테스트/분석 요청을 담당한다.
+ */
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.service.IRealityDefenderService;
+import kopo.poly.util.SessionUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -34,7 +39,7 @@ public class RealityDefenderController {
                               HttpSession session) {
         try {
             MultipartFile file = request.getFile("file");
-            Long userId = extractUserId(session);
+            Long userId = SessionUtil.getUserId(session);
             realityDefenderService.analyzeImage(file, userId);
             return "redirect:/history";
         } catch (IllegalArgumentException e) {
@@ -61,20 +66,4 @@ public class RealityDefenderController {
         return "redirect:/history";
     }
 
-    private Long extractUserId(HttpSession session) {
-        Object userId = session.getAttribute("USER_ID");
-        if (userId == null) {
-            return null;
-        }
-
-        if (userId instanceof Number number) {
-            return number.longValue();
-        }
-
-        try {
-            return Long.parseLong(String.valueOf(userId));
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
 }

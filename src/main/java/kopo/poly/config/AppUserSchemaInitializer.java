@@ -1,5 +1,9 @@
-﻿package kopo.poly.config;
+package kopo.poly.config;
 
+
+/**
+ * 체크리스트 기준 주석: 개발환경 세팅/설계: 보안, MVC, DB 스키마, 공통 Bean 설정을 담당한다.
+ */
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationRunner;
@@ -19,6 +23,22 @@ public class AppUserSchemaInitializer {
     public ApplicationRunner appUserSchemaRunner(JdbcTemplate jdbcTemplate) {
         return args -> {
             try {
+                jdbcTemplate.execute("""
+                        CREATE TABLE IF NOT EXISTS app_user (
+                            id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                            name VARCHAR(100) NOT NULL,
+                            email VARCHAR(255) NOT NULL,
+                            password_hash VARCHAR(255) NOT NULL,
+                            phone_number VARCHAR(30) NULL,
+                            address VARCHAR(255) NULL,
+                            oauth_provider VARCHAR(30) NULL,
+                            oauth_provider_id VARCHAR(150) NULL,
+                            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                            updated_at DATETIME NULL,
+                            CONSTRAINT uk_app_user_email UNIQUE (email)
+                        )
+                        """);
+
                 jdbcTemplate.execute("""
                         ALTER TABLE app_user
                         ADD COLUMN IF NOT EXISTS phone_number VARCHAR(30) NULL

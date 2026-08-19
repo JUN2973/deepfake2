@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!-- 체크리스트 기준 주석: 테이블 명세서(RDBMS)/구현(커뮤니티): 게시글, 댓글, 좋아요 데이터 접근 SQL을 정의한다. -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+<!--
+  커뮤니티 게시글, 댓글, 좋아요 SQL을 모아 둔 MyBatis 매퍼다.
+  CommunityService가 이 쿼리들을 호출해 목록/상세/작성/수정/삭제/좋아요 기능을 처리한다.
+-->
 <mapper namespace="kopo.poly.mapper.ICommunityMapper">
 
     <select id="selectPosts" resultType="kopo.poly.dto.CommunityPostDTO">
@@ -136,6 +141,31 @@
         WHERE c.post_id = #{postId}
         GROUP BY c.id, c.post_id, c.user_id, c.parent_id, c.author, c.content, c.created_at, c.updated_at
         ORDER BY COALESCE(c.parent_id, c.id) ASC, CASE WHEN c.parent_id IS NULL THEN 0 ELSE 1 END ASC, c.id ASC
+    </select>
+
+    <select id="selectCommentsByUserId" resultType="kopo.poly.dto.CommunityCommentDTO">
+        SELECT
+            c.id,
+            c.post_id AS postId,
+            c.user_id AS userId,
+            c.parent_id AS parentId,
+            p.title AS postTitle,
+            c.author,
+            c.content,
+            COUNT(l.user_id) AS likeCount,
+            CASE
+                WHEN #{currentUserId} IS NULL THEN FALSE
+                WHEN MAX(CASE WHEN l.user_id = #{currentUserId} THEN 1 ELSE 0 END) = 1 THEN TRUE
+                ELSE FALSE
+            END AS likedByCurrentUser,
+            DATE_FORMAT(c.created_at, '%Y-%m-%d %H:%i:%s') AS createdAt,
+            DATE_FORMAT(c.updated_at, '%Y-%m-%d %H:%i:%s') AS updatedAt
+        FROM community_comment c
+        INNER JOIN community_post p ON p.id = c.post_id
+        LEFT JOIN community_comment_like l ON l.comment_id = c.id
+        WHERE c.user_id = #{userId}
+        GROUP BY c.id, c.post_id, c.user_id, c.parent_id, p.title, c.author, c.content, c.created_at, c.updated_at
+        ORDER BY c.id DESC
     </select>
 
     <select id="selectCommentById" resultType="kopo.poly.dto.CommunityCommentDTO">

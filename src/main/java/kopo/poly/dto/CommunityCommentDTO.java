@@ -1,5 +1,9 @@
-﻿package kopo.poly.dto;
+package kopo.poly.dto;
 
+
+/**
+ * 체크리스트 기준 주석: 논리 ERD/구현(커뮤니티): 커뮤니티 요청/응답 데이터 전달 구조를 정의한다.
+ */
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +15,7 @@ public class CommunityCommentDTO {
     private Long postId;
     private Long userId;
     private Long parentId;
+    private String postTitle;
     private String author;
     private String content;
     private Integer likeCount;
@@ -27,6 +32,8 @@ public class CommunityCommentDTO {
     public void setUserId(Long userId) { this.userId = userId; }
     public Long getParentId() { return parentId; }
     public void setParentId(Long parentId) { this.parentId = parentId; }
+    public String getPostTitle() { return postTitle; }
+    public void setPostTitle(String postTitle) { this.postTitle = postTitle; }
     public String getAuthor() { return author; }
     public void setAuthor(String author) { this.author = author; }
     public String getContent() { return content; }

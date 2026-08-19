@@ -1,7 +1,12 @@
-﻿package kopo.poly.service.impl;
+package kopo.poly.service.impl;
 
+
+/**
+ * 체크리스트 기준 주석: 구현(이미지 업로드/검증기록): 업로드 파일 저장소와 공개 URL 생성을 담당한다.
+ */
 import kopo.poly.service.IObjectStorageService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,6 +18,7 @@ import java.nio.file.Paths;
  * 외부 스토리지 없이 로컬 uploads 폴더에 파일을 저장하는 구현체다.
  */
 @Service
+@ConditionalOnProperty(name = "app.storage.type", havingValue = "local", matchIfMissing = true)
 public class DummyObjectStorageService implements IObjectStorageService {
 
     @Value("${app.upload-dir:uploads}")

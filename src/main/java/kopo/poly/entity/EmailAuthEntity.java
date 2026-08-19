@@ -1,5 +1,9 @@
-﻿package kopo.poly.entity;
+package kopo.poly.entity;
 
+
+/**
+ * 체크리스트 기준 주석: 테이블 명세서(RDBMS): 이메일 인증 테이블과 매핑되는 JPA Entity를 정의한다.
+ */
 /**
  * 이메일 인증번호 테이블 한 행을 표현하는 엔티티다.
  */

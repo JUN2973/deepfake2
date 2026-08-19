@@ -3,6 +3,7 @@
   String contextPath = request.getContextPath();
   Object userIdObj = session.getAttribute("USER_ID");
   boolean isAuthenticated = (userIdObj != null);
+  String createPostHref = contextPath + (isAuthenticated ? "/community/create" : "/login");
   request.setAttribute("activePage", "community");
 %>
 <!DOCTYPE html>
@@ -125,6 +126,12 @@
       <div class="grid lg:grid-cols-3 gap-6">
         <div class="lg:col-span-2 space-y-6">
           <div class="space-y-4 reveal" style="--reveal-delay: 160ms;" data-reveal>
+            <div class="flex justify-end">
+              <button type="button" onclick="goPage('<%= createPostHref %>')" class="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-sky-600 to-cyan-600 px-5 py-3 font-semibold text-white shadow-lg shadow-sky-500/40 transition-all hover:from-sky-500 hover:to-cyan-500">
+                <i data-lucide="pen-square" class="h-5 w-5"></i>
+                <span>&#51089;&#49457;&#54616;&#44592;</span>
+              </button>
+            </div>
             <div class="relative">
               <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500"></i>
               <input id="searchInput" type="text" placeholder="게시글 검색..." class="w-full pl-12 pr-4 py-3 bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all">

@@ -1,5 +1,9 @@
-﻿package kopo.poly.controller.api;
+package kopo.poly.controller.api;
 
+
+/**
+ * 체크리스트 기준 주석: 구현(인증/회원): 이메일 인증번호 발송과 인증번호 확인 API를 처리한다.
+ */
 import kopo.poly.dto.EmailAuthResponseDTO;
 import kopo.poly.dto.EmailAuthSendRequestDTO;
 import kopo.poly.dto.EmailAuthVerifyRequestDTO;

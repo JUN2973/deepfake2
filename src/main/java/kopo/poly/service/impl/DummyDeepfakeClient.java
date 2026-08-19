@@ -1,5 +1,9 @@
-﻿package kopo.poly.service.impl;
+package kopo.poly.service.impl;
 
+
+/**
+ * 체크리스트 기준 주석: 구현(딥페이크 판별): 외부 API 없이 테스트 가능한 더미 분석 결과를 제공한다.
+ */
 import com.fasterxml.jackson.databind.ObjectMapper;
 import kopo.poly.dto.DeepfakeResultDTO;
 import kopo.poly.service.IDeepfakeClient;

@@ -1,0 +1,15 @@
+# 체크리스트 기준 주석: 배포 스크립트/문서: 운영 배포와 외부 분석 서비스 실행에 필요한 설정을 정리한다.
+services:
+  imd-service:
+    image: ${IMD_IMAGE:-ghcr.io/YOUR_GITHUB_USERNAME/deepfake2-imd:latest}
+    container_name: deepfake2-imd
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${IMD_HOST_PORT:-8000}:8000"
+    environment:
+      IMD_REPO: /opt/IMD
+      IMD_DEVICE: cpu
+      IMD_ENABLE_BUSTERNET: "false"
+      IMD_HEATMAP_THRESHOLD: "0.6"
+      IMD_MIN_REGION_AREA_RATIO: "0.003"
+      IMD_MAX_IMAGE_SIZE: "768"

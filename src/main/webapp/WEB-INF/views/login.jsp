@@ -1,7 +1,5 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
-  // JSP가 현재 애플리케이션의 context path를 구해 JS와 링크에서 공통으로 사용한다.
-  // 예: 로컬에서는 /, 배포 환경에서는 /deepfake2 처럼 달라질 수 있다.
   String contextPath = request.getContextPath();
 %>
 <!DOCTYPE html>
@@ -24,28 +22,24 @@
   </style>
 </head>
 <body class="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4 relative">
-  <!-- 로그인 화면 배경 효과 영역이다. 기능 로직과는 분리된 시각 요소다. -->
   <div class="absolute inset-0">
     <div class="absolute top-20 left-1/4 w-96 h-96 bg-sky-600/30 rounded-full blur-3xl"></div>
     <div class="absolute bottom-20 right-1/4 w-96 h-96 bg-cyan-600/30 rounded-full blur-3xl"></div>
   </div>
 
-  <!-- 상단 뒤로가기 버튼: contextPath를 붙여 어느 배포 경로에서도 홈으로 이동하게 한다. -->
   <div class="pointer-events-none fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
     <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
       <button
-    type="button"
-    onclick="goPage('<%= contextPath %>/')"
-    class="pointer-events-auto flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur-xl transition-all hover:bg-white/20"
-  >
-    <i data-lucide="arrow-left" class="w-4 h-4"></i>
-    홈으로
-  </button>
-
+        type="button"
+        onclick="goPage('<%= contextPath %>/')"
+        class="pointer-events-auto flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur-xl transition-all hover:bg-white/20"
+      >
+        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+        홈으로
+      </button>
     </div>
   </div>
 
-  <!-- 로그인 카드 전체 영역: 사용자가 이메일/비밀번호를 입력하고 로그인 API를 호출한다. -->
   <div class="w-full max-w-md relative">
     <div class="text-center mb-12">
       <div class="relative inline-block mb-6">
@@ -57,13 +51,12 @@
       <h1 class="text-4xl font-bold mb-3">
         <span class="bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">로그인</span>
       </h1>
-      <p class="text-slate-400">DeepScan 계정으로 로그인해 주세요</p>
+      <p class="text-slate-400">DeepScan 계정으로 로그인해 주세요.</p>
     </div>
 
     <div class="relative group">
       <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-3xl blur-2xl opacity-20 group-hover:opacity-30 transition-opacity"></div>
       <div class="relative bg-slate-900/50 backdrop-blur-xl rounded-3xl p-8 border border-white/10">
-        <!-- id="loginForm"은 아래 JS에서 submit 이벤트를 연결하는 기준이다. -->
         <form id="loginForm" class="space-y-6">
           <div>
             <label for="email" class="block text-sm text-slate-300 mb-2 font-medium">이메일</label>
@@ -86,7 +79,7 @@
               <input
                 id="password"
                 type="password"
-                placeholder="비밀번호를 입력하세요"
+                placeholder="비밀번호를 입력해 주세요."
                 required
                 class="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all backdrop-blur-xl"
               >
@@ -138,54 +131,41 @@
         </form>
       </div>
     </div>
-
   </div>
 
   <script>
-    // 서버에서 계산한 contextPath를 JS 상수로 저장해 모든 fetch와 페이지 이동에 사용한다.
     const contextPath = "<%= contextPath %>";
-
-    // 자주 사용하는 DOM 요소를 한 번만 찾아 변수로 보관한다.
     const form = document.getElementById("loginForm");
     const submitBtn = document.getElementById("submitBtn");
     const errorBox = document.getElementById("errorBox");
     const errorText = document.getElementById("errorText");
 
-    // 버튼에서 호출하는 공통 페이지 이동 함수다.
     function goPage(path) {
       window.location.href = path;
     }
 
-    // 로그인 실패 메시지를 화면의 빨간 박스에 표시한다.
     function showError(message) {
       errorText.textContent = message;
       errorBox.classList.remove("hidden");
       lucide.createIcons();
     }
 
-    // 이전 오류 메시지를 지워 새 요청 결과와 섞이지 않게 한다.
     function clearError() {
       errorText.textContent = "";
       errorBox.classList.add("hidden");
     }
 
-    // 중복 클릭을 막기 위해 요청 중에는 로그인 버튼을 비활성화하고 문구를 바꾼다.
     function setLoading(isLoading) {
       submitBtn.disabled = isLoading;
       submitBtn.textContent = isLoading ? "로그인 중..." : "로그인";
     }
 
-    // 로그인 폼 제출 흐름:
-    // 1. 브라우저 기본 submit을 막고
-    // 2. 이메일/비밀번호를 JSON으로 API에 전송하고
-    // 3. 성공하면 홈으로 이동, 실패하면 서버 메시지를 표시한다.
     form.addEventListener("submit", async function (event) {
       event.preventDefault();
       clearError();
       setLoading(true);
 
       try {
-        // AuthApiController.login()과 연결되는 API 호출이다.
         const response = await fetch(contextPath + "/api/v1/auth/login", {
           method: "POST",
           headers: {
@@ -197,23 +177,20 @@
           })
         });
 
-        // 서버가 오류 HTML을 돌려주는 상황도 대비해 JSON 파싱 실패를 null로 처리한다.
         const json = await response.json().catch(function () {
           return null;
         });
 
         if (json && json.success) {
-          // 홈 화면에서 로그인 성공 토스트를 보여주기 위해 sessionStorage에 임시 메시지를 저장한다.
           sessionStorage.setItem("appToast", JSON.stringify({
             type: "success",
             title: "로그인되었습니다",
-            description: "DeepScan에 다시 오신 것을 환영합니다."
+            description: "DeepScan에 오신 것을 환영합니다."
           }));
           window.location.href = contextPath + "/";
           return;
         }
 
-        // 서버가 내려준 에러 메시지가 있으면 그대로 보여주고, 없으면 기본 안내 문구를 보여준다.
         showError(
           json && json.error && json.error.message
             ? json.error.message
@@ -226,12 +203,10 @@
       }
     });
 
-    // Google OAuth 로그인 실패 후 돌아온 경우 URL 파라미터를 보고 사용자에게 안내한다.
     if (new URLSearchParams(window.location.search).get("oauthError")) {
-      showError("Google 로그인 처리 중 오류가 발생했습니다. 설정값과 계정 정보를 확인해주세요.");
+      showError("Google 로그인 처리 중 오류가 발생했습니다. 설정값과 계정 정보를 확인해 주세요.");
     }
 
-    // lucide 아이콘 라이브러리가 data-lucide 속성을 실제 SVG 아이콘으로 바꾼다.
     lucide.createIcons();
   </script>
 </body>

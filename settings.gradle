@@ -1,0 +1,16 @@
+// 체크리스트 기준 주석: 개발환경 세팅: Gradle 루트 프로젝트 이름과 모듈 구성을 정의한다.
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+    }
+}
+
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        mavenCentral()
+    }
+}
+
+rootProject.name = 'deepfake2'

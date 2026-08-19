@@ -1,5 +1,8 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page isELIgnored="false" %>
+<%--
+  체크리스트 기준 주석: 구현(결과 상세): 새벽 분석 결과, 판별 점수, 진위 여부 요약을 표시한다.
+--%>
 <%
     String contextPath = request.getContextPath();
 %>

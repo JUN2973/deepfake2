@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!-- 체크리스트 기준 주석: 테이블 명세서(RDBMS)/구현(검증기록): 검증기록 목록/상세 조회 SQL을 정의한다. -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+<!--
+  로그인 사용자의 딥페이크 분석 이력을 조회하는 매퍼다.
+  HistoryController/HistoryService가 검증 기록 화면에 보여 줄 목록을 가져온다.
+-->
 <mapper namespace="kopo.poly.mapper.IHistoryMapper">
 
     <select id="selectHistoryByUserId" parameterType="long" resultType="kopo.poly.dto.HistoryDTO">

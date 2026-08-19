@@ -1,0 +1,45 @@
+# Copy this file to /spring_module/.env.properties on EC2 and fill in real values.
+# Keep the real .env.properties out of git.
+
+# RDS MariaDB
+# AWS RDS console > Databases > MariaDB > Connectivity & security > Endpoint
+DB_URL=jdbc:mariadb://YOUR_RDS_ENDPOINT:3306/myDB?sslMode=trust&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+DB_USERNAME=poly
+DB_PASSWORD=CHANGE_ME_STRONG_DB_PASSWORD
+
+# MongoDB on EC2, if this project uses the EC2 MongoDB instance from class.
+MONGODB_URI=mongodb://myUser:CHANGE_ME_STRONG_MONGO_PASSWORD@YOUR_EC2_PRIVATE_OR_PUBLIC_IP:27017/MyDB?authSource=MyDB
+
+# Mail
+MAIL_USERNAME=
+MAIL_PASSWORD=
+APP_MAIL_FROM=
+
+# Reality Defender
+RD_API_KEY=
+REALITY_DEFENDER_API_KEY=${RD_API_KEY}
+REALITY_DEFENDER_MOCK_MODE=false
+
+# Local Python IMD service
+DEEPFAKE_CLIENT_MODE=real
+IMD_BASE_URL=http://127.0.0.1:8000
+IMD_HEATMAP_ENABLED=true
+IMD_AUTO_START_ENABLED=false
+
+# Browser security
+# Set this to the exact HTTPS origin users access in production.
+APP_ALLOWED_ORIGINS=https://YOUR_DOMAIN
+APP_COOKIE_SECURE=true
+APP_COOKIE_SAME_SITE=lax
+SERVER_FORWARD_HEADERS_STRATEGY=framework
+
+# Object storage. Use s3 for production unless the server disk is persistent and backed up.
+APP_STORAGE_TYPE=s3
+AWS_REGION=ap-northeast-2
+AWS_S3_BUCKET=
+AWS_S3_PUBLIC_BASE_URL=
+AWS_S3_PUBLIC_READ_ACL=false
+
+# Google OAuth2
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=

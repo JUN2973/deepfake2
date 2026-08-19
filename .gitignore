@@ -1,6 +1,5 @@
 HELP.md
 target/
-.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
 
@@ -26,6 +25,7 @@ target/
 /nbdist/
 /.nb-gradle/
 build/
+.gradle/
 !**/src/main/**/build/
 !**/src/test/**/build/
 
@@ -36,8 +36,15 @@ build/
 .env.properties
 
 # Local runtime artifacts
+.codex-ppt-build/
+.venv/
 uploads/
 tmp_src_compare/
+.tmp_*/
+*.log
+__pycache__/
+*.pyc
+imd-service/.venv/
 live_news_response.html
 news_page_snapshot.html
 news_run.out.log

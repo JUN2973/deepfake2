@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!-- 체크리스트 기준 주석: 테이블 명세서(RDBMS)/API 연동 설계: 외부 분석 API 결과 저장/조회 SQL을 정의한다. -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
+<!--
+  Reality Defender 기반 분석 결과를 저장하고 조회하는 매퍼다.
+  외부 API 응답을 화면용 요약값으로 정리해 verification_record 테이블에 남긴다.
+-->
 <mapper namespace="kopo.poly.mapper.IRealityDefenderMapper">
 
     <insert id="insertVerificationRecord"
-            parameterType="kopo.poly.dto.VerificationRecordDto"
+            parameterType="kopo.poly.dto.VerificationRecordDTO"
             useGeneratedKeys="true"
             keyProperty="id"
             keyColumn="id">
@@ -34,7 +39,7 @@
 
     <select id="selectVerificationRecordById"
             parameterType="long"
-            resultType="kopo.poly.dto.VerificationRecordDto">
+            resultType="kopo.poly.dto.VerificationRecordDTO">
         SELECT
             id,
             user_id AS userId,
@@ -52,7 +57,7 @@
     </select>
 
     <select id="selectVerificationRecordList"
-            resultType="kopo.poly.dto.VerificationRecordDto">
+            resultType="kopo.poly.dto.VerificationRecordDTO">
         SELECT
             id,
             user_id AS userId,

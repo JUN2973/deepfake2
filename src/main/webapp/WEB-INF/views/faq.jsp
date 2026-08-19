@@ -1,4 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%--
+  체크리스트 기준 주석: 구현(자주하는질문): FAQ 목록과 질문/답변 펼치기 UI를 구성한다.
+--%>
 <%
   String contextPath = request.getContextPath();
   request.setAttribute("activePage", "faq");

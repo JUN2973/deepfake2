@@ -1,5 +1,9 @@
-﻿package kopo.poly.service;
+package kopo.poly.service;
 
+
+/**
+ * 체크리스트 기준 주석: 설계/API 연동 설계: 컨트롤러와 구현체 사이의 서비스 계약을 정의한다.
+ */
 import kopo.poly.dto.CommunityPostDTO;
 import kopo.poly.dto.CommunityCommentDTO;
 import kopo.poly.dto.CommunityCommentLikeResponseDTO;
@@ -22,6 +26,7 @@ public interface ICommunityService {
     boolean deletePost(Long postId, Long userId);
     CommunityPostLikeResponseDTO togglePostLike(Long postId, Long userId);
     List<CommunityCommentDTO> getComments(Long postId, Long currentUserId);
+    List<CommunityCommentDTO> getCommentsByUser(Long userId);
     CommunityCommentDTO getComment(Long commentId, Long currentUserId);
     Long createComment(Long postId, Long parentId, Long userId, String author, String content);
     boolean updateComment(Long commentId, Long userId, String content);

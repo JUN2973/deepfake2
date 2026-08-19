@@ -1,4 +1,4 @@
-﻿package kopo.poly.service.impl;
+package kopo.poly.service.impl;
 
 import jakarta.mail.internet.MimeMessage;
 import kopo.poly.dto.MailDTO;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 /**
- * Spring JavaMailSender로 실제 이메일을 발송하는 서비스 구현체다.
+ * Spring JavaMailSender로 이메일을 발송한다.
  */
 @Service
 public class MailService implements IMailService {
@@ -47,7 +47,7 @@ public class MailService implements IMailService {
 
     private void validateMailConfiguration() {
         if (!StringUtils.hasText(mailUsername) || !StringUtils.hasText(mailPassword)) {
-            throw new IllegalStateException("Mail is not configured. Set MAIL_USERNAME and MAIL_PASSWORD.");
+            throw new IllegalStateException("메일 발송 계정이 설정되지 않았습니다. MAIL_USERNAME과 MAIL_PASSWORD를 설정해 주세요.");
         }
     }
 }

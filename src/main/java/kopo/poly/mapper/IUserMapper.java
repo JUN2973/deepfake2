@@ -1,6 +1,11 @@
-﻿package kopo.poly.mapper;
+package kopo.poly.mapper;
 
 
+
+/**
+ * 체크리스트 기준 주석: 테이블 명세서(RDBMS)/구현(인증/회원): 회원, 로그인, 이메일 인증 데이터 접근 SQL을 정의한다.
+ */
+import kopo.poly.dto.UserCreateDTO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.Map;
@@ -14,12 +19,8 @@ public interface IUserMapper {
     // 회원가입 이메일 중복확인: 같은 이메일이 app_user에 존재하면 1 이상을 반환한다.
     Integer existsByEmail(@Param("email") String email);
 
-    // 일반 회원가입 저장: 비밀번호는 컨트롤러에서 해시된 passwordHash만 전달한다.
-    int insertUser(@Param("name") String name,
-                   @Param("email") String email,
-                   @Param("passwordHash") String passwordHash,
-                   @Param("phoneNumber") String phoneNumber,
-                   @Param("address") String address);
+    // 일반 회원가입 저장: 서비스에서 저장용 DTO로 변환한 값만 전달한다.
+    int insertUser(UserCreateDTO dto);
 
     // Google OAuth 사용자 저장: OAuth 제공자와 제공자별 ID를 같이 저장한다.
     int insertSocialUser(@Param("name") String name,

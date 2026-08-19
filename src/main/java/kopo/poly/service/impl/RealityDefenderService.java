@@ -1,19 +1,21 @@
-﻿package kopo.poly.service.impl;
+package kopo.poly.service.impl;
 
+
+/**
+ * 체크리스트 기준 주석: 구현(딥페이크 판별): Reality Defender 분석 흐름을 서비스 계층에서 중계한다.
+ */
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import kopo.poly.dto.DetectionResultDto;
-import kopo.poly.dto.SuspiciousRegionDto;
-import kopo.poly.dto.VerificationRecordDto;
+import kopo.poly.dto.DetectionResultDTO;
+import kopo.poly.dto.SuspiciousRegionDTO;
+import kopo.poly.dto.VerificationRecordDTO;
 import kopo.poly.mapper.IRealityDefenderMapper;
 import kopo.poly.service.IRealityDefenderService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClientException;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
@@ -50,7 +52,7 @@ public class RealityDefenderService implements IRealityDefenderService {
     // 외부 분석 API로 보내기 전 서비스 계층에서 한 번 더 제한하는 최대 파일 크기다.
     private static final long MAX_FILE_SIZE = 10L * 1024L * 1024L;
 
-    private final RestTemplate restTemplate;
+    private final RestClient restClient;
     private final ObjectMapper objectMapper;
     private final IRealityDefenderMapper realityDefenderMapper;
 
@@ -67,22 +69,22 @@ public class RealityDefenderService implements IRealityDefenderService {
     private String uploadDir;
 
     @Override
-    public DetectionResultDto analyzeImage(MultipartFile file, Long userId) throws Exception {
+    public DetectionResultDTO analyzeImage(MultipartFile file, Long userId) throws Exception {
         // 업로드 검증 -> 파일 저장 -> 외부 API 분석 -> DB/스냅샷 저장까지 이어지는 분석 메인 흐름이다.
         validateFile(file);
 
         SavedImage savedImage = saveImage(file);
-        DetectionResultDto result;
+        DetectionResultDTO result;
 
         try {
             result = callRealityDefender(file, savedImage);
         } catch (Exception e) {
             log.error("Reality Defender API call failed. Falling back to mock response.", e);
             if (!isMockAllowed()) {
-                throw new IllegalStateException("External analysis server is unavailable.");
+                throw new IllegalStateException("외부 분석 서버를 사용할 수 없습니다.");
             }
             // 시연이나 개발 환경에서는 외부 API 장애가 있어도 화면 흐름을 확인할 수 있도록 mock 결과를 만든다.
-            result = buildMockResult(savedImage, "Mock fallback was used because the external analysis response was unavailable.");
+            result = buildMockResult(savedImage, "외부 분석 응답을 사용할 수 없어 임시 분석 결과를 사용했습니다.");
         }
 
         result.setUserId(userId);
@@ -101,19 +103,19 @@ public class RealityDefenderService implements IRealityDefenderService {
     }
 
     @Override
-    public DetectionResultDto getDetectionResult(Long id) throws Exception {
-        VerificationRecordDto record = realityDefenderMapper.selectVerificationRecordById(id);
+    public DetectionResultDTO getDetectionResult(Long id) throws Exception {
+        VerificationRecordDTO record = realityDefenderMapper.selectVerificationRecordById(id);
         if (record == null) {
             return null;
         }
 
         // DB에는 요약값을 저장하고, 자세한 탐지 영역 정보는 업로드 파일 옆의 스냅샷 JSON에서 복원한다.
         Path snapshotPath = Paths.get(record.getSavedPath() + ".analysis.json");
-        DetectionResultDto result;
+        DetectionResultDTO result;
         if (Files.exists(snapshotPath)) {
-            result = objectMapper.readValue(snapshotPath.toFile(), DetectionResultDto.class);
+            result = objectMapper.readValue(snapshotPath.toFile(), DetectionResultDTO.class);
         } else {
-            result = new DetectionResultDto();
+            result = new DetectionResultDTO();
             result.setId(record.getId());
             result.setUserId(record.getUserId());
             result.setOriginalFilename(record.getOriginalFilename());
@@ -136,12 +138,12 @@ public class RealityDefenderService implements IRealityDefenderService {
     }
 
     @Override
-    public List<DetectionResultDto> getDetectionHistory(Long userId) throws Exception {
-        List<VerificationRecordDto> rows = realityDefenderMapper.selectVerificationRecordList(userId);
-        List<DetectionResultDto> results = new ArrayList<>();
+    public List<DetectionResultDTO> getDetectionHistory(Long userId) throws Exception {
+        List<VerificationRecordDTO> rows = realityDefenderMapper.selectVerificationRecordList(userId);
+        List<DetectionResultDTO> results = new ArrayList<>();
 
-        for (VerificationRecordDto row : rows) {
-            DetectionResultDto dto = getDetectionResult(row.getId());
+        for (VerificationRecordDTO row : rows) {
+            DetectionResultDTO dto = getDetectionResult(row.getId());
             if (dto != null) {
                 results.add(dto);
             }
@@ -152,16 +154,16 @@ public class RealityDefenderService implements IRealityDefenderService {
 
     private void validateFile(MultipartFile file) {
         if (file == null || file.isEmpty()) {
-            throw new IllegalArgumentException("No image file was selected.");
+            throw new IllegalArgumentException("이미지 파일을 선택해 주세요.");
         }
 
         String contentType = file.getContentType();
         if (!StringUtils.hasText(contentType) || !contentType.toLowerCase(Locale.ROOT).startsWith("image/")) {
-            throw new IllegalArgumentException("Only image files are allowed.");
+            throw new IllegalArgumentException("이미지 파일만 업로드할 수 있습니다.");
         }
 
         if (file.getSize() > MAX_FILE_SIZE) {
-            throw new IllegalArgumentException("Image size must be 10MB or smaller.");
+            throw new IllegalArgumentException("이미지 크기는 10MB 이하여야 합니다.");
         }
     }
 
@@ -184,7 +186,7 @@ public class RealityDefenderService implements IRealityDefenderService {
         if (bufferedImage == null) {
             // 확장자만 이미지인 잘못된 파일은 저장 직후 삭제하고 분석을 중단한다.
             Files.deleteIfExists(targetPath);
-            throw new IllegalArgumentException("The uploaded file could not be parsed as an image.");
+            throw new IllegalArgumentException("업로드한 파일을 이미지로 읽을 수 없습니다.");
         }
 
         SavedImage savedImage = new SavedImage();
@@ -195,12 +197,12 @@ public class RealityDefenderService implements IRealityDefenderService {
         return savedImage;
     }
 
-    private DetectionResultDto callRealityDefender(MultipartFile file, SavedImage savedImage) throws Exception {
+    private DetectionResultDTO callRealityDefender(MultipartFile file, SavedImage savedImage) throws Exception {
         if (!StringUtils.hasText(baseUrl) || !StringUtils.hasText(apiKey)) {
             if (isMockAllowed()) {
                 return buildMockResult(savedImage, "Mock fallback was used because the API key is not configured.");
             }
-            throw new IllegalStateException("Reality Defender configuration is missing.");
+            throw new IllegalStateException("Reality Defender 설정이 누락되었습니다.");
         }
 
         // Reality Defender의 파일 스캔 API는 multipart/form-data로 원본 이미지를 전송한다.
@@ -223,26 +225,26 @@ public class RealityDefenderService implements IRealityDefenderService {
 
         ResponseEntity<String> response;
         try {
-            response = restTemplate.exchange(
-                    requestUrl,
-                    HttpMethod.POST,
-                    new HttpEntity<>(body, headers),
-                    String.class
-            );
+            response = restClient.post()
+                    .uri(requestUrl)
+                    .headers(requestHeaders -> requestHeaders.addAll(headers))
+                    .body(body)
+                    .retrieve()
+                    .toEntity(String.class);
         } catch (RestClientException e) {
-            throw new IllegalStateException("Reality Defender request failed.", e);
+            throw new IllegalStateException("Reality Defender 요청에 실패했습니다.", e);
         }
 
         if (!response.getStatusCode().is2xxSuccessful() || !StringUtils.hasText(response.getBody())) {
-            throw new IllegalStateException("Reality Defender returned an empty response.");
+            throw new IllegalStateException("Reality Defender 응답이 비어 있습니다.");
         }
 
         JsonNode root = objectMapper.readTree(response.getBody());
         return convertApiResponse(root, savedImage);
     }
 
-    private DetectionResultDto convertApiResponse(JsonNode root, SavedImage savedImage) {
-        DetectionResultDto result = new DetectionResultDto();
+    private DetectionResultDTO convertApiResponse(JsonNode root, SavedImage savedImage) {
+        DetectionResultDTO result = new DetectionResultDTO();
         result.setMockMode(false);
 
         // API 응답 버전별로 필드 위치가 달라질 수 있어 여러 JSON Pointer 후보를 순서대로 읽는다.
@@ -271,7 +273,7 @@ public class RealityDefenderService implements IRealityDefenderService {
                 ? defaultNotApplicableReason(reason)
                 : null);
 
-        List<SuspiciousRegionDto> suspiciousRegions = extractSuspiciousRegions(root, savedImage.width, savedImage.height);
+        List<SuspiciousRegionDTO> suspiciousRegions = extractSuspiciousRegions(root, savedImage.width, savedImage.height);
         if (suspiciousRegions.isEmpty() && !"NOT_APPLICABLE".equals(result.getStatus())) {
             // 외부 API가 점수만 주고 영역 좌표를 주지 않는 경우 결과 화면 표시용 임시 영역을 만든다.
             suspiciousRegions = buildMockRegions(savedImage.width, savedImage.height);
@@ -288,8 +290,8 @@ public class RealityDefenderService implements IRealityDefenderService {
         return result;
     }
 
-    private DetectionResultDto buildMockResult(SavedImage savedImage, String reason) {
-        DetectionResultDto result = new DetectionResultDto();
+    private DetectionResultDTO buildMockResult(SavedImage savedImage, String reason) {
+        DetectionResultDTO result = new DetectionResultDTO();
         result.setMockMode(true);
 
         if (savedImage.width < 220 || savedImage.height < 220) {
@@ -310,7 +312,7 @@ public class RealityDefenderService implements IRealityDefenderService {
         return result;
     }
 
-    private void enrichResult(DetectionResultDto result, SavedImage savedImage) {
+    private void enrichResult(DetectionResultDTO result, SavedImage savedImage) {
         // 외부 응답 또는 mock 응답에서 빠진 값이 있어도 JSP가 null 처리에 실패하지 않도록 기본값을 채운다.
         if (!StringUtils.hasText(result.getStatus())) {
             result.setStatus("NOT_APPLICABLE");
@@ -352,9 +354,9 @@ public class RealityDefenderService implements IRealityDefenderService {
         }
     }
 
-    private void persistResult(DetectionResultDto result) {
+    private void persistResult(DetectionResultDTO result) {
         // 목록/이력 조회에 필요한 요약값은 relational DB에 저장한다.
-        VerificationRecordDto record = new VerificationRecordDto();
+        VerificationRecordDTO record = new VerificationRecordDTO();
         record.setUserId(result.getUserId());
         record.setOriginalFilename(result.getOriginalFilename());
         record.setSavedPath(result.getSavedPath());
@@ -368,13 +370,13 @@ public class RealityDefenderService implements IRealityDefenderService {
         realityDefenderMapper.insertVerificationRecord(record);
         result.setId(record.getId());
 
-        VerificationRecordDto savedRecord = realityDefenderMapper.selectVerificationRecordById(record.getId());
+        VerificationRecordDTO savedRecord = realityDefenderMapper.selectVerificationRecordById(record.getId());
         if (savedRecord != null) {
             result.setCreatedAt(savedRecord.getCreatedAt());
         }
     }
 
-    private void writeSnapshot(DetectionResultDto result) throws IOException {
+    private void writeSnapshot(DetectionResultDTO result) throws IOException {
         if (!StringUtils.hasText(result.getSavedPath())) {
             return;
         }
@@ -382,7 +384,7 @@ public class RealityDefenderService implements IRealityDefenderService {
         objectMapper.writerWithDefaultPrettyPrinter().writeValue(snapshotPath.toFile(), result);
     }
 
-    private void addFallbackRegionsIfPossible(DetectionResultDto result) throws IOException {
+    private void addFallbackRegionsIfPossible(DetectionResultDTO result) throws IOException {
         if (result.getSuspiciousRegions() != null && !result.getSuspiciousRegions().isEmpty()) {
             return;
         }
@@ -403,7 +405,7 @@ public class RealityDefenderService implements IRealityDefenderService {
         }
     }
 
-    private List<SuspiciousRegionDto> extractSuspiciousRegions(JsonNode root, int imageWidth, int imageHeight) {
+    private List<SuspiciousRegionDTO> extractSuspiciousRegions(JsonNode root, int imageWidth, int imageHeight) {
         // suspiciousRegions, heatmap 등 실제/더미 응답에서 쓰일 수 있는 여러 좌표 배열 이름을 지원한다.
         String[] candidatePointers = {
                 "/suspiciousRegions",
@@ -423,9 +425,9 @@ public class RealityDefenderService implements IRealityDefenderService {
                 continue;
             }
 
-            List<SuspiciousRegionDto> regions = new ArrayList<>();
+            List<SuspiciousRegionDTO> regions = new ArrayList<>();
             for (JsonNode node : arrayNode) {
-                SuspiciousRegionDto region = toRegion(node, imageWidth, imageHeight);
+                SuspiciousRegionDTO region = toRegion(node, imageWidth, imageHeight);
                 if (region != null) {
                     regions.add(region);
                 }
@@ -439,7 +441,7 @@ public class RealityDefenderService implements IRealityDefenderService {
         return new ArrayList<>();
     }
 
-    private SuspiciousRegionDto toRegion(JsonNode node, int imageWidth, int imageHeight) {
+    private SuspiciousRegionDTO toRegion(JsonNode node, int imageWidth, int imageHeight) {
         double x = firstNumber(node, "/x", "/left", "/bbox/x", "/box/x");
         double y = firstNumber(node, "/y", "/top", "/bbox/y", "/box/y");
         double width = firstNumber(node, "/width", "/w", "/bbox/width", "/box/width");
@@ -457,7 +459,7 @@ public class RealityDefenderService implements IRealityDefenderService {
             height *= imageHeight;
         }
 
-        SuspiciousRegionDto region = new SuspiciousRegionDto();
+        SuspiciousRegionDTO region = new SuspiciousRegionDTO();
         region.setX(round(x));
         region.setY(round(y));
         region.setWidth(round(width));
@@ -472,8 +474,8 @@ public class RealityDefenderService implements IRealityDefenderService {
         return region;
     }
 
-    private List<SuspiciousRegionDto> buildMockRegions(int imageWidth, int imageHeight) {
-        List<SuspiciousRegionDto> regions = new ArrayList<>();
+    private List<SuspiciousRegionDTO> buildMockRegions(int imageWidth, int imageHeight) {
+        List<SuspiciousRegionDTO> regions = new ArrayList<>();
         regions.add(region(imageWidth * 0.27, imageHeight * 0.28, imageWidth * 0.15, imageHeight * 0.11, "Left eye area", 84));
         regions.add(region(imageWidth * 0.58, imageHeight * 0.29, imageWidth * 0.15, imageHeight * 0.11, "Right eye area", 81));
         regions.add(region(imageWidth * 0.43, imageHeight * 0.43, imageWidth * 0.16, imageHeight * 0.13, "Nose center", 72));
@@ -482,8 +484,8 @@ public class RealityDefenderService implements IRealityDefenderService {
         return regions;
     }
 
-    private SuspiciousRegionDto region(double x, double y, double width, double height, String label, double confidence) {
-        SuspiciousRegionDto dto = new SuspiciousRegionDto();
+    private SuspiciousRegionDTO region(double x, double y, double width, double height, String label, double confidence) {
+        SuspiciousRegionDTO dto = new SuspiciousRegionDTO();
         dto.setX(round(x));
         dto.setY(round(y));
         dto.setWidth(round(width));
@@ -518,7 +520,7 @@ public class RealityDefenderService implements IRealityDefenderService {
 
     private String buildDetailedReason(String status,
                                        Integer finalScore,
-                                       List<SuspiciousRegionDto> regions,
+                                       List<SuspiciousRegionDTO> regions,
                                        String fallbackReason) {
         if ("NOT_APPLICABLE".equals(status)) {
             String reason = StringUtils.hasText(fallbackReason)
@@ -528,7 +530,7 @@ public class RealityDefenderService implements IRealityDefenderService {
         }
 
         Set<String> labels = new LinkedHashSet<>();
-        for (SuspiciousRegionDto region : regions) {
+        for (SuspiciousRegionDTO region : regions) {
             if (StringUtils.hasText(region.getLabel())) {
                 labels.add(region.getLabel());
             }

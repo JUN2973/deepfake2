@@ -1,5 +1,9 @@
-﻿package kopo.poly.document;
+package kopo.poly.document;
 
+
+/**
+ * 체크리스트 기준 주석: 컬렉션 정의서(NoSQL): MongoDB에 저장되는 뉴스 캐시 문서 구조를 정의한다.
+ */
 import lombok.*;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.Transient;
@@ -27,6 +31,7 @@ public class NewsCacheDocument {
     private String originallink;
     private String link;
     private String description;
+    private String provider;
     private String pubDate;
     @Transient
     private String articleContent;

@@ -1,5 +1,9 @@
-﻿package kopo.poly.repository;
+package kopo.poly.repository;
 
+
+/**
+ * 체크리스트 기준 주석: 컬렉션 정의서(NoSQL): MongoDB 뉴스 캐시 컬렉션 접근 Repository를 정의한다.
+ */
 import kopo.poly.document.NewsCacheDocument;
 import org.springframework.data.mongodb.repository.MongoRepository;
 

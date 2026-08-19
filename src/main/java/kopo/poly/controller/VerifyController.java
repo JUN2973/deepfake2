@@ -1,8 +1,9 @@
-﻿package kopo.poly.controller;
+package kopo.poly.controller;
 
 import jakarta.servlet.http.HttpSession;
 import kopo.poly.dto.VerifyDTO;
 import kopo.poly.service.IVerifyService;
+import kopo.poly.util.SessionUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.multipart.MultipartFile;
@@ -22,25 +23,11 @@ public class VerifyController {
 
     @PostMapping("/verify")
     public String verify(MultipartHttpServletRequest request, HttpSession session) throws Exception {
+        // 기존 /verify 업로드 경로도 VerifyService의 공통 분석 파이프라인을 사용한다.
         MultipartFile file = request.getFile("file");
-        VerifyDTO rDTO = verifyService.createVerification(file, extractUserId(session));
+        VerifyDTO rDTO = verifyService.createVerification(file, SessionUtil.getUserId(session));
+        SessionUtil.rememberVerificationId(session, rDTO.getId());
+        // 분석 결과 id를 상세 화면 URL에 붙여 결과 페이지로 이동한다.
         return "redirect:/detail/" + rDTO.getId();
-    }
-
-    private Long extractUserId(HttpSession session) {
-        Object userId = session.getAttribute("USER_ID");
-        if (userId == null) {
-            return null;
-        }
-
-        if (userId instanceof Number number) {
-            return number.longValue();
-        }
-
-        try {
-            return Long.parseLong(String.valueOf(userId));
-        } catch (NumberFormatException e) {
-            return null;
-        }
     }
 }

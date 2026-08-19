@@ -1,5 +1,9 @@
-﻿package kopo.poly.dto;
+package kopo.poly.dto;
 
+
+/**
+ * 체크리스트 기준 주석: API 연동 설계: 비동기 API의 공통 응답 형식을 정의한다.
+ */
 /**
  * API 응답 성공/실패 형식을 통일하기 위한 공통 응답 DTO다.
  */

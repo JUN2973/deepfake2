@@ -1,6 +1,10 @@
-﻿package kopo.poly.service;
+package kopo.poly.service;
 
-import kopo.poly.dto.DetectionResultDto;
+
+/**
+ * 체크리스트 기준 주석: 설계/API 연동 설계: 컨트롤러와 구현체 사이의 서비스 계약을 정의한다.
+ */
+import kopo.poly.dto.DetectionResultDTO;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
@@ -10,9 +14,9 @@ import java.util.List;
  */
 public interface IRealityDefenderService {
 
-    DetectionResultDto analyzeImage(MultipartFile file, Long userId) throws Exception;
+    DetectionResultDTO analyzeImage(MultipartFile file, Long userId) throws Exception;
 
-    DetectionResultDto getDetectionResult(Long id) throws Exception;
+    DetectionResultDTO getDetectionResult(Long id) throws Exception;
 
-    List<DetectionResultDto> getDetectionHistory(Long userId) throws Exception;
+    List<DetectionResultDTO> getDetectionHistory(Long userId) throws Exception;
 }

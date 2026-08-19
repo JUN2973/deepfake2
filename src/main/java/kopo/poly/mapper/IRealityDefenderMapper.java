@@ -1,6 +1,10 @@
-﻿package kopo.poly.mapper;
+package kopo.poly.mapper;
 
-import kopo.poly.dto.VerificationRecordDto;
+
+/**
+ * 체크리스트 기준 주석: 테이블 명세서(RDBMS)/API 연동 설계: 외부 분석 API 결과 저장/조회 SQL을 정의한다.
+ */
+import kopo.poly.dto.VerificationRecordDTO;
 
 import java.util.List;
 
@@ -9,9 +13,9 @@ import java.util.List;
  */
 public interface IRealityDefenderMapper {
 
-    int insertVerificationRecord(VerificationRecordDto pDTO);
+    int insertVerificationRecord(VerificationRecordDTO pDTO);
 
-    VerificationRecordDto selectVerificationRecordById(Long id);
+    VerificationRecordDTO selectVerificationRecordById(Long id);
 
-    List<VerificationRecordDto> selectVerificationRecordList(Long userId);
+    List<VerificationRecordDTO> selectVerificationRecordList(Long userId);
 }

@@ -1,30 +1,20 @@
-﻿package kopo.poly.dto;
+package kopo.poly.dto;
 
+
+/**
+ * 체크리스트 기준 주석: API 연동 설계/구현(뉴스): 네이버 뉴스 API 응답과 화면 출력 데이터를 전달한다.
+ */
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.List;
 
-/**
- * 화면과 API 사이에서 데이터를 전달하기 위한 DTO 클래스다.
- */
 @Getter
 @Setter
 public class NaverNewsResponseDTO {
-
     private String lastBuildDate;
     private int total;
     private int start;
     private int display;
-    private List<Item> items;
-
-    @Getter
-    @Setter
-    public static class Item {
-        private String title;
-        private String originallink;
-        private String link;
-        private String description;
-        private String pubDate;
-    }
+    private List<NaverNewsItemDTO> items;
 }

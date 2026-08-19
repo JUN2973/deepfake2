@@ -1,5 +1,9 @@
-﻿package kopo.poly.controller;
+package kopo.poly.controller;
 
+
+/**
+ * 체크리스트 기준 주석: 구현(인증/회원): 로그인, 회원가입, 아이디/비밀번호 찾기, 마이페이지 화면 진입을 담당한다.
+ */
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 

@@ -11,6 +11,7 @@
       sessionUserId = null;
     }
   }
+  request.setAttribute("activePage", "community");
 %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -70,17 +71,19 @@
 <body class="min-h-screen bg-slate-950 text-white relative overflow-x-hidden">
   <div class="hero-glow"></div>
 
-  <button
-    type="button"
-    onclick="goPage('<%= contextPath %>/community')"
-    class="fixed top-6 left-6 z-50 flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur-xl transition-all hover:bg-white/20"
-  >
-    <i data-lucide="arrow-left" class="h-4 w-4"></i>
-    목록으로
-  </button>
+  <%@ include file="common/dashboard-nav.jspf" %>
 
-  <div class="pt-24 pb-12 px-4 relative">
+  <div class="pt-28 pb-12 px-4 relative">
     <div class="max-w-4xl mx-auto">
+      <button
+        type="button"
+        onclick="goPage('<%= contextPath %>/community')"
+        class="mb-8 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/8 px-4 py-2 text-sm font-medium text-slate-200 backdrop-blur-xl transition-all hover:border-sky-400/40 hover:bg-white/12 hover:text-white"
+      >
+        <i data-lucide="arrow-left" class="h-4 w-4"></i>
+        &#47785;&#47197;&#51004;&#47196;
+      </button>
+
       <div id="loadingBox" class="flex min-h-[40vh] items-center justify-center">
         <div class="text-center text-slate-400">
           <div class="mb-4 flex justify-center gap-2">
@@ -141,7 +144,7 @@
               <textarea id="editPostContent" rows="10" class="w-full resize-none rounded-2xl border border-white/10 bg-slate-800/50 px-4 py-3 text-base leading-8 text-slate-200 outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-500/40"></textarea>
               <div class="flex justify-end gap-2">
                 <button type="button" onclick="cancelPostEdit()" class="rounded-xl border border-white/15 bg-white/5 px-4 py-2 text-white transition-colors hover:bg-white/10">취소</button>
-                <button type="button" onclick="savePostEdit()" class="rounded-xl bg-gradient-to-r from-sky-600 to-cyan-600 px-4 py-2 font-medium text-white transition hover:from-sky-500 hover:to-cyan-500">저장</button>
+                <button type="button" onclick="savePostEdit()" class="rounded-xl bg-gradient-to-r from-sky-600 to-cyan-600 px-4 py-2 font-medium text-white transition hover:from-sky-500 hover:to-cyan-500">&#51200;&#51109;</button>
               </div>
             </div>
           </div>
@@ -263,11 +266,11 @@
       const hours = Math.floor(minutes / 60);
       const days = Math.floor(hours / 24);
       const weeks = Math.floor(days / 7);
-      if (weeks > 0) return weeks + "주 전";
-      if (days > 0) return days + "일 전";
-      if (hours > 0) return hours + "시간 전";
-      if (minutes > 0) return minutes + "분 전";
-      return "방금 전";
+      if (weeks > 0) return weeks + "\uC8FC \uC804";
+      if (days > 0) return days + "\uC77C \uC804";
+      if (hours > 0) return hours + "\uC2DC\uAC04 \uC804";
+      if (minutes > 0) return minutes + "\uBD84 \uC804";
+      return "\uBC29\uAE08 \uC804";
     }
 
     function getPostIdFromUrl() {
@@ -432,7 +435,7 @@
                     '<input type="text" value="' + escapeHtml(commentUiState.editDraft) + '" oninput="commentUiState.editDraft = this.value" onkeydown="handleEditKeydown(event, \'' + comment.id + '\')" class="w-full rounded-lg border border-white/10 bg-slate-800/50 px-3 py-2 text-sm text-white focus:outline-none focus:ring-2 focus:ring-sky-500">' +
                     '<div class="flex gap-2">' +
                       '<button type="button" onclick="cancelCommentEdit()" class="px-3 py-1 text-xs text-slate-400 transition-colors hover:text-white">취소</button>' +
-                      '<button type="button" onclick="saveCommentEdit(\'' + comment.id + '\')" class="px-3 py-1 text-xs font-medium text-sky-400 transition-colors hover:text-sky-300">저장</button>' +
+                      '<button type="button" onclick="saveCommentEdit(' + comment.id + ')" class="px-3 py-1 text-xs font-medium text-sky-400 transition-colors hover:text-sky-300">&#51200;&#51109;</button>' +
                     '</div>' +
                   '</div>'
                 : '<div class="inline-block max-w-full rounded-2xl bg-slate-800/30 px-4 py-2.5">' +
@@ -443,7 +446,7 @@
                   '</div>' +
                   '<div class="mt-1.5 flex flex-wrap items-center gap-4 px-1">' +
                     '<span class="text-xs text-slate-500">' + escapeHtml(getTimeAgo(comment.createdAt)) + '</span>' +
-                    (likeCount > 0 ? '<button type="button" onclick="toggleCommentLike(\'' + comment.id + '\')" class="text-xs font-medium text-slate-500 transition-colors hover:text-white">좋아요 ' + likeCount + '개</button>' : '') +
+                    (likeCount > 0 ? '<button type="button" onclick="toggleCommentLike(' + comment.id + ')" class="text-xs font-medium text-slate-500 transition-colors hover:text-white">&#51339;&#50500;&#50836; ' + likeCount + '&#44060;</button>' : '') +
                     (canReply ? '<button type="button" onclick="toggleReplyInput(\'' + comment.id + '\')" class="text-xs font-medium text-slate-500 transition-colors hover:text-white">답글 달기</button>' : '') +
                     (isAuthor ? '<div class="flex items-center gap-2 opacity-0 transition-opacity group-hover:opacity-100"><button type="button" onclick="startCommentEdit(\'' + comment.id + '\')" class="text-xs text-sky-400 transition-colors hover:text-sky-300">수정</button><button type="button" onclick="deleteComment(\'' + comment.id + '\')" class="text-xs text-red-400 transition-colors hover:text-red-300">삭제</button></div>' : '') +
                   '</div>'
@@ -452,7 +455,7 @@
                 ? '<div class="mt-2"><div class="flex items-center gap-2"><input type="text" value="' + escapeHtml(commentUiState.replyDraft) + '" oninput="commentUiState.replyDraft = this.value" onkeydown="handleReplyKeydown(event, \'' + comment.id + '\')" placeholder="@' + escapeHtml(comment.author) + '에게 답글..." class="flex-1 rounded-lg border border-white/10 bg-slate-800/50 px-3 py-2 text-sm text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500"><button type="button" onclick="submitReply(\'' + comment.id + '\')" class="rounded-lg bg-sky-500 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-sky-600">게시</button></div></div>'
                 : '') +
               (repliesCount > 0
-                ? '<button type="button" onclick="toggleReplies(\'' + comment.id + '\')" class="mt-3 flex items-center gap-2 text-xs font-medium text-slate-500 transition-colors hover:text-white"><div class="h-px w-6 bg-slate-700"></div>' + (showReplies ? '답글 숨기기' : '답글 ' + repliesCount + '개 보기') + '</button>'
+                ? '<button type="button" onclick="toggleReplies(' + comment.id + ')" class="mt-3 flex items-center gap-2 text-xs font-medium text-slate-500 transition-colors hover:text-white"><div class="h-px w-6 bg-slate-700"></div>' + (showReplies ? '&#45813;&#44544; &#49704;&#44592;&#44592;' : '&#45813;&#44544; ' + repliesCount + '&#44060; &#48372;&#44592;') + '</button>'
                 : '') +
               (showReplies && repliesCount > 0 ? '<div class="mt-3 space-y-3">' + replies.map(function (reply) { return renderSingleComment(reply, depth + 1); }).join("") + '</div>' : '') +
             '</div>' +

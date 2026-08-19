@@ -1,5 +1,9 @@
-﻿package kopo.poly.mapper;
+package kopo.poly.mapper;
 
+
+/**
+ * 체크리스트 기준 주석: 테이블 명세서(RDBMS)/구현(커뮤니티): 게시글, 댓글, 좋아요 데이터 접근 SQL을 정의한다.
+ */
 import kopo.poly.dto.CommunityPostDTO;
 import kopo.poly.dto.CommunityCommentDTO;
 import org.apache.ibatis.annotations.Param;
@@ -25,6 +29,8 @@ public interface ICommunityMapper {
                    @Param("content") String content);
     int deletePost(@Param("id") Long id);
     List<CommunityCommentDTO> selectCommentsByPostId(@Param("postId") Long postId,
+                                                     @Param("currentUserId") Long currentUserId);
+    List<CommunityCommentDTO> selectCommentsByUserId(@Param("userId") Long userId,
                                                      @Param("currentUserId") Long currentUserId);
     CommunityCommentDTO selectCommentById(@Param("id") Long id,
                                           @Param("currentUserId") Long currentUserId);
