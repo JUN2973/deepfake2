@@ -43,36 +43,13 @@ class OpenAiAnalysisServiceTest {
                 objectMapper,
                 "test-api-key",
                 "gpt-4.1-mini",
-                900
+                450
         );
     }
 
     @Test
     void analyzeSendsStructuredRequestAndMapsResponse() throws Exception {
-        String outputText = objectMapper.writeValueAsString(Map.of(
-                "summary", "summary",
-                "explanation", "explanation",
-                "reportDraft", "report draft",
-                "actionGuide", "action guide",
-                "riskLevel", "HIGH",
-                "disclaimer", "not definitive proof"
-        ));
-        String providerResponse = objectMapper.writeValueAsString(Map.of(
-                "status", "completed",
-                "model", "gpt-4.1-mini-2025-04-14",
-                "output", List.of(Map.of(
-                        "type", "message",
-                        "content", List.of(Map.of(
-                                "type", "output_text",
-                                "text", outputText
-                        ))
-                )),
-                "usage", Map.of(
-                        "input_tokens", 120,
-                        "output_tokens", 80,
-                        "total_tokens", 200
-                )
-        ));
+        String providerResponse = providerResponse();
 
         server.expect(once(), requestTo("https://api.openai.com/v1/responses"))
                 .andExpect(method(HttpMethod.POST))
@@ -83,6 +60,7 @@ class OpenAiAnalysisServiceTest {
                     JsonNode inputJson = objectMapper.readTree(requestJson.path("input").asText());
 
                     assertThat(requestJson.path("store").asBoolean()).isFalse();
+                    assertThat(requestJson.path("max_output_tokens").asInt()).isEqualTo(450);
                     assertThat(requestJson.path("text").path("format").path("type").asText())
                             .isEqualTo("json_schema");
                     assertThat(inputJson.path("detectionResult").path("confidencePercent").asInt())
@@ -109,13 +87,56 @@ class OpenAiAnalysisServiceTest {
     }
 
     @Test
+    void analyzeCompactsSourceAndCachesIdenticalRequest() throws Exception {
+        VerifyDTO verification = verification(7L);
+        verification.setApiRaw("{\"rawOnlyMarker\":true}");
+        verification.setAnalysisJson(objectMapper.writeValueAsString(Map.of(
+                "score", 0.82,
+                "evidence", "keep this evidence",
+                "heatmap", Map.of("data", "A".repeat(3_000))
+        )));
+
+        server.expect(once(), requestTo("https://api.openai.com/v1/responses"))
+                .andExpect(request -> {
+                    String body = ((MockClientHttpRequest) request).getBodyAsString();
+                    JsonNode requestJson = objectMapper.readTree(body);
+                    JsonNode inputJson = objectMapper.readTree(requestJson.path("input").asText());
+                    JsonNode detectionResult = inputJson.path("detectionResult");
+                    JsonNode compactedSource = objectMapper.readTree(
+                            detectionResult.path("analysisJson").asText()
+                    );
+
+                    assertThat(inputJson.path("request").path("includeReportDraft").asBoolean())
+                            .isFalse();
+                    assertThat(detectionResult.has("apiRaw")).isFalse();
+                    assertThat(compactedSource.path("evidence").asText())
+                            .isEqualTo("keep this evidence");
+                    assertThat(compactedSource.has("heatmap")).isFalse();
+                    assertThat(requestJson.path("input").asText())
+                            .doesNotContain("rawOnlyMarker");
+                })
+                .andRespond(withSuccess(providerResponse(), MediaType.APPLICATION_JSON));
+
+        AiAnalysisRequestDTO request = new AiAnalysisRequestDTO();
+        request.setVerificationId(7L);
+
+        AiAnalysisResponseDTO first = service.analyze(request, verification);
+        AiAnalysisResponseDTO second = service.analyze(request, verification);
+
+        assertThat(first.getCached()).isFalse();
+        assertThat(second.getCached()).isTrue();
+        assertThat(second.getTotalTokens()).isEqualTo(200);
+        server.verify();
+    }
+
+    @Test
     void analyzeRejectsMissingApiKeyBeforeCallingProvider() {
         OpenAiAnalysisService serviceWithoutKey = new OpenAiAnalysisService(
                 RestClient.create("https://api.openai.com/v1"),
                 objectMapper,
                 "",
                 "gpt-4.1-mini",
-                900
+                450
         );
 
         assertThatThrownBy(() -> serviceWithoutKey.analyze(new AiAnalysisRequestDTO(), verification(7L)))
@@ -145,5 +166,32 @@ class OpenAiAnalysisServiceTest {
         verification.setAnalysisJson("{\"score\":0.82}");
         verification.setRegDt("2026-08-21 10:00:00");
         return verification;
+    }
+
+    private String providerResponse() throws Exception {
+        String outputText = objectMapper.writeValueAsString(Map.of(
+                "summary", "summary",
+                "explanation", "explanation",
+                "reportDraft", "report draft",
+                "actionGuide", "action guide",
+                "riskLevel", "HIGH",
+                "disclaimer", "not definitive proof"
+        ));
+        return objectMapper.writeValueAsString(Map.of(
+                "status", "completed",
+                "model", "gpt-4.1-mini-2025-04-14",
+                "output", List.of(Map.of(
+                        "type", "message",
+                        "content", List.of(Map.of(
+                                "type", "output_text",
+                                "text", outputText
+                        ))
+                )),
+                "usage", Map.of(
+                        "input_tokens", 120,
+                        "output_tokens", 80,
+                        "total_tokens", 200
+                )
+        ));
     }
 }

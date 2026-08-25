@@ -1,5 +1,8 @@
 package kopo.poly.dto;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class AiAnalysisPromptDTO {
     private Long verificationId;
     private String originalName;

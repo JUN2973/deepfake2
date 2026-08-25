@@ -12,6 +12,7 @@ public class AiAnalysisResponseDTO {
     private Integer promptTokens;
     private Integer completionTokens;
     private Integer totalTokens;
+    private Boolean cached;
 
     public AiAnalysisResponseDTO() {
     }
@@ -110,5 +111,13 @@ public class AiAnalysisResponseDTO {
 
     public void setTotalTokens(Integer totalTokens) {
         this.totalTokens = totalTokens;
+    }
+
+    public Boolean getCached() {
+        return cached;
+    }
+
+    public void setCached(Boolean cached) {
+        this.cached = cached;
     }
 }
