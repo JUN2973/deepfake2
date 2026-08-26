@@ -309,6 +309,50 @@
                 </div>
 
                 <div class="rounded-3xl border border-white/10 bg-slate-900/60 p-6 backdrop-blur-xl">
+                    <div class="flex flex-wrap items-center justify-between gap-3">
+                        <div class="flex items-center gap-3">
+                            <div class="rounded-2xl bg-cyan-400/10 p-2.5 text-cyan-300">
+                                <i data-lucide="sparkles" class="h-5 w-5"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-semibold text-white">GPT 상세 해설</h2>
+                                <span id="aiRiskBadge" class="risk-badge risk-unknown mt-1 hidden">확인 중</span>
+                            </div>
+                        </div>
+                        <button id="generateAiExplanationButton" type="button" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-cyan-500 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-cyan-400 disabled:cursor-wait disabled:opacity-60">
+                            <i id="generateAiExplanationIcon" data-lucide="sparkles" class="h-4 w-4"></i>
+                            <span id="generateAiExplanationLabel">상세 해설 생성</span>
+                        </button>
+                    </div>
+
+                    <div id="aiExplanationLoading" class="mt-5 hidden items-center gap-3 border-t border-white/10 pt-5 text-sm text-slate-400" role="status">
+                        <i data-lucide="loader-circle" class="h-5 w-5 animate-spin text-cyan-300"></i>
+                        상세 해설을 생성하고 있습니다.
+                    </div>
+
+                    <div id="aiExplanationError" class="mt-5 hidden border-t border-red-400/20 pt-5 text-sm leading-6 text-red-300" role="alert"></div>
+
+                    <div id="aiExplanationResult" class="mt-5 hidden space-y-5 border-t border-white/10 pt-5">
+                        <div>
+                            <h3 class="mb-2 text-sm font-semibold text-cyan-200">종합 해석</h3>
+                            <p id="aiSummary" class="leading-7 text-white"></p>
+                        </div>
+                        <div>
+                            <h3 class="mb-2 text-sm font-semibold text-slate-300">상세 설명</h3>
+                            <p id="aiExplanation" class="whitespace-pre-line leading-7 text-slate-300"></p>
+                        </div>
+                        <div>
+                            <h3 class="mb-2 text-sm font-semibold text-slate-300">확인 방법</h3>
+                            <p id="aiActionGuide" class="whitespace-pre-line leading-7 text-slate-300"></p>
+                        </div>
+                        <div class="notice-box rounded-2xl p-4 text-sm leading-6">
+                            <span id="aiDisclaimer"></span>
+                        </div>
+                        <div id="aiExplanationMeta" class="text-xs text-slate-500"></div>
+                    </div>
+                </div>
+
+                <div class="rounded-3xl border border-white/10 bg-slate-900/60 p-6 backdrop-blur-xl">
                     <h2 class="mb-4 text-lg font-semibold text-white">상세 정보</h2>
                     <div class="space-y-3">
                         <div class="flex items-center justify-between border-b border-white/5 py-2">
@@ -790,6 +834,85 @@
         }
     }
 
+    function setAiExplanationLoading(loading) {
+        const button = document.getElementById("generateAiExplanationButton");
+        const loadingBox = document.getElementById("aiExplanationLoading");
+        button.disabled = loading;
+        button.innerHTML = loading
+            ? '<i data-lucide="loader-circle" class="h-4 w-4 animate-spin"></i><span>생성 중</span>'
+            : '<i data-lucide="sparkles" class="h-4 w-4"></i><span>상세 해설 생성</span>';
+        loadingBox.classList.toggle("hidden", !loading);
+        loadingBox.classList.toggle("flex", loading);
+        lucide.createIcons();
+    }
+
+    function aiRiskPresentation(riskLevel) {
+        const levels = {
+            HIGH: { label: "높음", className: "risk-high" },
+            MEDIUM: { label: "중간", className: "risk-medium" },
+            LOW: { label: "낮음", className: "risk-low" },
+            UNKNOWN: { label: "정보 부족", className: "risk-unknown" }
+        };
+        return levels[String(riskLevel || "UNKNOWN").toUpperCase()] || levels.UNKNOWN;
+    }
+
+    function renderAiExplanation(data) {
+        const risk = aiRiskPresentation(data.riskLevel);
+        const riskBadge = document.getElementById("aiRiskBadge");
+        riskBadge.textContent = risk.label;
+        riskBadge.className = "risk-badge mt-1 " + risk.className;
+
+        document.getElementById("aiSummary").textContent = data.summary || "";
+        document.getElementById("aiExplanation").textContent = data.explanation || "";
+        document.getElementById("aiActionGuide").textContent = data.actionGuide || "";
+        document.getElementById("aiDisclaimer").textContent = data.disclaimer || "";
+
+        const meta = [];
+        if (data.model) meta.push(data.model);
+        if (Number.isFinite(data.totalTokens)) meta.push("총 " + data.totalTokens + " 토큰");
+        if (data.cached === true) meta.push("캐시된 해설");
+        document.getElementById("aiExplanationMeta").textContent = meta.join(" · ");
+
+        document.getElementById("aiExplanationResult").classList.remove("hidden");
+        document.getElementById("aiExplanationError").classList.add("hidden");
+        document.getElementById("generateAiExplanationButton").classList.add("hidden");
+    }
+
+    async function generateAiExplanation() {
+        const errorBox = document.getElementById("aiExplanationError");
+        errorBox.classList.add("hidden");
+        errorBox.textContent = "";
+        setAiExplanationLoading(true);
+
+        try {
+            const response = await fetch(
+                contextPath + "/api/v1/ai/verifications/" + encodeURIComponent(resultId) + "/explanation",
+                {
+                    method: "POST",
+                    credentials: "same-origin",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        verificationId: Number(resultId),
+                        taskType: "EXPAND_EXISTING_EXPLANATION",
+                        userQuestion: "기존 분석 설명을 바탕으로 판정의 의미와 확인 방법을 자세히 설명해 주세요.",
+                        tone: "clear, calm, and detailed",
+                        includeReportDraft: false
+                    })
+                }
+            );
+            const payload = await response.json();
+            if (!response.ok || !payload.success || !payload.data) {
+                throw new Error(payload.error?.message || "상세 해설을 생성하지 못했습니다.");
+            }
+            renderAiExplanation(payload.data);
+        } catch (error) {
+            errorBox.textContent = error.message || "상세 해설을 생성하지 못했습니다. 잠시 후 다시 시도해 주세요.";
+            errorBox.classList.remove("hidden");
+        } finally {
+            setAiExplanationLoading(false);
+        }
+    }
+
     document.getElementById("topGlow").classList.add(config.glowClass);
     document.getElementById("verdictGlow").classList.add(config.glowClass);
     document.getElementById("verdictIconWrap").innerHTML = '<i data-lucide="' + config.icon + '" class="h-6 w-6 ' + config.badgeClass + '"></i>';
@@ -832,6 +955,8 @@
             legacyCopyToClipboard(shareUrl);
         }
     });
+
+    document.getElementById("generateAiExplanationButton").addEventListener("click", generateAiExplanation);
 
     renderDetailedAnalysisRows(getDetailedAnalysisRows(combinedResult));
     setViewMode("overlay");
