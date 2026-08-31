@@ -3,6 +3,7 @@ package kopo.poly.dto;
 public class AiAnalysisResultDTO {
     private Long id;
     private Long verificationId;
+    private String analysisType;
     private String requestHash;
     private String responseJson;
     private String model;
@@ -16,6 +17,8 @@ public class AiAnalysisResultDTO {
     public void setId(Long id) { this.id = id; }
     public Long getVerificationId() { return verificationId; }
     public void setVerificationId(Long verificationId) { this.verificationId = verificationId; }
+    public String getAnalysisType() { return analysisType; }
+    public void setAnalysisType(String analysisType) { this.analysisType = analysisType; }
     public String getRequestHash() { return requestHash; }
     public void setRequestHash(String requestHash) { this.requestHash = requestHash; }
     public String getResponseJson() { return responseJson; }
