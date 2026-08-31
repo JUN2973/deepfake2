@@ -11,6 +11,7 @@ import kopo.poly.service.IVerifyService;
 import kopo.poly.util.SessionUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,6 +31,25 @@ public class AiAnalysisApiController {
                                    IAiAnalysisService aiAnalysisService) {
         this.verifyService = verifyService;
         this.aiAnalysisService = aiAnalysisService;
+    }
+
+    @GetMapping("/verifications/{id}/explanation")
+    public ApiResponse<AiAnalysisResponseDTO> getSavedExplanation(
+            @PathVariable Long id,
+            HttpSession session) {
+        try {
+            VerifyDTO verification = verifyService.getOne(id);
+            if (verification == null) {
+                return ApiResponse.fail("AI-4040", "분석 결과를 찾을 수 없습니다.");
+            }
+            if (!SessionUtil.canAccessVerification(session, verification.getUserId(), verification.getId())) {
+                return ApiResponse.fail("AI-4030", "이 분석 결과에 접근할 권한이 없습니다.");
+            }
+            return ApiResponse.ok(aiAnalysisService.getLatest(id));
+        } catch (Exception e) {
+            log.error("Failed to load saved AI analysis. verificationId={}", id, e);
+            return ApiResponse.fail("AI-5001", "저장된 AI 해설을 불러오지 못했습니다.");
+        }
     }
 
     @PostMapping("/verifications/{id}/explanation")

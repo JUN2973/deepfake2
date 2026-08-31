@@ -7,4 +7,5 @@ import kopo.poly.dto.VerifyDTO;
 public interface IAiAnalysisService {
 
     AiAnalysisResponseDTO analyze(AiAnalysisRequestDTO request, VerifyDTO verification);
+    AiAnalysisResponseDTO getLatest(Long verificationId);
 }

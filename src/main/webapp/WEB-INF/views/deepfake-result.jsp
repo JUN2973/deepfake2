@@ -315,7 +315,7 @@
                                 <i data-lucide="sparkles" class="h-5 w-5"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-semibold text-white">GPT 상세 해설</h2>
+                                <h2 class="text-lg font-semibold text-white">Gemini 상세 해설</h2>
                                 <span id="aiRiskBadge" class="risk-badge risk-unknown mt-1 hidden">확인 중</span>
                             </div>
                         </div>
@@ -913,6 +913,21 @@
         }
     }
 
+    async function loadSavedAiExplanation() {
+        try {
+            const response = await fetch(
+                contextPath + "/api/v1/ai/verifications/" + encodeURIComponent(resultId) + "/explanation",
+                { method: "GET", credentials: "same-origin" }
+            );
+            const payload = await response.json();
+            if (response.ok && payload.success && payload.data) {
+                renderAiExplanation(payload.data);
+            }
+        } catch (error) {
+            console.debug("저장된 Gemini 해설을 불러오지 못했습니다.", error);
+        }
+    }
+
     document.getElementById("topGlow").classList.add(config.glowClass);
     document.getElementById("verdictGlow").classList.add(config.glowClass);
     document.getElementById("verdictIconWrap").innerHTML = '<i data-lucide="' + config.icon + '" class="h-6 w-6 ' + config.badgeClass + '"></i>';
@@ -960,6 +975,7 @@
 
     renderDetailedAnalysisRows(getDetailedAnalysisRows(combinedResult));
     setViewMode("overlay");
+    loadSavedAiExplanation();
     lucide.createIcons();
 </script>
 </body>

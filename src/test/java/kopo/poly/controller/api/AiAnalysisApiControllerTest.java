@@ -60,6 +60,23 @@ class AiAnalysisApiControllerTest {
     }
 
     @Test
+    void getSavedExplanationReturnsLatestResultToOwner() {
+        VerifyDTO verification = verification(7L, 11L);
+        AiAnalysisResponseDTO saved = new AiAnalysisResponseDTO();
+        saved.setVerificationId(7L);
+        saved.setSummary("saved summary");
+        when(verifyService.getOne(7L)).thenReturn(verification);
+        when(aiAnalysisService.getLatest(7L)).thenReturn(saved);
+        MockHttpSession session = new MockHttpSession();
+        session.setAttribute("USER_ID", 11L);
+
+        ApiResponse<AiAnalysisResponseDTO> result = controller.getSavedExplanation(7L, session);
+
+        assertThat(result.isSuccess()).isTrue();
+        assertThat(result.getData()).isSameAs(saved);
+    }
+
+    @Test
     void generateExplanationReturnsNotFoundWhenVerificationIsMissing() {
         when(verifyService.getOne(99L)).thenReturn(null);
 
