@@ -14,3 +14,4 @@ public interface IGoogleOAuthService {
 
     AuthenticatedUserDTO loginWithCode(String code, String redirectUri);
 }
+

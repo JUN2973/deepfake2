@@ -33,7 +33,7 @@ DeepScan은 사용자가 이미지의 딥페이크 가능성을 쉽게 확인할
 | ORM / SQL      | MyBatis                                         |
 | Database       | MariaDB, H2, MongoDB                            |
 | Infrastructure | AWS EC2, AWS RDS, AWS S3, Docker                |
-| External API   | Reality Defender API, Naver News API, Google OAuth |
+| External API   | Reality Defender API, Gemini API, Naver News API, Google OAuth |
 | AI Service     | IMD, FastAPI, Uvicorn                           |
 
 ---
@@ -63,6 +63,7 @@ DeepScan은 사용자가 이미지의 딥페이크 가능성을 쉽게 확인할
 
 * 분석 결과 상세 페이지
 * REAL / SUSPICIOUS / FAKE / NOT_APPLICABLE 상태 제공
+* Gemini 기반 GPT 상세 해설 생성
 * 의심 영역 좌표 및 confidence 표시
 * 분석 원본 JSON 저장
 * 사용자별 검증 이력 조회
@@ -116,6 +117,7 @@ Spring Boot
    │
    └── External Services
          ├── Reality Defender API
+         ├── Gemini API
          ├── IMD FastAPI Service
          ├── Naver News API
          └── Google OAuth
@@ -154,6 +156,14 @@ Spring Boot
 * AWS S3 저장소 지원
 * 환경 설정에 따라 저장 방식 전환
 * 업로드 파일 public URL 관리
+
+### Gemini AI Explanation
+
+* Reality Defender 분석 결과를 기반으로 사용자용 상세 해설 생성
+* 기존 분석 설명을 반복하지 않고 점수, 한계, 확인 절차를 보강
+* 입력 데이터 1,800자 제한 및 Base64 / 히트맵 / 중복 원문 제거
+* 출력 토큰 450개 제한, 30분 메모리 캐시, 동시 중복 호출 방지
+* 로컬 실행 시 `.env.properties`에 `GEMINI_API_KEY=발급받은_키`를 설정
 
 ---
 

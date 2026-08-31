@@ -37,6 +37,7 @@ build/
 
 # Local runtime artifacts
 .codex-ppt-build/
+.codex-review-render/
 .venv/
 uploads/
 tmp_src_compare/
