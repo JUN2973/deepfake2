@@ -6,6 +6,7 @@
     <select id="selectByRequestHash" resultType="kopo.poly.dto.AiAnalysisResultDTO">
         SELECT id,
                verification_id AS verificationId,
+               analysis_type AS analysisType,
                request_hash AS requestHash,
                response_json AS responseJson,
                model,
@@ -23,6 +24,7 @@
     <select id="selectLatest" resultType="kopo.poly.dto.AiAnalysisResultDTO">
         SELECT id,
                verification_id AS verificationId,
+               analysis_type AS analysisType,
                request_hash AS requestHash,
                response_json AS responseJson,
                model,
@@ -33,20 +35,41 @@
                DATE_FORMAT(upd_dt, '%Y-%m-%d %H:%i:%s') AS updDt
         FROM ai_analysis_result
         WHERE verification_id = #{verificationId}
+          AND analysis_type = 'EXPLANATION'
+        ORDER BY upd_dt DESC, id DESC
+        LIMIT 1
+    </select>
+
+    <select id="selectLatestImageVerification" resultType="kopo.poly.dto.AiAnalysisResultDTO">
+        SELECT id,
+               verification_id AS verificationId,
+               analysis_type AS analysisType,
+               request_hash AS requestHash,
+               response_json AS responseJson,
+               model,
+               prompt_tokens AS promptTokens,
+               completion_tokens AS completionTokens,
+               total_tokens AS totalTokens,
+               DATE_FORMAT(reg_dt, '%Y-%m-%d %H:%i:%s') AS regDt,
+               DATE_FORMAT(upd_dt, '%Y-%m-%d %H:%i:%s') AS updDt
+        FROM ai_analysis_result
+        WHERE verification_id = #{verificationId}
+          AND analysis_type = 'IMAGE_VERIFICATION'
         ORDER BY upd_dt DESC, id DESC
         LIMIT 1
     </select>
 
     <insert id="upsert" parameterType="kopo.poly.dto.AiAnalysisResultDTO">
         INSERT INTO ai_analysis_result (
-            verification_id, request_hash, response_json, model,
+            verification_id, analysis_type, request_hash, response_json, model,
             prompt_tokens, completion_tokens, total_tokens
         ) VALUES (
-            #{verificationId}, #{requestHash}, #{responseJson}, #{model},
+            #{verificationId}, COALESCE(#{analysisType}, 'EXPLANATION'), #{requestHash}, #{responseJson}, #{model},
             #{promptTokens}, #{completionTokens}, #{totalTokens}
         )
         ON DUPLICATE KEY UPDATE
             response_json = VALUES(response_json),
+            analysis_type = COALESCE(VALUES(analysis_type), 'EXPLANATION'),
             model = VALUES(model),
             prompt_tokens = VALUES(prompt_tokens),
             completion_tokens = VALUES(completion_tokens),

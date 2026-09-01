@@ -7,5 +7,6 @@ public interface IAiAnalysisResultMapper {
     AiAnalysisResultDTO selectByRequestHash(@Param("verificationId") Long verificationId,
                                             @Param("requestHash") String requestHash);
     AiAnalysisResultDTO selectLatest(@Param("verificationId") Long verificationId);
+    AiAnalysisResultDTO selectLatestImageVerification(@Param("verificationId") Long verificationId);
     int upsert(AiAnalysisResultDTO result);
 }

@@ -20,6 +20,7 @@ public class AiAnalysisSchemaInitializer {
                         CREATE TABLE IF NOT EXISTS ai_analysis_result (
                             id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
                             verification_id BIGINT NOT NULL,
+                            analysis_type VARCHAR(30) NOT NULL DEFAULT 'EXPLANATION',
                             request_hash CHAR(64) NOT NULL,
                             response_json LONGTEXT NOT NULL,
                             model VARCHAR(100) NULL,
@@ -31,6 +32,10 @@ public class AiAnalysisSchemaInitializer {
                             UNIQUE KEY uk_ai_analysis_request (verification_id, request_hash),
                             INDEX idx_ai_analysis_verification (verification_id)
                         )
+                        """);
+                jdbcTemplate.execute("""
+                        ALTER TABLE ai_analysis_result
+                        ADD COLUMN IF NOT EXISTS analysis_type VARCHAR(30) NOT NULL DEFAULT 'EXPLANATION'
                         """);
                 log.info("Ensured AI analysis result schema is ready.");
             } catch (Exception e) {
