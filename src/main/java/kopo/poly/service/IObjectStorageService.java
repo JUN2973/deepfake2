@@ -11,6 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 public interface IObjectStorageService {
     UploadResult uploadPublic(MultipartFile file, String objectKey) throws Exception;
+    byte[] readObject(String objectKey) throws Exception;
 
     class UploadResult {
         private final String objectKey;

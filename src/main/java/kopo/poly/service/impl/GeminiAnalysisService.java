@@ -86,7 +86,7 @@ public class GeminiAnalysisService implements IAiAnalysisService {
                                  ObjectMapper objectMapper,
                                  IAiAnalysisResultMapper aiAnalysisResultMapper,
                                  @Value("${gemini.api-key:}") String apiKey,
-                                 @Value("${gemini.model:gemini-1.5-flash}") String model,
+                                 @Value("${gemini.model:gemini-2.5-flash}") String model,
                                  @Value("${gemini.base-url:https://generativelanguage.googleapis.com/v1beta}") String baseUrl,
                                  @Value("${gemini.connect-timeout-ms:5000}") int connectTimeoutMs,
                                  @Value("${gemini.read-timeout-ms:30000}") int readTimeoutMs,
@@ -137,7 +137,7 @@ public class GeminiAnalysisService implements IAiAnalysisService {
         this.objectMapper = objectMapper;
         this.aiAnalysisResultMapper = aiAnalysisResultMapper;
         this.apiKey = apiKey == null ? "" : apiKey.trim();
-        this.model = isBlank(model) ? "gemini-1.5-flash" : model.trim();
+        this.model = isBlank(model) ? "gemini-2.5-flash" : model.trim();
         this.maxOutputTokens = Math.max(100, maxOutputTokens);
         this.cacheEnabled = cacheEnabled;
         this.cacheTtlMillis = Duration.ofMinutes(Math.max(1, cacheTtlMinutes)).toMillis();
@@ -226,10 +226,8 @@ public class GeminiAnalysisService implements IAiAnalysisService {
                                                    Long verificationId) {
         try {
             JsonNode response = restClient.post()
-                    .uri(uriBuilder -> uriBuilder
-                            .path("/models/{model}:generateContent")
-                            .queryParam("key", apiKey)
-                            .build(model))
+                    .uri("/models/{model}:generateContent", model)
+                    .header("x-goog-api-key", apiKey)
                     .contentType(MediaType.APPLICATION_JSON)
                     .body(requestBody)
                     .retrieve()
@@ -498,6 +496,7 @@ public class GeminiAnalysisService implements IAiAnalysisService {
         try {
             AiAnalysisResultDTO result = new AiAnalysisResultDTO();
             result.setVerificationId(verificationId);
+            result.setAnalysisType("EXPLANATION");
             result.setRequestHash(cacheKey);
             result.setResponseJson(objectMapper.writeValueAsString(response));
             result.setModel(response.getModel());

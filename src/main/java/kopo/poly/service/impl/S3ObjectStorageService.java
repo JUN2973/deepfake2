@@ -16,6 +16,7 @@ import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.ObjectCannedACL;
+import software.amazon.awssdk.services.s3.model.GetObjectRequest;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 
 import java.io.InputStream;
@@ -88,6 +89,16 @@ public class S3ObjectStorageService implements IObjectStorageService {
         }
 
         return new UploadResult(safeObjectKey, buildPublicUrl(safeObjectKey));
+    }
+
+    @Override
+    public byte[] readObject(String objectKey) {
+        String safeObjectKey = normalizeObjectKey(objectKey);
+        return s3Client.getObjectAsBytes(GetObjectRequest.builder()
+                        .bucket(bucket)
+                        .key(safeObjectKey)
+                        .build())
+                .asByteArray();
     }
 
     private String buildPublicUrl(String objectKey) {

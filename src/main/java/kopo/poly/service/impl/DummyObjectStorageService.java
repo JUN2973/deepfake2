@@ -26,13 +26,7 @@ public class DummyObjectStorageService implements IObjectStorageService {
 
     @Override
     public UploadResult uploadPublic(MultipartFile file, String objectKey) throws Exception {
-        Path basePath = Paths.get(uploadDir).toAbsolutePath().normalize();
-        Path targetPath = basePath.resolve(objectKey).normalize();
-
-        // 조작된 objectKey로 업로드 폴더 밖에 저장되는 것을 막는다.
-        if (!targetPath.startsWith(basePath)) {
-            throw new IllegalArgumentException("Invalid upload path.");
-        }
+        Path targetPath = resolveSafePath(objectKey);
 
         Path parent = targetPath.getParent();
         if (parent != null) {
@@ -44,5 +38,22 @@ public class DummyObjectStorageService implements IObjectStorageService {
         // WebConfig에서 /uploads/** 경로를 이 로컬 폴더에 매핑한다.
         String url = "/uploads/" + objectKey.replace("\\", "/");
         return new UploadResult(objectKey, url);
+    }
+
+    @Override
+    public byte[] readObject(String objectKey) throws Exception {
+        return Files.readAllBytes(resolveSafePath(objectKey));
+    }
+
+    private Path resolveSafePath(String objectKey) {
+        if (objectKey == null || objectKey.isBlank()) {
+            throw new IllegalArgumentException("Object key is required.");
+        }
+        Path basePath = Paths.get(uploadDir).toAbsolutePath().normalize();
+        Path targetPath = basePath.resolve(objectKey).normalize();
+        if (!targetPath.startsWith(basePath)) {
+            throw new IllegalArgumentException("Invalid upload path.");
+        }
+        return targetPath;
     }
 }

@@ -51,7 +51,7 @@ class GeminiAnalysisServiceTest {
                 objectMapper,
                 resultMapper,
                 "test-api-key",
-                "gemini-1.5-flash",
+                "gemini-2.5-flash",
                 450
         );
     }
@@ -60,7 +60,7 @@ class GeminiAnalysisServiceTest {
     void analyzeSendsStructuredRequestAndMapsResponse() throws Exception {
         String providerResponse = providerResponse();
 
-        server.expect(once(), requestTo("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=test-api-key"))
+        server.expect(once(), requestTo("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"))
                 .andExpect(method(HttpMethod.POST))
                 .andExpect(request -> {
                     String body = ((MockClientHttpRequest) request).getBodyAsString();
@@ -91,7 +91,7 @@ class GeminiAnalysisServiceTest {
         assertThat(result.getVerificationId()).isEqualTo(7L);
         assertThat(result.getSummary()).isEqualTo("summary");
         assertThat(result.getRiskLevel()).isEqualTo("HIGH");
-        assertThat(result.getModel()).isEqualTo("gemini-1.5-flash");
+        assertThat(result.getModel()).isEqualTo("gemini-2.5-flash");
         assertThat(result.getPromptTokens()).isEqualTo(120);
         assertThat(result.getCompletionTokens()).isEqualTo(80);
         assertThat(result.getTotalTokens()).isEqualTo(200);
@@ -109,7 +109,7 @@ class GeminiAnalysisServiceTest {
                 "heatmap", Map.of("data", "A".repeat(3_000))
         )));
 
-        server.expect(once(), requestTo("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=test-api-key"))
+        server.expect(once(), requestTo("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"))
                 .andExpect(request -> {
                     String body = ((MockClientHttpRequest) request).getBodyAsString();
                     JsonNode requestJson = objectMapper.readTree(body);
@@ -166,9 +166,9 @@ class GeminiAnalysisServiceTest {
 
     @Test
     void analyzeUsesDifferentCacheKeysForDifferentQuestions() throws Exception {
-        server.expect(once(), requestTo("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=test-api-key"))
+        server.expect(once(), requestTo("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"))
                 .andRespond(withSuccess(providerResponse(), MediaType.APPLICATION_JSON));
-        server.expect(once(), requestTo("https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=test-api-key"))
+        server.expect(once(), requestTo("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"))
                 .andRespond(withSuccess(providerResponse(), MediaType.APPLICATION_JSON));
 
         AiAnalysisRequestDTO first = new AiAnalysisRequestDTO();
@@ -190,7 +190,7 @@ class GeminiAnalysisServiceTest {
                 RestClient.create("https://generativelanguage.googleapis.com/v1beta"),
                 objectMapper,
                 "",
-                "gemini-1.5-flash",
+                "gemini-2.5-flash",
                 450
         );
 
