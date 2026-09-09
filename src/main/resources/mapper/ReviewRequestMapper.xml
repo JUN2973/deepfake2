@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kopo.poly.mapper.IReviewRequestMapper">
+
+    <sql id="reviewRequestColumns">
+        rr.id,
+        rr.verification_id AS verificationId,
+        rr.user_id AS userId,
+        rr.request_type AS requestType,
+        rr.reason,
+        rr.status,
+        rr.reviewer_note AS reviewerNote,
+        v.original_name AS originalName,
+        v.verdict,
+        v.score,
+        DATE_FORMAT(rr.reg_dt, '%Y-%m-%d %H:%i:%s') AS regDt,
+        DATE_FORMAT(rr.upd_dt, '%Y-%m-%d %H:%i:%s') AS updDt
+    </sql>
+
+    <insert id="insertReviewRequest"
+            parameterType="kopo.poly.dto.ReviewRequestResponseDTO"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO review_request (
+            verification_id,
+            user_id,
+            request_type,
+            reason,
+            status
+        ) VALUES (
+            #{verificationId},
+            #{userId},
+            #{requestType},
+            #{reason},
+            COALESCE(#{status}, 'PENDING')
+        )
+    </insert>
+
+    <select id="selectActiveByVerificationIdAndUserId"
+            resultType="kopo.poly.dto.ReviewRequestResponseDTO">
+        SELECT
+        <include refid="reviewRequestColumns"/>
+        FROM review_request rr
+        INNER JOIN verification v ON v.id = rr.verification_id
+        WHERE rr.verification_id = #{verificationId}
+          AND rr.user_id = #{userId}
+          AND rr.status IN ('PENDING', 'REVIEWING')
+        ORDER BY rr.id DESC
+        LIMIT 1
+    </select>
+
+    <select id="selectByIdAndUserId"
+            resultType="kopo.poly.dto.ReviewRequestResponseDTO">
+        SELECT
+        <include refid="reviewRequestColumns"/>
+        FROM review_request rr
+        INNER JOIN verification v ON v.id = rr.verification_id
+        WHERE rr.id = #{id}
+          AND rr.user_id = #{userId}
+        LIMIT 1
+    </select>
+
+    <select id="selectListByUserId"
+            resultType="kopo.poly.dto.ReviewRequestResponseDTO">
+        SELECT
+        <include refid="reviewRequestColumns"/>
+        FROM review_request rr
+        INNER JOIN verification v ON v.id = rr.verification_id
+        WHERE rr.user_id = #{userId}
+        ORDER BY rr.id DESC
+    </select>
+
+    <update id="updateStatus">
+        UPDATE review_request
+        SET status = #{status},
+            reviewer_note = #{reviewerNote},
+            upd_dt = CURRENT_TIMESTAMP
+        WHERE id = #{id}
+    </update>
+
+</mapper>
