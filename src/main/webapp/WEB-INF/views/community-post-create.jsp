@@ -13,6 +13,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/resources/image/deepscan-mark.svg?v=30">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>게시글 작성 - DeepScan</title>

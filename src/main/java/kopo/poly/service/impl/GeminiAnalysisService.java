@@ -86,7 +86,7 @@ public class GeminiAnalysisService implements IAiAnalysisService {
                                  ObjectMapper objectMapper,
                                  IAiAnalysisResultMapper aiAnalysisResultMapper,
                                  @Value("${gemini.api-key:}") String apiKey,
-                                 @Value("${gemini.model:gemini-2.5-flash}") String model,
+                                 @Value("${gemini.model:gemini-3.6-flash}") String model,
                                  @Value("${gemini.base-url:https://generativelanguage.googleapis.com/v1beta}") String baseUrl,
                                  @Value("${gemini.connect-timeout-ms:5000}") int connectTimeoutMs,
                                  @Value("${gemini.read-timeout-ms:30000}") int readTimeoutMs,
@@ -137,7 +137,7 @@ public class GeminiAnalysisService implements IAiAnalysisService {
         this.objectMapper = objectMapper;
         this.aiAnalysisResultMapper = aiAnalysisResultMapper;
         this.apiKey = apiKey == null ? "" : apiKey.trim();
-        this.model = isBlank(model) ? "gemini-2.5-flash" : model.trim();
+        this.model = isBlank(model) ? "gemini-3.6-flash" : model.trim();
         this.maxOutputTokens = Math.max(100, maxOutputTokens);
         this.cacheEnabled = cacheEnabled;
         this.cacheTtlMillis = Duration.ofMinutes(Math.max(1, cacheTtlMinutes)).toMillis();
@@ -303,12 +303,20 @@ public class GeminiAnalysisService implements IAiAnalysisService {
                 "role", "user",
                 "parts", List.of(Map.of("text", serializeInput(inputData)))
         )));
-        body.put("generationConfig", Map.of(
-                "maxOutputTokens", maxOutputTokens,
-                "responseMimeType", "application/json",
-                "responseSchema", responseSchema()
-        ));
+        Map<String, Object> generationConfig = new LinkedHashMap<>();
+        generationConfig.put("maxOutputTokens", maxOutputTokens);
+        generationConfig.put("thinkingConfig", thinkingConfig());
+        generationConfig.put("responseMimeType", "application/json");
+        generationConfig.put("responseSchema", responseSchema());
+        body.put("generationConfig", generationConfig);
         return body;
+    }
+
+    private Map<String, Object> thinkingConfig() {
+        if (model.toLowerCase().startsWith("gemini-3")) {
+            return Map.of("thinkingLevel", "minimal");
+        }
+        return Map.of("thinkingBudget", 0);
     }
 
     private Map<String, Object> responseSchema() {
@@ -589,7 +597,7 @@ public class GeminiAnalysisService implements IAiAnalysisService {
         }
 
         try {
-            JsonNode result = objectMapper.readTree(outputText);
+            JsonNode result = objectMapper.readTree(normalizeJsonText(outputText));
             AiAnalysisResponseDTO out = new AiAnalysisResponseDTO();
             out.setVerificationId(verificationId);
             out.setSummary(requiredText(result, "summary"));
@@ -619,12 +627,36 @@ public class GeminiAnalysisService implements IAiAnalysisService {
             return null;
         }
 
+        String fallback = null;
         for (JsonNode part : parts) {
-            if (part.has("text")) {
-                return part.path("text").asText(null);
+            if (part.path("thought").asBoolean(false) || !part.has("text")) {
+                continue;
+            }
+            String text = part.path("text").asText(null);
+            if (text == null || text.isBlank()) {
+                continue;
+            }
+            fallback = text;
+            String normalized = normalizeJsonText(text);
+            if (normalized.startsWith("{") || normalized.startsWith("[")) {
+                return text;
             }
         }
-        return null;
+        return fallback;
+    }
+
+    private String normalizeJsonText(String text) {
+        String normalized = text == null ? "" : text.trim();
+        if (!normalized.startsWith("```")) {
+            return normalized;
+        }
+
+        int firstLineEnd = normalized.indexOf('\n');
+        int closingFence = normalized.lastIndexOf("```");
+        if (firstLineEnd < 0 || closingFence <= firstLineEnd) {
+            return normalized;
+        }
+        return normalized.substring(firstLineEnd + 1, closingFence).trim();
     }
 
     private String requiredText(JsonNode node, String fieldName) {

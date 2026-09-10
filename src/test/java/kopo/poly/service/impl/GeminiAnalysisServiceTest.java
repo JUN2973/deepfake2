@@ -69,6 +69,8 @@ class GeminiAnalysisServiceTest {
                     JsonNode inputJson = objectMapper.readTree(inputText);
 
                     assertThat(requestJson.path("generationConfig").path("maxOutputTokens").asInt()).isEqualTo(450);
+                    assertThat(requestJson.path("generationConfig").path("thinkingConfig")
+                            .path("thinkingBudget").asInt()).isZero();
                     assertThat(requestJson.path("generationConfig").path("responseMimeType").asText())
                             .isEqualTo("application/json");
                     assertThat(requestJson.path("generationConfig").path("responseSchema").path("type").asText())
@@ -210,6 +212,21 @@ class GeminiAnalysisServiceTest {
                 .hasMessageContaining("Verification ID");
     }
 
+    @Test
+    void analyzeSkipsThoughtPartAndParsesFencedJson() throws Exception {
+        server.expect(once(), requestTo("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"))
+                .andRespond(withSuccess(providerResponseWithThought(), MediaType.APPLICATION_JSON));
+
+        AiAnalysisRequestDTO request = new AiAnalysisRequestDTO();
+        request.setVerificationId(7L);
+
+        AiAnalysisResponseDTO result = service.analyze(request, verification(7L));
+
+        assertThat(result.getSummary()).isEqualTo("summary");
+        assertThat(result.getRiskLevel()).isEqualTo("HIGH");
+        server.verify();
+    }
+
     private VerifyDTO verification(Long id) {
         VerifyDTO verification = new VerifyDTO();
         verification.setId(id);
@@ -245,5 +262,15 @@ class GeminiAnalysisServiceTest {
                         "totalTokenCount", 200
                 )
         ));
+    }
+
+    private String providerResponseWithThought() throws Exception {
+        JsonNode response = objectMapper.readTree(providerResponse());
+        JsonNode parts = response.path("candidates").path(0).path("content").path("parts");
+        String answer = parts.path(0).path("text").asText();
+        ((com.fasterxml.jackson.databind.node.ArrayNode) parts).removeAll()
+                .add(objectMapper.createObjectNode().put("thought", true).put("text", "internal reasoning"))
+                .add(objectMapper.createObjectNode().put("text", "```json\n" + answer + "\n```"));
+        return objectMapper.writeValueAsString(response);
     }
 }

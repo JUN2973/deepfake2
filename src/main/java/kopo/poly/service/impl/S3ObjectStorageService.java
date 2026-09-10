@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
  * S3에 업로드 파일을 저장하고 브라우저에서 접근 가능한 공개 URL을 생성한다.
  */
 @Service
-@ConditionalOnProperty(name = "app.storage.type", havingValue = "s3")
+@ConditionalOnProperty(name = "app.s3.enabled", havingValue = "true")
 public class S3ObjectStorageService implements IObjectStorageService {
 
     private final S3Client s3Client;

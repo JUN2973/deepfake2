@@ -8,6 +8,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/resources/image/deepscan-mark.svg?v=30">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>계정 찾기 - DeepScan</title>
@@ -48,11 +49,9 @@
   <div class="pt-24 pb-12 px-4 flex items-center justify-center min-h-screen">
     <div class="w-full max-w-md relative z-10">
       <div class="text-center mb-8">
-        <div class="relative inline-block mb-6">
-          <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-xl blur-xl opacity-75"></div>
-          <div class="relative w-12 h-12 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-xl flex items-center justify-center mx-auto">
-            <i data-lucide="shield" class="w-7 h-7 text-white"></i>
-          </div>
+        <div class="relative inline-flex h-14 w-14 items-center justify-center mb-6">
+          <div class="absolute inset-1 bg-cyan-500/25 blur-xl"></div>
+          <img src="<%= contextPath %>/resources/image/deepscan-mark.svg?v=30" alt="DeepScan" class="relative h-12 w-12" width="48" height="48">
         </div>
         <h1 class="text-3xl font-bold text-white mb-2">계정 찾기</h1>
         <p class="text-slate-400">아이디 또는 비밀번호를 찾으세요</p>

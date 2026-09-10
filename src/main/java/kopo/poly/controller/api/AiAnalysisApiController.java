@@ -18,11 +18,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+
 @RestController
 @RequestMapping("/api/v1/ai")
 public class AiAnalysisApiController {
 
     private static final Logger log = LoggerFactory.getLogger(AiAnalysisApiController.class);
+    // 현재 클래스에서 log.info(), log.warn(), log.error()를 사용하기 위한 로그 객체 생성 = @Slf4j를 활용하면 안써도 된다.
 
     private final IVerifyService verifyService;
     private final IAiAnalysisService aiAnalysisService;
@@ -35,7 +37,7 @@ public class AiAnalysisApiController {
 
     @GetMapping("/verifications/{id}/explanation")
     public ApiResponse<AiAnalysisResponseDTO> getSavedExplanation(
-            @PathVariable Long id,
+            @PathVariable Long id, // @PathVariable - URL 경로에 들어있는 값을 꺼내서 Controller 메서드의 변수로 받기 위해 사용
             HttpSession session) {
         try {
             VerifyDTO verification = verifyService.getOne(id);
@@ -44,7 +46,7 @@ public class AiAnalysisApiController {
             }
             if (!SessionUtil.canAccessVerification(session, verification.getUserId(), verification.getId())) {
                 return ApiResponse.fail("AI-4030", "이 분석 결과에 접근할 권한이 없습니다.");
-            }
+            } //canAccessVerification(...) - true면 접근가능 false면 접근 불가
             return ApiResponse.ok(aiAnalysisService.getLatest(id));
         } catch (Exception e) {
             log.error("Failed to load saved AI analysis. verificationId={}", id, e);

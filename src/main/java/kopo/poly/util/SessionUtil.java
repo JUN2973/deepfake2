@@ -29,11 +29,12 @@ public final class SessionUtil {
         if (userId == null) {
             return null;
         }
+//long - 세션에서 USER_ID를 가져와서 Long 타입으로 돌려주고, 로그인 정보가 없으면 null을 돌려주는 메서드
 
         if (userId instanceof Number number) {
             return number.longValue();
         }
-
+//
         try {
             return Long.parseLong(String.valueOf(userId));
         } catch (NumberFormatException e) {
@@ -50,6 +51,7 @@ public final class SessionUtil {
         ids.add(verificationId);
         session.setAttribute(OWNED_VERIFICATION_IDS, ids);
     }
+    // Set<Long>을 쓰는이유 - 중복을 허용하지 않는다.
 
     public static boolean canAccessVerification(HttpSession session, Long ownerUserId, Long verificationId) {
         Long currentUserId = getUserId(session);

@@ -71,6 +71,45 @@
       animation: heroPop 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       animation-delay: var(--hero-delay, 0ms);
     }
+    .particle-hero {
+      min-height: min(860px, 100vh);
+      isolation: isolate;
+      background:
+        radial-gradient(circle at 50% 46%, rgba(14, 165, 233, 0.11), transparent 34%),
+        linear-gradient(180deg, #020617 0%, #020617 72%, #07111f 100%);
+    }
+    .particle-hero::after {
+      content: "";
+      position: absolute;
+      inset: auto 0 0;
+      height: 30%;
+      pointer-events: none;
+      background: linear-gradient(180deg, transparent, #020617);
+      z-index: 1;
+    }
+    .particle-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0.96;
+      pointer-events: none;
+    }
+    .hero-vignette {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      pointer-events: none;
+      background:
+        linear-gradient(90deg, rgba(2, 6, 23, 0.92), transparent 25%, transparent 75%, rgba(2, 6, 23, 0.92)),
+        radial-gradient(circle at center, transparent 12%, rgba(2, 6, 23, 0.18) 53%, rgba(2, 6, 23, 0.85) 100%);
+    }
+    .hero-copy-shadow {
+      text-shadow: 0 4px 36px rgba(2, 6, 23, 0.95);
+    }
+    .hero-status {
+      box-shadow: inset 0 1px rgba(255,255,255,0.08), 0 18px 55px rgba(2, 6, 23, 0.4);
+    }
     .card-hover-lift {
       transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
     }
@@ -141,6 +180,16 @@
       0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
       50% { transform: translate3d(0, -16px, 0) scale(1.06); }
     }
+    @media (max-width: 767px) {
+      .particle-hero { min-height: 760px; }
+      .hero-vignette {
+        background: radial-gradient(circle at center, transparent 5%, rgba(2, 6, 23, 0.34) 54%, rgba(2, 6, 23, 0.92) 100%);
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .hero-pop { animation: none; opacity: 1; transform: none; }
+      .float-orb, .hero-visual-orb { animation: none; }
+    }
   </style>
 </head>
 <body class="min-h-screen bg-slate-950 text-white overflow-x-hidden">
@@ -160,37 +209,42 @@
   <div class="min-h-screen bg-slate-950 text-white">
     <%@ include file="common/dashboard-nav.jspf" %>
 
-    <section class="relative pt-32 pb-20 px-4 overflow-hidden">
-      <div class="absolute inset-0">
-        <div class="absolute top-20 left-1/4 w-96 h-96 bg-sky-600/30 rounded-full blur-3xl float-orb"></div>
-        <div class="absolute bottom-20 right-1/4 w-96 h-96 bg-cyan-600/30 rounded-full blur-3xl float-orb orb-delay-1"></div>
-        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-sky-600/20 to-cyan-600/20 rounded-full blur-3xl float-orb orb-delay-2"></div>
-      </div>
+    <section class="particle-hero relative flex items-center overflow-hidden px-4 pb-16 pt-32">
+      <canvas id="particleCanvas" class="particle-canvas" aria-hidden="true"></canvas>
+      <div class="hero-vignette"></div>
 
-      <div class="max-w-7xl mx-auto relative">
-        <div class="text-center mb-16">
-          <div class="hero-pop inline-flex items-center gap-2 px-5 py-2 bg-white/10 backdrop-blur-xl rounded-full mb-8 border border-white/20" style="--hero-delay: 120ms;">
-            <i data-lucide="sparkles" class="w-4 h-4 text-sky-400"></i>
-            <span class="text-sm font-medium text-slate-200">AI 기반 이미지 검증 플랫폼</span>
+      <div class="relative z-10 mx-auto w-full max-w-7xl text-center">
+        <div class="text-center">
+          <div class="hero-pop mb-8 inline-flex items-center gap-2 rounded-full border border-sky-300/20 bg-slate-950/45 px-5 py-2 backdrop-blur-xl hero-status" style="--hero-delay: 80ms;">
+            <span class="relative flex h-2.5 w-2.5">
+              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-300 opacity-60"></span>
+              <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-cyan-300"></span>
+            </span>
+            <span class="text-sm font-medium tracking-wide text-slate-200">AI 기반 이미지 검증 플랫폼</span>
           </div>
-          <h1 class="hero-pop text-6xl md:text-8xl mb-8 font-bold tracking-tight" style="--hero-delay: 220ms;">
-            <span class="block mb-2">딥페이크를</span>
-            <span class="block bg-gradient-to-r from-sky-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">빠르고 정확하게</span>
-            <span class="block">검증하세요</span>
+          <h1 class="hero-pop hero-copy-shadow mx-auto max-w-5xl text-5xl font-extrabold leading-[1.08] tracking-[-0.045em] text-white md:text-7xl lg:text-[5.5rem]" style="--hero-delay: 180ms;">
+            보이지 않는 조작까지,<br>
+            <span class="bg-gradient-to-r from-sky-300 via-cyan-300 to-blue-400 bg-clip-text text-transparent">AI가 정밀하게 검증합니다</span>
           </h1>
-          <p class="hero-pop text-xl md:text-2xl text-slate-400 mb-12 max-w-3xl mx-auto leading-relaxed font-light" style="--hero-delay: 320ms;">
-            업로드한 이미지를 AI로 분석해 조작 가능성을 빠르게 확인하고,
-            <span class="block">신뢰도 점수와 근거를 함께 제공합니다.</span>
+          <p class="hero-pop hero-copy-shadow mx-auto mt-8 max-w-2xl text-lg leading-8 text-slate-300 md:text-xl" style="--hero-delay: 280ms;">
+            이미지 속 미세한 흔적을 다각도로 분석해<br class="hidden sm:block">
+            딥페이크 가능성과 판단 근거를 빠르게 제공합니다.
           </p>
-          <div class="hero-pop flex justify-center items-center" style="--hero-delay: 420ms;">
-            <a href="#upload" class="group px-8 py-4 bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 rounded-full transition-all shadow-2xl shadow-sky-500/50 flex items-center gap-3 font-semibold text-lg">
-              지금 시작하기
-              <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
+          <div class="hero-pop mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row" style="--hero-delay: 380ms;">
+            <a href="#upload" class="group inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-base font-bold text-slate-950 shadow-2xl shadow-sky-950/60 transition hover:-translate-y-0.5 hover:bg-sky-50">
+              이미지 검증하기
+              <i data-lucide="arrow-right" class="h-5 w-5 transition-transform group-hover:translate-x-1"></i>
             </a>
+            <a href="#features" class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-base font-semibold text-white backdrop-blur-md transition hover:border-white/30 hover:bg-white/10">서비스 알아보기</a>
+          </div>
+          <div class="hero-pop mx-auto mt-16 grid max-w-3xl grid-cols-3 divide-x divide-white/10 border-t border-white/10 pt-7" style="--hero-delay: 480ms;">
+            <div><strong class="block text-xl text-white md:text-2xl">98.7%</strong><span class="mt-1 block text-xs text-slate-500 md:text-sm">탐지 정확도</span></div>
+            <div><strong class="block text-xl text-white md:text-2xl">1.2초</strong><span class="mt-1 block text-xs text-slate-500 md:text-sm">평균 분석 시간</span></div>
+            <div><strong class="block text-xl text-white md:text-2xl">10,000+</strong><span class="mt-1 block text-xs text-slate-500 md:text-sm">검증된 이미지</span></div>
           </div>
         </div>
 
-        <div class="max-w-6xl mx-auto mb-16 reveal" style="--reveal-delay: 120ms;" data-reveal>
+        <div class="hidden max-w-6xl mx-auto mb-16 reveal" style="--reveal-delay: 120ms;" data-reveal>
           <div class="relative card-hover-lift">
             <div class="absolute inset-0 bg-gradient-to-r from-sky-600/20 via-cyan-500/20 to-blue-600/20 rounded-[2rem] blur-3xl"></div>
             <main class="relative h-[320px] md:h-[440px] glass-panel border border-white/10 rounded-[2rem] loading-stage overflow-hidden">
@@ -261,7 +315,7 @@
           </div>
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+        <div class="hidden grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
           <div class="relative group reveal" style="--reveal-delay: 0ms;" data-reveal>
             <div class="absolute inset-0 bg-gradient-to-r from-sky-500 to-blue-500 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
             <div class="relative glass-panel p-8 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift">
@@ -505,10 +559,8 @@
       <div class="max-w-7xl mx-auto">
         <div class="flex flex-col md:flex-row justify-between items-center gap-6">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-xl flex items-center justify-center">
-              <i data-lucide="shield" class="w-6 h-6 text-white"></i>
-            </div>
-            <span class="text-xl font-bold bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">DeepScan</span>
+            <img src="<%= contextPath %>/resources/image/deepscan-mark.svg?v=30" alt="" class="h-10 w-10" width="40" height="40">
+            <span class="text-xl font-bold"><span class="text-white">Deep</span><span class="text-cyan-400">Scan</span></span>
           </div>
           <div class="flex gap-8 text-sm text-slate-400">
             <button type="button" onclick="goPage('<%= contextPath %>/news')" class="hover:text-white transition-colors">뉴스</button>
@@ -741,6 +793,120 @@
       }
     }
 
+    function initParticleHero() {
+      const canvas = document.getElementById("particleCanvas");
+      if (!canvas) return;
+
+      const context = canvas.getContext("2d");
+      const hero = canvas.parentElement;
+      const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const palette = [[56, 189, 248], [34, 211, 238], [99, 102, 241], [244, 114, 182]];
+      let width = 0;
+      let height = 0;
+      let pixelRatio = 1;
+      let animationFrame = 0;
+      let pointerX = 0;
+      let pointerY = 0;
+      let targetPointerX = 0;
+      let targetPointerY = 0;
+      let particles = [];
+
+      function createParticles() {
+        const compact = width < 720;
+        const count = compact ? 620 : Math.min(1450, Math.floor(width * 1.15));
+        const goldenAngle = Math.PI * (3 - Math.sqrt(5));
+        particles = Array.from({ length: count }, function (_, index) {
+          const normalized = (index + 0.5) / count;
+          const y = 1 - normalized * 2;
+          const radius = Math.sqrt(1 - y * y);
+          const theta = goldenAngle * index;
+          const noise = 0.88 + Math.random() * 0.22;
+          return {
+            x: Math.cos(theta) * radius * noise,
+            y: y * noise,
+            z: Math.sin(theta) * radius * noise,
+            size: 0.55 + Math.random() * 1.35,
+            phase: Math.random() * Math.PI * 2,
+            color: palette[index % palette.length]
+          };
+        });
+      }
+
+      function resizeCanvas() {
+        const bounds = hero.getBoundingClientRect();
+        width = Math.max(1, Math.round(bounds.width));
+        height = Math.max(1, Math.round(bounds.height));
+        pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.round(width * pixelRatio);
+        canvas.height = Math.round(height * pixelRatio);
+        canvas.style.width = width + "px";
+        canvas.style.height = height + "px";
+        context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        createParticles();
+      }
+
+      function render(time) {
+        const seconds = time * 0.001;
+        pointerX += (targetPointerX - pointerX) * 0.035;
+        pointerY += (targetPointerY - pointerY) * 0.035;
+        context.clearRect(0, 0, width, height);
+
+        const compact = width < 720;
+        const scale = Math.min(width * (compact ? 0.46 : 0.31), height * (compact ? 0.28 : 0.36));
+        const centerX = width * 0.5 + pointerX * 24;
+        const centerY = height * (compact ? 0.43 : 0.46) + pointerY * 14;
+        const rotationY = (reduceMotion ? 0.45 : seconds * 0.16) + pointerX * 0.28;
+        const rotationX = -0.12 + pointerY * 0.16 + (reduceMotion ? 0 : Math.sin(seconds * 0.23) * 0.08);
+        const cosY = Math.cos(rotationY);
+        const sinY = Math.sin(rotationY);
+        const cosX = Math.cos(rotationX);
+        const sinX = Math.sin(rotationX);
+
+        particles.forEach(function (particle) {
+          const wave = reduceMotion ? 0 : Math.sin(seconds * 1.2 + particle.phase + particle.y * 4) * 0.055;
+          const px = particle.x * (1 + wave);
+          const py = particle.y * (0.7 + wave * 0.5);
+          const pz = particle.z * (0.72 + wave);
+          const rotatedX = px * cosY - pz * sinY;
+          const rotatedZ = px * sinY + pz * cosY;
+          const rotatedY = py * cosX - rotatedZ * sinX;
+          const depth = py * sinX + rotatedZ * cosX;
+          const perspective = 1.08 + depth * 0.22;
+          const screenX = centerX + rotatedX * scale * 1.36 * perspective;
+          const screenY = centerY + rotatedY * scale * perspective;
+          const alpha = Math.max(0.16, Math.min(0.92, 0.48 + depth * 0.34));
+          const color = particle.color;
+
+          context.beginPath();
+          context.fillStyle = "rgba(" + color[0] + "," + color[1] + "," + color[2] + "," + alpha + ")";
+          context.arc(screenX, screenY, particle.size * perspective, 0, Math.PI * 2);
+          context.fill();
+        });
+
+        if (!reduceMotion) animationFrame = window.requestAnimationFrame(render);
+      }
+
+      hero.addEventListener("pointermove", function (event) {
+        const bounds = hero.getBoundingClientRect();
+        targetPointerX = ((event.clientX - bounds.left) / bounds.width - 0.5) * 2;
+        targetPointerY = ((event.clientY - bounds.top) / bounds.height - 0.5) * 2;
+      }, { passive: true });
+      hero.addEventListener("pointerleave", function () {
+        targetPointerX = 0;
+        targetPointerY = 0;
+      });
+      document.addEventListener("visibilitychange", function () {
+        if (reduceMotion) return;
+        if (document.hidden) window.cancelAnimationFrame(animationFrame);
+        else animationFrame = window.requestAnimationFrame(render);
+      });
+      window.addEventListener("resize", resizeCanvas, { passive: true });
+
+      resizeCanvas();
+      if (reduceMotion) render(0);
+      else animationFrame = window.requestAnimationFrame(render);
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
       try {
         const pendingToast = sessionStorage.getItem("appToast");
@@ -842,6 +1008,7 @@
 
       lucide.createIcons();
       updateAnalyzeVisibility();
+      initParticleHero();
     });
   </script>
 </body>

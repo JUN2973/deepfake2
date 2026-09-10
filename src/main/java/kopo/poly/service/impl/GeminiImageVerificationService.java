@@ -75,7 +75,7 @@ public class GeminiImageVerificationService implements IAiImageVerificationServi
             IObjectStorageService objectStorageService,
             IAiAnalysisResultMapper resultMapper,
             @Value("${gemini.api-key:}") String apiKey,
-            @Value("${gemini.vision-model:gemini-2.5-flash}") String model,
+            @Value("${gemini.vision-model:gemini-3.6-flash}") String model,
             @Value("${gemini.base-url:https://generativelanguage.googleapis.com/v1beta}") String baseUrl,
             @Value("${gemini.connect-timeout-ms:5000}") int connectTimeoutMs,
             @Value("${gemini.read-timeout-ms:30000}") int readTimeoutMs,
@@ -106,7 +106,7 @@ public class GeminiImageVerificationService implements IAiImageVerificationServi
         this.objectStorageService = objectStorageService;
         this.resultMapper = resultMapper;
         this.apiKey = apiKey == null ? "" : apiKey.trim();
-        this.model = model == null || model.isBlank() ? "gemini-2.5-flash" : model.trim();
+        this.model = model == null || model.isBlank() ? "gemini-3.6-flash" : model.trim();
         this.maxOutputTokens = Math.max(200, maxOutputTokens);
         this.maxImageBytes = Math.max(1, maxImageBytes);
     }
@@ -228,12 +228,20 @@ public class GeminiImageVerificationService implements IAiImageVerificationServi
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("systemInstruction", Map.of("parts", List.of(Map.of("text", INSTRUCTIONS))));
         body.put("contents", List.of(Map.of("role", "user", "parts", parts)));
-        body.put("generationConfig", Map.of(
-                "maxOutputTokens", maxOutputTokens,
-                "responseMimeType", "application/json",
-                "responseSchema", responseSchema()
-        ));
+        Map<String, Object> generationConfig = new LinkedHashMap<>();
+        generationConfig.put("maxOutputTokens", maxOutputTokens);
+        generationConfig.put("thinkingConfig", thinkingConfig());
+        generationConfig.put("responseMimeType", "application/json");
+        generationConfig.put("responseSchema", responseSchema());
+        body.put("generationConfig", generationConfig);
         return body;
+    }
+
+    private Map<String, Object> thinkingConfig() {
+        if (model.toLowerCase().startsWith("gemini-3")) {
+            return Map.of("thinkingLevel", "minimal");
+        }
+        return Map.of("thinkingBudget", 0);
     }
 
     private Map<String, Object> responseSchema() {
@@ -292,9 +300,12 @@ public class GeminiImageVerificationService implements IAiImageVerificationServi
         if (!finishReason.isBlank() && !"STOP".equals(finishReason)) {
             throw new AiAnalysisServiceException("AI-RESPONSE", "Gemini image verification did not finish: " + finishReason);
         }
-        String output = candidate.path("content").path("parts").path(0).path("text").asText();
+        String output = findOutputText(candidate.path("content").path("parts"));
+        if (output == null || output.isBlank()) {
+            throw new AiAnalysisServiceException("AI-RESPONSE", "Gemini image verification returned no output text.");
+        }
         try {
-            JsonNode result = objectMapper.readTree(output);
+            JsonNode result = objectMapper.readTree(normalizeJsonText(output));
             AiImageVerificationResponseDTO out = new AiImageVerificationResponseDTO();
             out.setVerificationId(verification.getId());
             out.setVisualAssessment(requiredText(result, "visualAssessment"));
@@ -318,6 +329,43 @@ public class GeminiImageVerificationService implements IAiImageVerificationServi
         } catch (JsonProcessingException e) {
             throw new AiAnalysisServiceException("AI-RESPONSE", "Failed to parse Gemini image verification response.", e);
         }
+    }
+
+    private String findOutputText(JsonNode parts) {
+        if (!parts.isArray()) {
+            return null;
+        }
+
+        String fallback = null;
+        for (JsonNode part : parts) {
+            if (part.path("thought").asBoolean(false) || !part.has("text")) {
+                continue;
+            }
+            String text = part.path("text").asText(null);
+            if (text == null || text.isBlank()) {
+                continue;
+            }
+            fallback = text;
+            String normalized = normalizeJsonText(text);
+            if (normalized.startsWith("{") || normalized.startsWith("[")) {
+                return text;
+            }
+        }
+        return fallback;
+    }
+
+    private String normalizeJsonText(String text) {
+        String normalized = text == null ? "" : text.trim();
+        if (!normalized.startsWith("```")) {
+            return normalized;
+        }
+
+        int firstLineEnd = normalized.indexOf('\n');
+        int closingFence = normalized.lastIndexOf("```");
+        if (firstLineEnd < 0 || closingFence <= firstLineEnd) {
+            return normalized;
+        }
+        return normalized.substring(firstLineEnd + 1, closingFence).trim();
     }
 
     private void applyCrossCheck(AiImageVerificationResponseDTO response, String detectorVerdict) {

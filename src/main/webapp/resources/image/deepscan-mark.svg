@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title">
+  <title id="title">DeepScan</title>
+  <defs>
+    <linearGradient id="deepscan-top" x1="5" y1="7" x2="57" y2="37" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#18e2e9"/>
+      <stop offset="1" stop-color="#09b7f4"/>
+    </linearGradient>
+    <linearGradient id="deepscan-bottom" x1="9" y1="57" x2="57" y2="29" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#087cf0"/>
+      <stop offset="1" stop-color="#10c9f2"/>
+    </linearGradient>
+    <mask id="deepscan-cutout">
+      <rect width="64" height="64" fill="white"/>
+      <path d="M21 21h10l18 12-16 14H21z" fill="black"/>
+    </mask>
+  </defs>
+  <g mask="url(#deepscan-cutout)">
+    <path d="M4 7h32l24 22v11L49 30 31 20H17z" fill="url(#deepscan-top)"/>
+    <path d="M7 24h14v22h12l16-15 11 10-22 19H7z" fill="url(#deepscan-bottom)"/>
+  </g>
+  <path d="M7 24h14v8H7z" fill="#129af0" opacity=".72"/>
+</svg>

@@ -40,11 +40,9 @@
 
   <main class="w-full max-w-2xl mx-auto relative z-10 pt-24 pb-12 px-4">
     <section class="text-center mb-8">
-      <div class="relative inline-block mb-6">
-        <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-3xl blur-xl opacity-75"></div>
-        <div class="relative w-20 h-20 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-3xl flex items-center justify-center mx-auto">
-          <i data-lucide="shield" class="w-10 h-10 text-white"></i>
-        </div>
+      <div class="relative inline-flex h-20 w-20 items-center justify-center mb-6">
+        <div class="absolute inset-2 bg-cyan-500/25 blur-2xl"></div>
+        <img src="<%= contextPath %>/resources/image/deepscan-mark.svg?v=30" alt="DeepScan" class="relative h-16 w-16" width="64" height="64">
       </div>
       <h1 class="text-4xl font-bold mb-3">
         <span class="bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">회원가입</span>

@@ -18,7 +18,7 @@ import java.nio.file.Paths;
  * 외부 스토리지 없이 로컬 uploads 폴더에 파일을 저장하는 구현체다.
  */
 @Service
-@ConditionalOnProperty(name = "app.storage.type", havingValue = "local", matchIfMissing = true)
+@ConditionalOnProperty(name = "app.s3.enabled", havingValue = "false", matchIfMissing = true)
 public class DummyObjectStorageService implements IObjectStorageService {
 
     @Value("${app.upload-dir:uploads}")

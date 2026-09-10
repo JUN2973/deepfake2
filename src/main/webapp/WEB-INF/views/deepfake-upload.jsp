@@ -513,10 +513,8 @@
       <div class="max-w-7xl mx-auto">
         <div class="flex flex-col md:flex-row justify-between items-center gap-6">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-xl flex items-center justify-center">
-              <i data-lucide="shield" class="w-6 h-6 text-white"></i>
-            </div>
-            <span class="text-xl font-bold bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">DeepScan</span>
+            <img src="<%= contextPath %>/resources/image/deepscan-mark.svg?v=30" alt="" class="h-10 w-10" width="40" height="40">
+            <span class="text-xl font-bold"><span class="text-white">Deep</span><span class="text-cyan-400">Scan</span></span>
           </div>
           <div class="flex gap-8 text-sm text-slate-400">
             <button type="button" onclick="goPage('<%= contextPath %>/news')" class="hover:text-white transition-colors">뉴스</button>
