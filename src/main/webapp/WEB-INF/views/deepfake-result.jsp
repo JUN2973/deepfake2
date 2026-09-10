@@ -7,6 +7,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/resources/image/deepscan-mark.svg">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>분석 리포트 - DeepScan</title>
@@ -349,6 +350,109 @@
                             <span id="aiDisclaimer"></span>
                         </div>
                         <div id="aiExplanationMeta" class="text-xs text-slate-500"></div>
+                    </div>
+                </div>
+
+                <div class="rounded-3xl border border-white/10 bg-slate-900/60 p-6 backdrop-blur-xl">
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="rounded-2xl bg-emerald-400/10 p-2.5 text-emerald-300">
+                                <i data-lucide="scan-search" class="h-5 w-5"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-lg font-semibold text-white">AI 이미지 2차 검증</h2>
+                                <span id="imageReviewStatusBadge" class="risk-badge risk-unknown mt-1 hidden">검토 전</span>
+                            </div>
+                        </div>
+                        <button id="generateImageReviewButton" type="button" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-emerald-400 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-emerald-300 disabled:cursor-wait disabled:opacity-60">
+                            <i data-lucide="scan-search" class="h-4 w-4"></i>
+                            <span>이미지 다시 검토</span>
+                        </button>
+                    </div>
+
+                    <div id="imageReviewLoading" class="mt-5 hidden items-center gap-3 border-t border-white/10 pt-5 text-sm text-slate-400" role="status">
+                        <i data-lucide="loader-circle" class="h-5 w-5 animate-spin text-emerald-300"></i>
+                        Gemini가 원본 이미지를 독립적으로 검토하고 있습니다.
+                    </div>
+
+                    <div id="imageReviewError" class="mt-5 hidden border-t border-red-400/20 pt-5 text-sm leading-6 text-red-300" role="alert"></div>
+
+                    <div id="imageReviewResult" class="mt-5 hidden space-y-5 border-t border-white/10 pt-5">
+                        <div>
+                            <h3 class="mb-2 text-sm font-semibold text-emerald-200">교차 검증 결론</h3>
+                            <p id="imageReviewConclusion" class="leading-7 text-white"></p>
+                        </div>
+                        <div>
+                            <h3 class="mb-2 text-sm font-semibold text-slate-300">이미지 관찰 결과</h3>
+                            <p id="imageReviewSummary" class="leading-7 text-slate-300"></p>
+                        </div>
+                        <div>
+                            <h3 class="mb-2 text-sm font-semibold text-slate-300">관찰된 시각적 단서</h3>
+                            <ul id="imageReviewIndicators" class="space-y-2 text-sm leading-6 text-slate-300"></ul>
+                        </div>
+                        <div class="notice-box rounded-2xl p-4 text-sm leading-6">
+                            <span id="imageReviewLimitations"></span>
+                        </div>
+                        <div id="imageReviewMeta" class="text-xs text-slate-500"></div>
+                    </div>
+                </div>
+
+                <div class="rounded-3xl border border-white/10 bg-slate-900/60 p-6 backdrop-blur-xl">
+                    <div class="flex items-center gap-3">
+                        <div class="rounded-2xl bg-amber-400/10 p-2.5 text-amber-300">
+                            <i data-lucide="flag" class="h-5 w-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-white">오탐 신고 및 재검토 요청</h2>
+                            <p class="mt-1 text-sm text-slate-400">현재 검증 결과가 실제 이미지와 다르다고 판단되면 재검토를 요청할 수 있습니다.</p>
+                        </div>
+                    </div>
+
+                    <form id="reviewRequestForm" class="mt-5 space-y-4 border-t border-white/10 pt-5">
+                        <div>
+                            <label for="reviewRequestType" class="mb-2 block text-sm font-semibold text-slate-300">요청 유형</label>
+                            <select id="reviewRequestType" class="min-h-11 w-full rounded-xl border border-white/10 bg-slate-950/80 px-3 text-sm text-white outline-none transition focus:border-amber-300/60 focus:ring-2 focus:ring-amber-300/20">
+                                <option value="RECHECK">판정 재검토</option>
+                                <option value="FALSE_POSITIVE">오탐 신고: 실제인데 조작으로 판정</option>
+                                <option value="FALSE_NEGATIVE">미탐 신고: 조작인데 실제로 판정</option>
+                            </select>
+                        </div>
+                        <div>
+                            <div class="mb-2 flex items-center justify-between gap-3">
+                                <label for="reviewRequestReason" class="text-sm font-semibold text-slate-300">요청 사유</label>
+                                <span id="reviewRequestReasonCount" class="text-xs text-slate-500">0 / 1000</span>
+                            </div>
+                            <textarea id="reviewRequestReason" maxlength="1000" rows="4" required class="w-full resize-y rounded-xl border border-white/10 bg-slate-950/80 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-slate-600 focus:border-amber-300/60 focus:ring-2 focus:ring-amber-300/20" placeholder="판정이 잘못되었다고 생각하는 이유를 구체적으로 작성해 주세요."></textarea>
+                        </div>
+                        <button id="submitReviewRequestButton" type="submit" class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-amber-300 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-amber-200 disabled:cursor-wait disabled:opacity-60">
+                            <i data-lucide="send" class="h-4 w-4"></i>
+                            <span>재검토 요청 접수</span>
+                        </button>
+                    </form>
+
+                    <div id="reviewRequestLoading" class="mt-5 hidden items-center gap-3 border-t border-white/10 pt-5 text-sm text-slate-400" role="status">
+                        <i data-lucide="loader-circle" class="h-5 w-5 animate-spin text-amber-300"></i>
+                        재검토 요청 상태를 확인하고 있습니다.
+                    </div>
+                    <div id="reviewRequestError" class="mt-5 hidden border-t border-red-400/20 pt-5 text-sm leading-6 text-red-300" role="alert"></div>
+
+                    <div id="reviewRequestResult" class="mt-5 hidden space-y-4 border-t border-white/10 pt-5">
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div>
+                                <p class="text-xs text-slate-500">요청 유형</p>
+                                <p id="reviewRequestTypeText" class="mt-1 font-semibold text-white"></p>
+                            </div>
+                            <span id="reviewRequestStatusBadge" class="risk-badge risk-unknown"></span>
+                        </div>
+                        <div>
+                            <p class="text-xs text-slate-500">요청 사유</p>
+                            <p id="reviewRequestReasonText" class="mt-1 whitespace-pre-line text-sm leading-6 text-slate-300"></p>
+                        </div>
+                        <div id="reviewerNoteWrap" class="hidden rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+                            <p class="text-xs text-slate-500">검토자 답변</p>
+                            <p id="reviewerNoteText" class="mt-1 whitespace-pre-line text-sm leading-6 text-slate-300"></p>
+                        </div>
+                        <p id="reviewRequestMeta" class="text-xs text-slate-500"></p>
                     </div>
                 </div>
 
@@ -928,6 +1032,227 @@
         }
     }
 
+    function setImageReviewLoading(loading) {
+        const button = document.getElementById("generateImageReviewButton");
+        const loadingBox = document.getElementById("imageReviewLoading");
+        button.disabled = loading;
+        button.innerHTML = loading
+            ? '<i data-lucide="loader-circle" class="h-4 w-4 animate-spin"></i><span>검토 중</span>'
+            : '<i data-lucide="scan-search" class="h-4 w-4"></i><span>이미지 다시 검토</span>';
+        loadingBox.classList.toggle("hidden", !loading);
+        loadingBox.classList.toggle("flex", loading);
+        lucide.createIcons();
+    }
+
+    function imageReviewPresentation(status) {
+        const statuses = {
+            AGREES: { label: "1차 판독과 일치", className: "risk-medium" },
+            DISAGREES: { label: "판독 결과 불일치", className: "risk-high" },
+            INCONCLUSIVE: { label: "판단 보류", className: "risk-unknown" }
+        };
+        return statuses[String(status || "INCONCLUSIVE").toUpperCase()] || statuses.INCONCLUSIVE;
+    }
+
+    function renderImageReview(data) {
+        const presentation = imageReviewPresentation(data.crossCheckStatus);
+        const badge = document.getElementById("imageReviewStatusBadge");
+        badge.textContent = presentation.label;
+        badge.className = "risk-badge mt-1 " + presentation.className;
+
+        document.getElementById("imageReviewConclusion").textContent = data.combinedConclusion || "";
+        document.getElementById("imageReviewSummary").textContent = data.visualSummary || "";
+        document.getElementById("imageReviewLimitations").textContent = data.limitations ||
+            "이미지 기반 AI 검토는 진위를 확정하는 증거가 아닙니다.";
+
+        const indicators = document.getElementById("imageReviewIndicators");
+        indicators.innerHTML = "";
+        const items = Array.isArray(data.visualIndicators) && data.visualIndicators.length > 0
+            ? data.visualIndicators
+            : ["명확하게 구분할 수 있는 시각적 단서가 확인되지 않았습니다."];
+        items.forEach(function(item) {
+            const li = document.createElement("li");
+            li.className = "flex gap-2";
+            const marker = document.createElement("span");
+            marker.className = "mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300";
+            const textNode = document.createElement("span");
+            textNode.textContent = item;
+            li.appendChild(marker);
+            li.appendChild(textNode);
+            indicators.appendChild(li);
+        });
+
+        const meta = [];
+        if (data.model) meta.push(data.model);
+        if (data.confidenceLevel) meta.push("시각 검토 신뢰 수준 " + data.confidenceLevel);
+        if (Number.isFinite(data.totalTokens)) meta.push("총 " + data.totalTokens + " 토큰");
+        if (data.cached === true) meta.push("저장된 검토 결과");
+        document.getElementById("imageReviewMeta").textContent = meta.join(" · ");
+
+        document.getElementById("imageReviewResult").classList.remove("hidden");
+        document.getElementById("imageReviewError").classList.add("hidden");
+        document.getElementById("generateImageReviewButton").classList.add("hidden");
+    }
+
+    async function generateImageReview() {
+        const errorBox = document.getElementById("imageReviewError");
+        errorBox.classList.add("hidden");
+        errorBox.textContent = "";
+        setImageReviewLoading(true);
+        try {
+            const response = await fetch(
+                contextPath + "/api/v1/ai/verifications/" + encodeURIComponent(resultId) + "/image-review",
+                { method: "POST", credentials: "same-origin" }
+            );
+            const payload = await response.json();
+            if (!response.ok || !payload.success || !payload.data) {
+                throw new Error(payload.error?.message || "AI 이미지 2차 검증을 완료하지 못했습니다.");
+            }
+            renderImageReview(payload.data);
+        } catch (error) {
+            errorBox.textContent = error.message || "AI 이미지 2차 검증을 완료하지 못했습니다.";
+            errorBox.classList.remove("hidden");
+        } finally {
+            setImageReviewLoading(false);
+        }
+    }
+
+    async function loadSavedImageReview() {
+        try {
+            const response = await fetch(
+                contextPath + "/api/v1/ai/verifications/" + encodeURIComponent(resultId) + "/image-review",
+                { method: "GET", credentials: "same-origin" }
+            );
+            const payload = await response.json();
+            if (response.ok && payload.success && payload.data) {
+                renderImageReview(payload.data);
+            }
+        } catch (error) {
+            console.debug("저장된 AI 이미지 검토를 불러오지 못했습니다.", error);
+        }
+    }
+
+    function reviewRequestTypeLabel(requestType) {
+        const labels = {
+            FALSE_POSITIVE: "오탐 신고: 실제인데 조작으로 판정",
+            FALSE_NEGATIVE: "미탐 신고: 조작인데 실제로 판정",
+            RECHECK: "판정 재검토"
+        };
+        return labels[String(requestType || "RECHECK").toUpperCase()] || labels.RECHECK;
+    }
+
+    function reviewRequestStatusPresentation(status) {
+        const statuses = {
+            PENDING: { label: "접수 완료", className: "risk-medium" },
+            REVIEWING: { label: "검토 중", className: "risk-medium" },
+            COMPLETED: { label: "검토 완료", className: "risk-low" },
+            REJECTED: { label: "요청 반려", className: "risk-high" }
+        };
+        return statuses[String(status || "PENDING").toUpperCase()] || statuses.PENDING;
+    }
+
+    function setReviewRequestLoading(loading, submitting) {
+        const button = document.getElementById("submitReviewRequestButton");
+        const loadingBox = document.getElementById("reviewRequestLoading");
+        button.disabled = loading;
+        button.innerHTML = loading && submitting
+            ? '<i data-lucide="loader-circle" class="h-4 w-4 animate-spin"></i><span>접수 중</span>'
+            : '<i data-lucide="send" class="h-4 w-4"></i><span>재검토 요청 접수</span>';
+        loadingBox.classList.toggle("hidden", !loading || submitting);
+        loadingBox.classList.toggle("flex", loading && !submitting);
+        lucide.createIcons();
+    }
+
+    function showReviewRequestError(message) {
+        const errorBox = document.getElementById("reviewRequestError");
+        errorBox.textContent = message;
+        errorBox.classList.remove("hidden");
+    }
+
+    function renderReviewRequest(data) {
+        const presentation = reviewRequestStatusPresentation(data.status);
+        const badge = document.getElementById("reviewRequestStatusBadge");
+        badge.textContent = presentation.label;
+        badge.className = "risk-badge " + presentation.className;
+
+        document.getElementById("reviewRequestTypeText").textContent = reviewRequestTypeLabel(data.requestType);
+        document.getElementById("reviewRequestReasonText").textContent = data.reason || "작성된 요청 사유가 없습니다.";
+
+        const reviewerNoteWrap = document.getElementById("reviewerNoteWrap");
+        const reviewerNote = String(data.reviewerNote || "").trim();
+        document.getElementById("reviewerNoteText").textContent = reviewerNote;
+        reviewerNoteWrap.classList.toggle("hidden", reviewerNote.length === 0);
+
+        const meta = [];
+        if (data.id != null) meta.push("요청 번호 " + data.id);
+        if (data.regDt) meta.push("접수 " + data.regDt);
+        if (data.updDt && data.updDt !== data.regDt) meta.push("변경 " + data.updDt);
+        document.getElementById("reviewRequestMeta").textContent = meta.join(" · ");
+
+        document.getElementById("reviewRequestForm").classList.add("hidden");
+        document.getElementById("reviewRequestError").classList.add("hidden");
+        document.getElementById("reviewRequestResult").classList.remove("hidden");
+    }
+
+    async function submitReviewRequest(event) {
+        event.preventDefault();
+        const reasonInput = document.getElementById("reviewRequestReason");
+        const reason = reasonInput.value.trim();
+        if (!reason) {
+            showReviewRequestError("재검토 요청 사유를 입력해 주세요.");
+            reasonInput.focus();
+            return;
+        }
+
+        document.getElementById("reviewRequestError").classList.add("hidden");
+        setReviewRequestLoading(true, true);
+        try {
+            const response = await fetch(
+                contextPath + "/api/v1/verifications/" + encodeURIComponent(resultId) + "/review-requests",
+                {
+                    method: "POST",
+                    credentials: "same-origin",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        requestType: document.getElementById("reviewRequestType").value,
+                        reason: reason
+                    })
+                }
+            );
+            const payload = await response.json();
+            if (!response.ok || !payload.success || !payload.data) {
+                throw new Error(payload.error?.message || "재검토 요청을 접수하지 못했습니다.");
+            }
+            renderReviewRequest(payload.data);
+        } catch (error) {
+            showReviewRequestError(error.message || "재검토 요청을 접수하지 못했습니다.");
+        } finally {
+            setReviewRequestLoading(false, true);
+        }
+    }
+
+    async function loadSavedReviewRequest() {
+        setReviewRequestLoading(true, false);
+        try {
+            const response = await fetch(
+                contextPath + "/api/v1/review-requests",
+                { method: "GET", credentials: "same-origin" }
+            );
+            const payload = await response.json();
+            if (!response.ok || !payload.success) {
+                throw new Error(payload.error?.message || "재검토 요청 상태를 불러오지 못했습니다.");
+            }
+            const requests = Array.isArray(payload.data) ? payload.data : [];
+            const savedRequest = requests.find(function(item) {
+                return String(item.verificationId) === String(resultId);
+            });
+            if (savedRequest) renderReviewRequest(savedRequest);
+        } catch (error) {
+            showReviewRequestError(error.message || "재검토 요청 상태를 불러오지 못했습니다.");
+        } finally {
+            setReviewRequestLoading(false, false);
+        }
+    }
+
     document.getElementById("topGlow").classList.add(config.glowClass);
     document.getElementById("verdictGlow").classList.add(config.glowClass);
     document.getElementById("verdictIconWrap").innerHTML = '<i data-lucide="' + config.icon + '" class="h-6 w-6 ' + config.badgeClass + '"></i>';
@@ -972,10 +1297,17 @@
     });
 
     document.getElementById("generateAiExplanationButton").addEventListener("click", generateAiExplanation);
+    document.getElementById("generateImageReviewButton").addEventListener("click", generateImageReview);
+    document.getElementById("reviewRequestForm").addEventListener("submit", submitReviewRequest);
+    document.getElementById("reviewRequestReason").addEventListener("input", function() {
+        document.getElementById("reviewRequestReasonCount").textContent = this.value.length + " / 1000";
+    });
 
     renderDetailedAnalysisRows(getDetailedAnalysisRows(combinedResult));
     setViewMode("overlay");
     loadSavedAiExplanation();
+    loadSavedImageReview();
+    loadSavedReviewRequest();
     lucide.createIcons();
 </script>
 </body>

@@ -14,6 +14,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/resources/image/deepscan-mark.svg">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>&#xAC80;&#xC99D;&#xAE30;&#xB85D; - DeepScan</title>
@@ -308,7 +309,7 @@
     </div>
 
     <div id="detailBackdrop" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm"></div>
-    <aside id="detailPanel" class="fixed bottom-0 right-0 top-0 z-50 w-full translate-x-full overflow-y-auto border-l border-white/10 bg-slate-900 transition-transform duration-300 md:w-[620px]">
+    <aside id="detailPanel" class="fixed bottom-0 right-0 top-0 z-50 w-full translate-x-full overflow-y-auto border-l border-white/10 bg-slate-900 transition-transform duration-300 md:w-1/2">
       <div class="sticky top-0 z-10 border-b border-white/10 bg-slate-900/95 p-6 backdrop-blur-xl">
         <div class="flex items-center justify-between gap-4">
           <div>
@@ -381,6 +382,106 @@
             이 결과는 원본 여부를 확정하는 값이 아니라, 이미지에서 주변 픽셀 패턴과 다르게 감지된 영역을 보여주는 참고용 분석입니다. 압축, 보정, 필터, 캡처, 재업로드 이미지에서도 비슷한 패턴이 나타날 수 있습니다.
           </div>
         </div>
+
+        <section class="rounded-3xl border border-cyan-500/20 bg-slate-800/40 p-6">
+          <div class="mb-4 flex items-center gap-2">
+            <i data-lucide="sparkles" class="h-5 w-5 text-cyan-300"></i>
+            <h3 class="text-lg font-semibold text-white">Gemini 상세 해설</h3>
+          </div>
+          <div id="historyAiExplanationLoading" class="flex items-center gap-2 text-sm text-slate-400">
+            <i data-lucide="loader-circle" class="h-4 w-4 animate-spin"></i>
+            저장된 해설을 확인하고 있습니다.
+          </div>
+          <p id="historyAiExplanationEmpty" class="hidden text-sm leading-6 text-slate-400">
+            아직 생성된 상세 해설이 없습니다. 분석 결과 화면에서 한 번 생성하면 여기에 저장됩니다.
+          </p>
+          <div id="historyAiExplanationResult" class="hidden space-y-4">
+            <p id="historyAiSummary" class="font-semibold leading-7 text-cyan-100"></p>
+            <p id="historyAiExplanation" class="text-sm leading-7 text-slate-300"></p>
+            <div class="border-t border-white/10 pt-4">
+              <div class="mb-1 text-xs font-semibold text-slate-500">확인 방법</div>
+              <p id="historyAiActionGuide" class="text-sm leading-6 text-slate-300"></p>
+            </div>
+            <p id="historyAiMeta" class="text-xs text-slate-500"></p>
+          </div>
+        </section>
+
+        <section class="rounded-3xl border border-emerald-500/20 bg-slate-800/40 p-6">
+          <div class="mb-4 flex items-center gap-2">
+            <i data-lucide="scan-search" class="h-5 w-5 text-emerald-300"></i>
+            <h3 class="text-lg font-semibold text-white">AI 이미지 2차 검증</h3>
+          </div>
+          <div id="historyImageReviewLoading" class="flex items-center gap-2 text-sm text-slate-400">
+            <i data-lucide="loader-circle" class="h-4 w-4 animate-spin"></i>
+            저장된 2차 검증을 확인하고 있습니다.
+          </div>
+          <p id="historyImageReviewEmpty" class="hidden text-sm leading-6 text-slate-400">
+            아직 생성된 이미지 2차 검증 결과가 없습니다. 분석 결과 화면에서 한 번 검토하면 여기에 저장됩니다.
+          </p>
+          <div id="historyImageReviewResult" class="hidden space-y-4">
+            <div class="flex items-center justify-between gap-3">
+              <span class="text-xs font-semibold text-slate-500">교차 검증 결과</span>
+              <span id="historyImageReviewStatus" class="rounded-full border px-3 py-1 text-xs font-semibold"></span>
+            </div>
+            <p id="historyImageReviewConclusion" class="font-semibold leading-7 text-emerald-100"></p>
+            <p id="historyImageReviewSummary" class="text-sm leading-7 text-slate-300"></p>
+            <ul id="historyImageReviewIndicators" class="space-y-2 text-sm leading-6 text-slate-300"></ul>
+            <p id="historyImageReviewMeta" class="border-t border-white/10 pt-4 text-xs text-slate-500"></p>
+          </div>
+        </section>
+
+        <section class="rounded-3xl border border-amber-500/20 bg-slate-800/40 p-6">
+          <div class="mb-4 flex items-center gap-2">
+            <i data-lucide="flag" class="h-5 w-5 text-amber-300"></i>
+            <h3 class="text-lg font-semibold text-white">오탐 신고 및 재검토 요청</h3>
+          </div>
+          <div id="historyReviewRequestLoading" class="flex items-center gap-2 text-sm text-slate-400">
+            <i data-lucide="loader-circle" class="h-4 w-4 animate-spin"></i>
+            재검토 요청 상태를 확인하고 있습니다.
+          </div>
+          <div id="historyReviewRequestError" class="hidden text-sm leading-6 text-rose-300" role="alert"></div>
+
+          <form id="historyReviewRequestForm" class="hidden space-y-4">
+            <div>
+              <label for="historyReviewRequestType" class="mb-2 block text-sm font-semibold text-slate-300">요청 유형</label>
+              <select id="historyReviewRequestType" class="min-h-11 w-full rounded-xl border border-white/10 bg-slate-950/80 px-3 text-sm text-white outline-none transition focus:border-amber-300/60 focus:ring-2 focus:ring-amber-300/20">
+                <option value="RECHECK">판정 재검토</option>
+                <option value="FALSE_POSITIVE">오탐 신고: 실제인데 조작으로 판정</option>
+                <option value="FALSE_NEGATIVE">미탐 신고: 조작인데 실제로 판정</option>
+              </select>
+            </div>
+            <div>
+              <div class="mb-2 flex items-center justify-between gap-3">
+                <label for="historyReviewRequestReason" class="text-sm font-semibold text-slate-300">요청 사유</label>
+                <span id="historyReviewRequestReasonCount" class="text-xs text-slate-500">0 / 1000</span>
+              </div>
+              <textarea id="historyReviewRequestReason" maxlength="1000" rows="4" required class="w-full resize-y rounded-xl border border-white/10 bg-slate-950/80 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-slate-600 focus:border-amber-300/60 focus:ring-2 focus:ring-amber-300/20" placeholder="판정이 잘못되었다고 생각하는 이유를 작성해 주세요."></textarea>
+            </div>
+            <button id="historyReviewRequestSubmitButton" type="submit" class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-amber-300 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-amber-200 disabled:cursor-wait disabled:opacity-60">
+              <i data-lucide="send" class="h-4 w-4"></i>
+              <span>재검토 요청 접수</span>
+            </button>
+          </form>
+
+          <div id="historyReviewRequestResult" class="hidden space-y-4">
+            <div class="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <p class="text-xs text-slate-500">요청 유형</p>
+                <p id="historyReviewRequestTypeText" class="mt-1 font-semibold text-white"></p>
+              </div>
+              <span id="historyReviewRequestStatus" class="rounded-full border px-3 py-1 text-xs font-semibold"></span>
+            </div>
+            <div>
+              <p class="text-xs text-slate-500">요청 사유</p>
+              <p id="historyReviewRequestReasonText" class="mt-1 whitespace-pre-line text-sm leading-6 text-slate-300"></p>
+            </div>
+            <div id="historyReviewerNoteWrap" class="hidden rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+              <p class="text-xs text-slate-500">검토자 답변</p>
+              <p id="historyReviewerNoteText" class="mt-1 whitespace-pre-line text-sm leading-6 text-slate-300"></p>
+            </div>
+            <p id="historyReviewRequestMeta" class="border-t border-white/10 pt-4 text-xs text-slate-500"></p>
+          </div>
+        </section>
 
         <div class="rounded-3xl border border-white/10 bg-slate-800/40 p-6">
           <h3 class="mb-4 text-lg font-semibold text-white">상세 정보</h3>
@@ -1126,9 +1227,248 @@
       applyDetailTabStyles();
     }
 
+    function resetSavedAiResults() {
+      ["historyAiExplanationResult", "historyAiExplanationEmpty", "historyImageReviewResult", "historyImageReviewEmpty"]
+        .forEach(function(id) { document.getElementById(id).classList.add("hidden"); });
+      ["historyAiExplanationLoading", "historyImageReviewLoading"]
+        .forEach(function(id) {
+          document.getElementById(id).classList.remove("hidden");
+          document.getElementById(id).classList.add("flex");
+        });
+    }
+
+    function finishSavedAiLoading(loadingId) {
+      const loading = document.getElementById(loadingId);
+      loading.classList.add("hidden");
+      loading.classList.remove("flex");
+    }
+
+    function renderSavedAiExplanation(data) {
+      finishSavedAiLoading("historyAiExplanationLoading");
+      if (!data) {
+        document.getElementById("historyAiExplanationEmpty").classList.remove("hidden");
+        return;
+      }
+
+      document.getElementById("historyAiSummary").textContent = data.summary || "";
+      document.getElementById("historyAiExplanation").textContent = data.explanation || "";
+      document.getElementById("historyAiActionGuide").textContent = data.actionGuide || "";
+      const meta = [data.model, Number.isFinite(data.totalTokens) ? "생성 시 총 " + data.totalTokens + " 토큰" : ""]
+        .filter(Boolean);
+      document.getElementById("historyAiMeta").textContent = meta.join(" · ");
+      document.getElementById("historyAiExplanationResult").classList.remove("hidden");
+    }
+
+    function renderSavedImageReview(data) {
+      finishSavedAiLoading("historyImageReviewLoading");
+      if (!data) {
+        document.getElementById("historyImageReviewEmpty").classList.remove("hidden");
+        return;
+      }
+
+      const statusMap = {
+        AGREES: ["1차 판독과 일치", "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"],
+        DISAGREES: ["판독 결과 불일치", "border-rose-500/30 bg-rose-500/10 text-rose-300"],
+        INCONCLUSIVE: ["판단 보류", "border-amber-500/30 bg-amber-500/10 text-amber-300"]
+      };
+      const status = statusMap[String(data.crossCheckStatus || "INCONCLUSIVE").toUpperCase()] || statusMap.INCONCLUSIVE;
+      const badge = document.getElementById("historyImageReviewStatus");
+      badge.textContent = status[0];
+      badge.className = "rounded-full border px-3 py-1 text-xs font-semibold " + status[1];
+      document.getElementById("historyImageReviewConclusion").textContent = data.combinedConclusion || "";
+      document.getElementById("historyImageReviewSummary").textContent = data.visualSummary || "";
+
+      const indicators = document.getElementById("historyImageReviewIndicators");
+      indicators.innerHTML = "";
+      (Array.isArray(data.visualIndicators) ? data.visualIndicators : []).forEach(function(item) {
+        const li = document.createElement("li");
+        li.className = "flex gap-2";
+        const marker = document.createElement("span");
+        marker.className = "mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-300";
+        const text = document.createElement("span");
+        text.textContent = item;
+        li.appendChild(marker);
+        li.appendChild(text);
+        indicators.appendChild(li);
+      });
+      const meta = [data.model, data.confidenceLevel ? "신뢰 수준 " + data.confidenceLevel : "",
+        Number.isFinite(data.totalTokens) ? "생성 시 총 " + data.totalTokens + " 토큰" : ""]
+        .filter(Boolean);
+      document.getElementById("historyImageReviewMeta").textContent = meta.join(" · ");
+      document.getElementById("historyImageReviewResult").classList.remove("hidden");
+    }
+
+    async function loadSavedAiResults(id) {
+      resetSavedAiResults();
+      const requests = [
+        ["/explanation", renderSavedAiExplanation, "historyAiExplanationLoading", "historyAiExplanationEmpty"],
+        ["/image-review", renderSavedImageReview, "historyImageReviewLoading", "historyImageReviewEmpty"]
+      ];
+
+      await Promise.all(requests.map(async function(request) {
+        try {
+          const response = await fetch(
+            contextPath + "/api/v1/ai/verifications/" + encodeURIComponent(id) + request[0],
+            { method: "GET", credentials: "same-origin" }
+          );
+          const payload = await response.json();
+          if (!selectedItem || String(selectedItem.id) !== String(id)) return;
+          request[1](response.ok && payload.success ? payload.data : null);
+        } catch (error) {
+          if (!selectedItem || String(selectedItem.id) !== String(id)) return;
+          finishSavedAiLoading(request[2]);
+          document.getElementById(request[3]).classList.remove("hidden");
+        }
+      }));
+      lucide.createIcons();
+    }
+
+    function resetHistoryReviewRequest() {
+      ["historyReviewRequestForm", "historyReviewRequestResult", "historyReviewRequestError"]
+        .forEach(function(id) { document.getElementById(id).classList.add("hidden"); });
+      const loading = document.getElementById("historyReviewRequestLoading");
+      loading.classList.remove("hidden");
+      loading.classList.add("flex");
+      document.getElementById("historyReviewRequestReason").value = "";
+      document.getElementById("historyReviewRequestReasonCount").textContent = "0 / 1000";
+      document.getElementById("historyReviewRequestType").value = "RECHECK";
+    }
+
+    function finishHistoryReviewRequestLoading() {
+      const loading = document.getElementById("historyReviewRequestLoading");
+      loading.classList.add("hidden");
+      loading.classList.remove("flex");
+    }
+
+    function historyReviewRequestTypeLabel(requestType) {
+      const labels = {
+        FALSE_POSITIVE: "오탐 신고: 실제인데 조작으로 판정",
+        FALSE_NEGATIVE: "미탐 신고: 조작인데 실제로 판정",
+        RECHECK: "판정 재검토"
+      };
+      return labels[String(requestType || "RECHECK").toUpperCase()] || labels.RECHECK;
+    }
+
+    function renderHistoryReviewRequest(data) {
+      finishHistoryReviewRequestLoading();
+      document.getElementById("historyReviewRequestForm").classList.add("hidden");
+      document.getElementById("historyReviewRequestError").classList.add("hidden");
+
+      const statusMap = {
+        PENDING: ["접수 완료", "border-amber-500/30 bg-amber-500/10 text-amber-300"],
+        REVIEWING: ["검토 중", "border-sky-500/30 bg-sky-500/10 text-sky-300"],
+        COMPLETED: ["검토 완료", "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"],
+        REJECTED: ["요청 반려", "border-rose-500/30 bg-rose-500/10 text-rose-300"]
+      };
+      const status = statusMap[String(data.status || "PENDING").toUpperCase()] || statusMap.PENDING;
+      const badge = document.getElementById("historyReviewRequestStatus");
+      badge.textContent = status[0];
+      badge.className = "rounded-full border px-3 py-1 text-xs font-semibold " + status[1];
+
+      document.getElementById("historyReviewRequestTypeText").textContent = historyReviewRequestTypeLabel(data.requestType);
+      document.getElementById("historyReviewRequestReasonText").textContent = data.reason || "작성된 요청 사유가 없습니다.";
+      const reviewerNote = String(data.reviewerNote || "").trim();
+      document.getElementById("historyReviewerNoteText").textContent = reviewerNote;
+      document.getElementById("historyReviewerNoteWrap").classList.toggle("hidden", reviewerNote.length === 0);
+
+      const meta = [];
+      if (data.id != null) meta.push("요청 번호 " + data.id);
+      if (data.regDt) meta.push("접수 " + data.regDt);
+      if (data.updDt && data.updDt !== data.regDt) meta.push("변경 " + data.updDt);
+      document.getElementById("historyReviewRequestMeta").textContent = meta.join(" · ");
+      document.getElementById("historyReviewRequestResult").classList.remove("hidden");
+    }
+
+    function showHistoryReviewRequestForm() {
+      finishHistoryReviewRequestLoading();
+      document.getElementById("historyReviewRequestResult").classList.add("hidden");
+      document.getElementById("historyReviewRequestForm").classList.remove("hidden");
+    }
+
+    function showHistoryReviewRequestError(message) {
+      finishHistoryReviewRequestLoading();
+      const errorBox = document.getElementById("historyReviewRequestError");
+      errorBox.textContent = message;
+      errorBox.classList.remove("hidden");
+    }
+
+    async function loadSavedReviewRequest(id) {
+      resetHistoryReviewRequest();
+      try {
+        const response = await fetch(contextPath + "/api/v1/review-requests", {
+          method: "GET",
+          credentials: "same-origin"
+        });
+        const payload = await response.json();
+        if (!selectedItem || String(selectedItem.id) !== String(id)) return;
+        if (!response.ok || !payload.success) {
+          throw new Error(payload.error && payload.error.message || "재검토 요청 상태를 불러오지 못했습니다.");
+        }
+        const requests = Array.isArray(payload.data) ? payload.data : [];
+        const savedRequest = requests.find(function(item) {
+          return String(item.verificationId) === String(id);
+        });
+        if (savedRequest) renderHistoryReviewRequest(savedRequest);
+        else showHistoryReviewRequestForm();
+      } catch (error) {
+        if (!selectedItem || String(selectedItem.id) !== String(id)) return;
+        showHistoryReviewRequestError(error.message || "재검토 요청 상태를 불러오지 못했습니다.");
+      }
+      lucide.createIcons();
+    }
+
+    async function submitHistoryReviewRequest(event) {
+      event.preventDefault();
+      if (!selectedItem) return;
+      const requestId = selectedItem.id;
+      const reasonInput = document.getElementById("historyReviewRequestReason");
+      const reason = reasonInput.value.trim();
+      if (!reason) {
+        showHistoryReviewRequestError("재검토 요청 사유를 입력해 주세요.");
+        reasonInput.focus();
+        return;
+      }
+
+      const button = document.getElementById("historyReviewRequestSubmitButton");
+      button.disabled = true;
+      button.innerHTML = '<i data-lucide="loader-circle" class="h-4 w-4 animate-spin"></i><span>접수 중</span>';
+      document.getElementById("historyReviewRequestError").classList.add("hidden");
+      lucide.createIcons();
+      try {
+        const response = await fetch(
+          contextPath + "/api/v1/verifications/" + encodeURIComponent(requestId) + "/review-requests",
+          {
+            method: "POST",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              requestType: document.getElementById("historyReviewRequestType").value,
+              reason: reason
+            })
+          }
+        );
+        const payload = await response.json();
+        if (!response.ok || !payload.success || !payload.data) {
+          throw new Error(payload.error && payload.error.message || "재검토 요청을 접수하지 못했습니다.");
+        }
+        if (selectedItem && String(selectedItem.id) === String(requestId)) renderHistoryReviewRequest(payload.data);
+      } catch (error) {
+        if (selectedItem && String(selectedItem.id) === String(requestId)) {
+          showHistoryReviewRequestError(error.message || "재검토 요청을 접수하지 못했습니다.");
+        }
+      } finally {
+        button.disabled = false;
+        button.innerHTML = '<i data-lucide="send" class="h-4 w-4"></i><span>재검토 요청 접수</span>';
+        lucide.createIcons();
+      }
+    }
+
     function openDetail(id) {
       selectedItem = rawHistory.find(function(item) { return String(item.id) === String(id); }) || null;
       if (!selectedItem) return;
+
+      resetSavedAiResults();
+      resetHistoryReviewRequest();
 
       fetch(contextPath + "/api/v1/verifications/" + encodeURIComponent(id))
         .then(function(response) {
@@ -1141,6 +1481,8 @@
           const detail = payload && payload.data ? payload.data : payload;
           populateDetail(detail);
           openPanel();
+          loadSavedAiResults(id);
+          loadSavedReviewRequest(id);
         })
         .catch(function() {
           alert(TEXT.detailLoadFailed);
@@ -1205,6 +1547,10 @@
       applyDetailTabStyles();
     });
     document.getElementById("detailDeleteButton").addEventListener("click", openDeleteModal);
+    document.getElementById("historyReviewRequestForm").addEventListener("submit", submitHistoryReviewRequest);
+    document.getElementById("historyReviewRequestReason").addEventListener("input", function() {
+      document.getElementById("historyReviewRequestReasonCount").textContent = this.value.length + " / 1000";
+    });
     document.getElementById("deleteCancelIcon").addEventListener("click", closeDeleteModal);
     document.getElementById("deleteCancelButton").addEventListener("click", closeDeleteModal);
     document.getElementById("deleteConfirmButton").addEventListener("click", deleteItem);
