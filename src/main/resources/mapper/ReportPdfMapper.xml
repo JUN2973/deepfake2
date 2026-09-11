@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kopo.poly.mapper.IReportPdfMapper">
+
+    <sql id="reportPdfColumns">
+        id,
+        verification_id AS verificationId,
+        user_id AS userId,
+        report_reason AS reportReason,
+        source_url AS sourceUrl,
+        report_draft AS reportDraft,
+        original_image_included AS originalImageIncluded,
+        heatmap_included AS heatmapIncluded,
+        ai_report_draft_included AS aiReportDraftIncluded,
+        original_name AS originalName,
+        verdict,
+        score,
+        file_name AS fileName,
+        content_type AS contentType,
+        status,
+        DATE_FORMAT(reg_dt, '%Y-%m-%d %H:%i:%s') AS regDt
+    </sql>
+
+    <insert id="insertReport"
+            parameterType="kopo.poly.dto.ReportPdfResponseDTO"
+            useGeneratedKeys="true"
+            keyProperty="id">
+        INSERT INTO generated_report (
+            verification_id,
+            user_id,
+            report_reason,
+            source_url,
+            report_draft,
+            original_image_included,
+            heatmap_included,
+            ai_report_draft_included,
+            original_name,
+            verdict,
+            score,
+            file_name,
+            content_type,
+            status
+        ) VALUES (
+            #{verificationId},
+            #{userId},
+            #{reportReason},
+            #{sourceUrl},
+            #{reportDraft},
+            #{originalImageIncluded},
+            #{heatmapIncluded},
+            #{aiReportDraftIncluded},
+            #{originalName},
+            #{verdict},
+            #{score},
+            #{fileName},
+            COALESCE(#{contentType}, 'application/pdf'),
+            COALESCE(#{status}, 'READY')
+        )
+    </insert>
+
+    <select id="selectByIdAndUserId"
+            resultType="kopo.poly.dto.ReportPdfResponseDTO">
+        SELECT
+        <include refid="reportPdfColumns"/>
+        FROM generated_report
+        WHERE id = #{id}
+          AND user_id = #{userId}
+        LIMIT 1
+    </select>
+
+    <select id="selectLatestByVerificationIdAndUserId"
+            resultType="kopo.poly.dto.ReportPdfResponseDTO">
+        SELECT
+        <include refid="reportPdfColumns"/>
+        FROM generated_report
+        WHERE verification_id = #{verificationId}
+          AND user_id = #{userId}
+        ORDER BY id DESC
+        LIMIT 1
+    </select>
+
+    <select id="selectListByUserId"
+            resultType="kopo.poly.dto.ReportPdfResponseDTO">
+        SELECT
+        <include refid="reportPdfColumns"/>
+        FROM generated_report
+        WHERE user_id = #{userId}
+        ORDER BY id DESC
+    </select>
+
+    <delete id="deleteByIdAndUserId">
+        DELETE FROM generated_report
+        WHERE id = #{id}
+          AND user_id = #{userId}
+    </delete>
+
+    <delete id="deleteByVerificationIdAndUserId">
+        DELETE FROM generated_report
+        WHERE verification_id = #{verificationId}
+          AND user_id = #{userId}
+    </delete>
+
+</mapper>
