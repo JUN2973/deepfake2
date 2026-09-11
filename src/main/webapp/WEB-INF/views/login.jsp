@@ -5,6 +5,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/deepscan-theme.css?v=4">
   <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/resources/image/deepscan-mark.svg?v=30">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,7 +23,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-white flex items-center justify-center p-4 relative">
+<body class="ds-page ds-auth-page min-h-screen bg-slate-950 text-white flex items-center justify-center p-4 relative">
   <div class="absolute inset-0">
     <div class="absolute top-20 left-1/4 w-96 h-96 bg-sky-600/30 rounded-full blur-3xl"></div>
     <div class="absolute bottom-20 right-1/4 w-96 h-96 bg-cyan-600/30 rounded-full blur-3xl"></div>

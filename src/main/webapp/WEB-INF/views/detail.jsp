@@ -7,6 +7,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/deepscan-theme.css?v=3">
   <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/resources/image/deepscan-mark.svg?v=30">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -39,7 +40,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-white">
+<body class="ds-page min-h-screen bg-slate-950 text-white">
   <div class="pointer-events-none fixed inset-0 overflow-hidden">
     <div id="topGlow" class="absolute left-1/4 top-16 h-80 w-80 rounded-full blur-3xl opacity-20"></div>
     <div class="absolute bottom-10 right-1/4 h-80 w-80 rounded-full bg-cyan-500 blur-3xl opacity-10"></div>

@@ -20,180 +20,160 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet">
   <style>
+    :root {
+      color-scheme: dark;
+      --page: #090b0e;
+      --surface: #11151a;
+      --surface-raised: #151a21;
+      --line: #272d35;
+      --muted: #929aa5;
+      --accent: #3b82f6;
+    }
     html { scroll-behavior: smooth; }
     body {
       font-family: "Pretendard", "Noto Sans KR", sans-serif;
-      background: #020617;
+      background: var(--page);
+      color: #f3f4f6;
     }
-    .glass-panel {
-      background: rgba(15, 23, 42, 0.5);
-      backdrop-filter: blur(20px);
+    .surface {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 50px rgba(0, 0, 0, 0.22);
     }
-    .float-orb {
-      animation: orbFloat 18s ease-in-out infinite;
-      will-change: transform;
-    }
-    .float-orb.orb-delay-1 {
-      animation-duration: 22s;
-      animation-delay: -4s;
-    }
-    .float-orb.orb-delay-2 {
-      animation-duration: 28s;
-      animation-delay: -8s;
+    .eyebrow {
+      color: #75a7ff;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
     }
     .reveal {
       opacity: 0;
-      transform: translateY(28px) scale(0.985);
-      transition:
-        opacity 0.7s ease,
-        transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-      transition-delay: var(--reveal-delay, 0ms);
-      will-change: opacity, transform;
-    }
-    .reveal.reveal-visible {
-      opacity: 1;
-      transform: translateY(0) scale(1);
-    }
-    .reveal-x {
-      opacity: 0;
-      transform: translateX(24px);
-      transition:
-        opacity 0.7s ease,
-        transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      transform: translateY(18px);
+      transition: opacity 0.55s ease, transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
       transition-delay: var(--reveal-delay, 0ms);
     }
-    .reveal-x.reveal-visible {
-      opacity: 1;
-      transform: translateX(0);
+    .reveal.reveal-visible { opacity: 1; transform: translateY(0); }
+    .upload-dropzone { background: #0d1116; border-color: #343b45; }
+    .upload-dropzone:hover { border-color: #4d8ff7; background: #101722; }
+    .feature-row { border-top: 1px solid var(--line); }
+    .feature-row:last-child { border-bottom: 1px solid var(--line); }
+    .keep-words { word-break: keep-all; overflow-wrap: break-word; }
+    .forensic-visual {
+      position: absolute;
+      top: 50%;
+      left: max(-17rem, calc(50% - 58rem));
+      width: min(68rem, 82vw);
+      height: 100%;
+      transform: translateY(-50%);
+      opacity: 0.62;
+      pointer-events: none;
+      mask-image: linear-gradient(90deg, transparent 0%, #000 14%, #000 58%, rgba(0, 0, 0, 0.56) 76%, transparent 94%);
     }
-    .hero-pop {
-      opacity: 0;
-      transform: translateY(24px) scale(0.96);
-      animation: heroPop 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-      animation-delay: var(--hero-delay, 0ms);
-    }
-    .particle-hero {
-      min-height: min(860px, 100vh);
-      isolation: isolate;
-      background:
-        radial-gradient(circle at 50% 46%, rgba(14, 165, 233, 0.11), transparent 34%),
-        linear-gradient(180deg, #020617 0%, #020617 72%, #07111f 100%);
-    }
-    .particle-hero::after {
+    .forensic-visual::before {
       content: "";
       position: absolute;
-      inset: auto 0 0;
-      height: 30%;
-      pointer-events: none;
-      background: linear-gradient(180deg, transparent, #020617);
-      z-index: 1;
-    }
-    .particle-canvas {
-      position: absolute;
       inset: 0;
-      width: 100%;
-      height: 100%;
-      opacity: 0.96;
-      pointer-events: none;
+      z-index: 4;
+      background: radial-gradient(circle at 47% 45%, transparent 22%, rgba(9, 11, 14, 0.06) 55%, rgba(9, 11, 14, 0.9) 96%);
     }
-    .hero-vignette {
+    .forensic-visual::after {
+      content: "";
       position: absolute;
-      inset: 0;
-      z-index: 1;
-      pointer-events: none;
-      background:
-        linear-gradient(90deg, rgba(2, 6, 23, 0.92), transparent 25%, transparent 75%, rgba(2, 6, 23, 0.92)),
-        radial-gradient(circle at center, transparent 12%, rgba(2, 6, 23, 0.18) 53%, rgba(2, 6, 23, 0.85) 100%);
+      top: 18%;
+      bottom: 18%;
+      left: 38%;
+      width: 1px;
+      background: linear-gradient(180deg, transparent, rgba(120, 172, 255, 0.72), transparent);
+      box-shadow: 0 0 28px rgba(59, 130, 246, 0.48);
+      animation: spectralScan 9s cubic-bezier(0.45, 0, 0.55, 1) infinite;
     }
-    .hero-copy-shadow {
-      text-shadow: 0 4px 36px rgba(2, 6, 23, 0.95);
+    .forensic-visual svg,
+    .scan-sweep,
+    .inspection-lens { display: none; }
+    .optical-object {
+      position: absolute;
+      inset: 9% 12% 9% 7%;
+      perspective: 900px;
+      animation: opticalFloat 15s ease-in-out infinite alternate;
     }
-    .hero-status {
-      box-shadow: inset 0 1px rgba(255,255,255,0.08), 0 18px 55px rgba(2, 6, 23, 0.4);
-    }
-    .card-hover-lift {
-      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-    .card-hover-lift:hover {
-      transform: translateY(-6px);
-      box-shadow: 0 24px 60px rgba(14, 165, 233, 0.16);
-    }
-    .loading-stage {
-      position: relative;
+    .optical-frame {
+      position: absolute;
+      width: 21rem;
+      height: 27rem;
       overflow: hidden;
+      border: 1px solid rgba(132, 161, 201, 0.24);
+      border-radius: 1.4rem;
+      background: linear-gradient(145deg, rgba(95, 129, 176, 0.11), rgba(13, 19, 27, 0.2) 46%, rgba(106, 146, 201, 0.06));
+      box-shadow: inset 0 1px rgba(255,255,255,0.12), 0 28px 80px rgba(0,0,0,0.3);
+      backdrop-filter: blur(2px);
     }
-    .hero-visual-grid {
-      background-image:
-        linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
-      background-size: 32px 32px;
-      mask-image: radial-gradient(circle at center, black 28%, transparent 88%);
+    .optical-frame::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(128deg, transparent 0 38%, rgba(140, 184, 244, 0.14) 39%, transparent 41%),
+        repeating-linear-gradient(0deg, transparent 0 23px, rgba(121, 157, 206, 0.07) 24px);
     }
-    .hero-visual-orb {
-      animation: heroOrb 9s ease-in-out infinite;
+    .optical-frame::after {
+      content: "";
+      position: absolute;
+      inset: 17% 13%;
+      border: 1px solid rgba(117, 167, 255, 0.2);
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(72, 125, 202, 0.16), transparent 61%);
     }
-    .hero-visual-orb.delay-1 {
-      animation-delay: -3s;
+    .frame-one { left: 8%; top: 8%; transform: rotateY(24deg) rotateZ(-12deg); opacity: 0.38; }
+    .frame-two { left: 19%; top: 14%; transform: rotateY(20deg) rotateZ(-4deg); opacity: 0.56; }
+    .frame-three { left: 30%; top: 21%; transform: rotateY(15deg) rotateZ(5deg); opacity: 0.78; }
+    .optical-lens {
+      position: absolute;
+      left: 30%;
+      top: 29%;
+      width: 16rem;
+      height: 16rem;
+      border: 1px solid rgba(143, 182, 235, 0.46);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 42% 38%, rgba(125, 176, 247, 0.16), transparent 23%),
+        radial-gradient(circle, rgba(20, 43, 72, 0.28), rgba(5, 10, 16, 0.08) 68%);
+      box-shadow: inset 0 0 0 12px rgba(95, 138, 198, 0.025), inset 0 0 45px rgba(79, 133, 211, 0.12), 0 24px 70px rgba(0,0,0,0.42);
     }
-    .hero-visual-orb.delay-2 {
-      animation-delay: -6s;
+    .optical-lens::before,
+    .optical-lens::after { content: ""; position: absolute; background: rgba(129, 173, 235, 0.22); }
+    .optical-lens::before { left: 50%; top: 8%; bottom: 8%; width: 1px; }
+    .optical-lens::after { left: 8%; right: 8%; top: 50%; height: 1px; }
+    .crop-mark {
+      position: absolute;
+      width: 2.4rem;
+      height: 2.4rem;
+      border-color: rgba(116, 167, 240, 0.56);
     }
-    .loading-ring {
-      width: 88px;
-      height: 88px;
-      border-radius: 9999px;
-      border: 8px solid rgba(255, 255, 255, 0.08);
-      border-top-color: #38bdf8;
-      border-right-color: #22d3ee;
-      animation: spin 1s linear infinite;
-      box-shadow: 0 0 32px rgba(14, 165, 233, 0.28);
+    .crop-a { left: 19%; top: 14%; border-left: 1px solid; border-top: 1px solid; }
+    .crop-b { right: 18%; bottom: 15%; border-right: 1px solid; border-bottom: 1px solid; }
+    @keyframes opticalFloat {
+      from { transform: translate3d(-0.6rem, 0.8rem, 0) rotate(-0.7deg); }
+      to { transform: translate3d(0.9rem, -0.7rem, 0) rotate(0.7deg); }
     }
-    .loading-stage .loading-ring {
-      display: none;
+    @keyframes spectralScan {
+      0%, 100% { transform: translateX(-5rem); opacity: 0; }
+      15%, 85% { opacity: 0.76; }
+      50% { transform: translateX(18rem); opacity: 0.92; }
     }
-    .loading-stage .text-center p:last-child {
-      display: none;
+    @media (max-width: 1023px) {
+      .forensic-visual { left: -23rem; width: 62rem; opacity: 0.4; }
     }
-    .loading-stage .text-center p:first-child {
-      font-size: 1.875rem;
-      line-height: 2.25rem;
-    }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-    @keyframes orbFloat {
-      0%, 100% { transform: translate3d(0, 0, 0) scale(1) rotate(0deg); }
-      33% { transform: translate3d(0, -28px, 0) scale(1.06) rotate(8deg); }
-      66% { transform: translate3d(0, 22px, 0) scale(0.96) rotate(-6deg); }
-    }
-    @keyframes heroPop {
-      from {
-        opacity: 0;
-        transform: translateY(24px) scale(0.96);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-    @keyframes heroOrb {
-      0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
-      50% { transform: translate3d(0, -16px, 0) scale(1.06); }
-    }
-    @media (max-width: 767px) {
-      .particle-hero { min-height: 760px; }
-      .hero-vignette {
-        background: radial-gradient(circle at center, transparent 5%, rgba(2, 6, 23, 0.34) 54%, rgba(2, 6, 23, 0.92) 100%);
-      }
+    @media (max-width: 639px) {
+      .forensic-visual { left: -27rem; top: 24rem; width: 58rem; height: 48rem; opacity: 0.32; }
     }
     @media (prefers-reduced-motion: reduce) {
-      .hero-pop { animation: none; opacity: 1; transform: none; }
-      .float-orb, .hero-visual-orb { animation: none; }
+      .reveal { opacity: 1; transform: none; transition: none; }
+      .optical-object, .forensic-visual::after { animation: none; }
     }
   </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-white overflow-x-hidden">
+<body class="min-h-screen overflow-x-hidden bg-[#090b0e] text-white">
   <div id="toastRoot" class="pointer-events-none fixed left-1/2 top-6 z-[100] hidden w-full max-w-md -translate-x-1/2 px-4">
     <div id="toastCard" class="rounded-2xl border border-white/10 bg-slate-900/95 px-6 py-4 shadow-2xl backdrop-blur-xl transition-all">
       <div class="flex items-start gap-3">
@@ -207,361 +187,166 @@
       </div>
     </div>
   </div>
-  <div class="min-h-screen bg-slate-950 text-white">
+  <div class="min-h-screen bg-[#090b0e] text-white">
     <%@ include file="common/dashboard-nav.jspf" %>
 
-    <section class="particle-hero relative flex items-center overflow-hidden px-4 pb-16 pt-32">
-      <canvas id="particleCanvas" class="particle-canvas" aria-hidden="true"></canvas>
-      <div class="hero-vignette"></div>
-
-      <div class="relative z-10 mx-auto w-full max-w-7xl text-center">
-        <div class="text-center">
-          <div class="hero-pop mb-8 inline-flex items-center gap-2 rounded-full border border-sky-300/20 bg-slate-950/45 px-5 py-2 backdrop-blur-xl hero-status" style="--hero-delay: 80ms;">
-            <span class="relative flex h-2.5 w-2.5">
-              <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-cyan-300 opacity-60"></span>
-              <span class="relative inline-flex h-2.5 w-2.5 rounded-full bg-cyan-300"></span>
-            </span>
-            <span class="text-sm font-medium tracking-wide text-slate-200">AI 기반 이미지 검증 플랫폼</span>
+    <main>
+      <section id="upload" class="relative isolate overflow-hidden border-b border-[#272d35] px-4 pb-20 pt-32 md:pb-28 md:pt-40">
+        <div class="forensic-visual" aria-hidden="true">
+          <div class="optical-object">
+            <div class="optical-frame frame-one"></div>
+            <div class="optical-frame frame-two"></div>
+            <div class="optical-frame frame-three"></div>
+            <div class="optical-lens"></div>
+            <div class="crop-mark crop-a"></div>
+            <div class="crop-mark crop-b"></div>
           </div>
-          <h1 class="hero-pop hero-copy-shadow mx-auto max-w-5xl text-5xl font-extrabold leading-[1.08] tracking-[-0.045em] text-white md:text-7xl lg:text-[5.5rem]" style="--hero-delay: 180ms;">
-            보이지 않는 조작까지,<br>
-            <span class="bg-gradient-to-r from-sky-300 via-cyan-300 to-blue-400 bg-clip-text text-transparent">AI가 정밀하게 검증합니다</span>
-          </h1>
-          <p class="hero-pop hero-copy-shadow mx-auto mt-8 max-w-2xl text-lg leading-8 text-slate-300 md:text-xl" style="--hero-delay: 280ms;">
-            이미지 속 미세한 흔적을 다각도로 분석해<br class="hidden sm:block">
-            딥페이크 가능성과 판단 근거를 빠르게 제공합니다.
-          </p>
-          <div class="hero-pop mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row" style="--hero-delay: 380ms;">
-            <a href="#upload" class="group inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-base font-bold text-slate-950 shadow-2xl shadow-sky-950/60 transition hover:-translate-y-0.5 hover:bg-sky-50">
-              이미지 검증하기
-              <i data-lucide="arrow-right" class="h-5 w-5 transition-transform group-hover:translate-x-1"></i>
-            </a>
-            <a href="#features" class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-8 py-4 text-base font-semibold text-white backdrop-blur-md transition hover:border-white/30 hover:bg-white/10">서비스 알아보기</a>
-          </div>
-          <div class="hero-pop mx-auto mt-16 grid max-w-3xl grid-cols-3 divide-x divide-white/10 border-t border-white/10 pt-7" style="--hero-delay: 480ms;">
-            <div><strong class="block text-xl text-white md:text-2xl">98.7%</strong><span class="mt-1 block text-xs text-slate-500 md:text-sm">탐지 정확도</span></div>
-            <div><strong class="block text-xl text-white md:text-2xl">1.2초</strong><span class="mt-1 block text-xs text-slate-500 md:text-sm">평균 분석 시간</span></div>
-            <div><strong class="block text-xl text-white md:text-2xl">10,000+</strong><span class="mt-1 block text-xs text-slate-500 md:text-sm">검증된 이미지</span></div>
-          </div>
+          <svg viewBox="0 0 760 760" role="presentation">
+            <g class="forensic-lines">
+              <path class="major" d="M378 68C231 68 139 180 139 348c0 168 91 307 239 344 148-37 239-176 239-344C617 180 525 68 378 68Z"/>
+              <path d="M378 91c-130 0-215 103-215 261 0 149 82 273 215 314 133-41 215-165 215-314 0-158-85-261-215-261Z"/>
+              <path d="M378 119c-111 0-188 89-188 236 0 132 73 241 188 281 115-40 188-149 188-281 0-147-77-236-188-236Z"/>
+              <path class="quiet" d="M378 149c-96 0-161 79-161 209 0 112 63 207 161 245 98-38 161-133 161-245 0-130-65-209-161-209Z"/>
+              <path d="M245 263c33-27 74-39 116-29M395 234c42-10 83 2 116 29"/>
+              <path class="major" d="M252 293c31-27 73-27 105 0-32 19-74 19-105 0ZM399 293c32-27 74-27 106 0-32 19-74 19-106 0Z"/>
+              <path d="M378 275c-8 62-19 113-36 154 21 18 50 20 72 0-17-41-28-92-36-154Z"/>
+              <path class="quiet" d="M291 370c23 20 47 28 72 22M393 392c25 6 49-2 72-22M298 477c49 36 111 36 160 0M322 493c36 17 76 17 112 0"/>
+              <path d="M213 333c-31 55-38 119-19 180M543 333c31 55 38 119 19 180"/>
+              <path class="quiet" d="M179 223c55-16 105-16 151 1M426 224c46-17 96-17 151-1M163 407c63 22 117 23 163 4M430 411c46 19 100 18 163-4"/>
+              <path d="M204 546c55-18 107-13 154 15M398 561c47-28 99-33 154-15"/>
+              <path class="quiet" d="M118 348h520M139 407h478M160 467h436M193 527h370M238 587h280"/>
+              <path class="quiet" d="M378 68v624M298 86c-22 163-22 365 0 565M458 86c22 163 22 365 0 565"/>
+            </g>
+            <g class="forensic-nodes" opacity="0.78">
+              <circle cx="305" cy="292" r="2.8"/><circle cx="452" cy="292" r="2.8"/><circle cx="378" cy="429" r="2.8"/><circle cx="378" cy="489" r="2.8"/>
+              <rect x="231" y="268" width="145" height="60" rx="5"/><rect x="326" y="395" width="104" height="72" rx="5"/>
+            </g>
+          </svg>
+          <div class="scan-sweep"></div>
+          <div class="inspection-lens"></div>
         </div>
+        <div class="relative z-10 mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.88fr_1.12fr] lg:items-center lg:gap-20">
+          <div class="reveal" data-reveal>
+            <p class="eyebrow mb-5">Digital image verification</p>
+            <h1 class="keep-words max-w-2xl text-5xl font-bold leading-[1.08] tracking-[-0.045em] text-white md:text-6xl">
+              이미지의 조작 흔적을 확인하세요.
+            </h1>
+            <p class="keep-words mt-7 max-w-xl text-lg leading-8 text-[#a9b0ba]">
+              픽셀 패턴과 메타데이터, 모델 판정을 종합해 의심 영역과 판단 근거를 하나의 리포트로 정리합니다.
+            </p>
+            <div class="mt-9 flex flex-wrap gap-x-6 gap-y-3 text-sm text-[#a9b0ba]">
+              <span class="inline-flex items-center gap-2"><i data-lucide="layers-3" class="h-4 w-4 text-blue-400"></i>다중 신호 분석</span>
+              <span class="inline-flex items-center gap-2"><i data-lucide="scan-search" class="h-4 w-4 text-blue-400"></i>의심 영역 시각화</span>
+              <span class="inline-flex items-center gap-2"><i data-lucide="file-text" class="h-4 w-4 text-blue-400"></i>상세 리포트</span>
+            </div>
+            <p class="mt-10 border-l-2 border-[#3b82f6] pl-4 text-sm leading-6 text-[#7f8792]">
+              분석 결과는 판단을 돕는 참고 자료이며, 원본 여부를 법적으로 확정하는 증명서는 아닙니다.
+            </p>
+          </div>
 
-        <div class="hidden max-w-6xl mx-auto mb-16 reveal" style="--reveal-delay: 120ms;" data-reveal>
-          <div class="relative card-hover-lift">
-            <div class="absolute inset-0 bg-gradient-to-r from-sky-600/20 via-cyan-500/20 to-blue-600/20 rounded-[2rem] blur-3xl"></div>
-            <main class="relative h-[320px] md:h-[440px] glass-panel border border-white/10 rounded-[2rem] loading-stage overflow-hidden">
-              <div class="hero-visual-grid absolute inset-0"></div>
-              <div class="absolute left-[14%] top-[18%] h-28 w-28 rounded-full bg-sky-500/20 blur-2xl hero-visual-orb"></div>
-              <div class="absolute right-[16%] top-[20%] h-24 w-24 rounded-full bg-cyan-400/20 blur-2xl hero-visual-orb delay-1"></div>
-              <div class="absolute bottom-[20%] left-[24%] h-32 w-32 rounded-full bg-blue-500/20 blur-2xl hero-visual-orb delay-2"></div>
-              <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(56,189,248,0.10),rgba(2,6,23,0)_60%)] pointer-events-none z-10"></div>
-              <div class="relative z-20 flex h-full items-center justify-center px-8">
-                <div class="w-full max-w-4xl">
-                  <div class="grid gap-6 md:grid-cols-[1.2fr_0.8fr] md:items-center">
-                    <div class="space-y-5">
-                      <div class="inline-flex items-center gap-2 rounded-full border border-sky-400/20 bg-sky-500/10 px-4 py-2 text-sm font-medium text-sky-300">
-                        <i data-lucide="scan-face" class="h-4 w-4"></i>
-                        AI Vision Monitor
-                      </div>
-                      <div>
-                        <h3 class="mb-3 text-3xl font-bold tracking-tight text-white md:text-4xl">딥페이크 탐지 흐름을 한눈에 확인하세요</h3>
-                        <p class="max-w-xl text-base leading-7 text-slate-300 md:text-lg">이미지 업로드부터 분석 결과 확인까지 이어지는 검증 과정을 시각 요소 중심으로 정리했습니다.</p>
-                      </div>
-                      <div class="flex flex-wrap gap-3 text-sm text-slate-300">
-                        <div class="rounded-full border border-white/10 bg-white/5 px-4 py-2">실시간 분석 상태</div>
-                        <div class="rounded-full border border-white/10 bg-white/5 px-4 py-2">신뢰도 점수 안내</div>
-                        <div class="rounded-full border border-white/10 bg-white/5 px-4 py-2">근거 시각화</div>
-                      </div>
-                    </div>
-                    <div class="rounded-[1.75rem] border border-white/10 bg-slate-950/55 p-5 shadow-2xl shadow-sky-900/20">
-                      <div class="mb-4 flex items-center justify-between">
-                        <div>
-                          <p class="text-xs uppercase tracking-[0.24em] text-slate-500">Analysis Preview</p>
-                          <p class="mt-1 text-lg font-semibold text-white">DeepScan Engine</p>
-                        </div>
-                        <div class="flex gap-2">
-                          <span class="h-2.5 w-2.5 rounded-full bg-sky-400"></span>
-                          <span class="h-2.5 w-2.5 rounded-full bg-cyan-400"></span>
-                          <span class="h-2.5 w-2.5 rounded-full bg-blue-400"></span>
-                        </div>
-                      </div>
-                      <div class="space-y-3">
-                        <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                          <div class="mb-2 flex items-center justify-between text-sm">
-                            <span class="text-slate-400">검증 진행률</span>
-                            <span class="font-medium text-sky-300">92%</span>
-                          </div>
-                          <div class="h-2.5 rounded-full bg-slate-800">
-                            <div class="h-2.5 w-[92%] rounded-full bg-gradient-to-r from-sky-500 to-cyan-400"></div>
-                          </div>
-                        </div>
-                        <div class="grid grid-cols-2 gap-3">
-                          <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                            <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Confidence</p>
-                            <p class="mt-2 text-2xl font-bold text-white">98.7%</p>
-                          </div>
-                          <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                            <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Status</p>
-                            <p class="mt-2 text-2xl font-bold text-cyan-300">Stable</p>
-                          </div>
-                        </div>
-                        <div class="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
-                          핵심 의심 구역, 메타데이터 단서, 모델 판정 근거를 함께 제공합니다.
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+          <div class="surface reveal rounded-2xl p-4 sm:p-6" style="--reveal-delay: 90ms;" data-reveal>
+            <div class="mb-5 flex items-center justify-between border-b border-[#272d35] pb-5">
+              <div>
+                <p class="text-sm font-semibold text-white">새 이미지 검증</p>
+                <p class="mt-1 text-xs text-[#7f8792]">JPG, PNG, WEBP · 최대 10MB</p>
               </div>
-            </main>
-          </div>
-        </div>
-
-        <div class="hidden grid-cols-1 md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-          <div class="relative group reveal" style="--reveal-delay: 0ms;" data-reveal>
-            <div class="absolute inset-0 bg-gradient-to-r from-sky-500 to-blue-500 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
-            <div class="relative glass-panel p-8 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift">
-              <div class="text-5xl font-bold mb-3 bg-gradient-to-r from-sky-500 to-blue-500 bg-clip-text text-transparent">98.7%</div>
-              <div class="text-slate-400 font-medium">탐지 정확도</div>
+              <span class="rounded-md border border-[#303844] bg-[#0d1116] px-2.5 py-1 text-xs font-medium text-[#929aa5]">안전한 업로드</span>
             </div>
-          </div>
-          <div class="relative group reveal" style="--reveal-delay: 90ms;" data-reveal>
-            <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
-            <div class="relative glass-panel p-8 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift">
-              <div class="text-5xl font-bold mb-3 bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">1.2초</div>
-              <div class="text-slate-400 font-medium">평균 분석 시간</div>
-            </div>
-          </div>
-          <div class="relative group reveal" style="--reveal-delay: 180ms;" data-reveal>
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
-            <div class="relative glass-panel p-8 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift">
-              <div class="text-5xl font-bold mb-3 bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">10,000+</div>
-              <div class="text-slate-400 font-medium">검증된 이미지</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
 
-    <section id="upload" class="py-32 px-4 relative">
-      <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-16 reveal" data-reveal>
-          <h2 class="text-5xl md:text-6xl font-bold mb-6">
-            검증 <span class="bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">시작하기</span>
-          </h2>
-          <p class="text-xl text-slate-400 max-w-2xl mx-auto">이미지를 업로드하거나 URL을 입력하여 즉시 AI 분석을 받아보세요.</p>
-        </div>
-
-        <div class="relative group reveal" style="--reveal-delay: 120ms;" data-reveal>
-          <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-3xl blur-2xl opacity-20 group-hover:opacity-30 transition-opacity"></div>
-          <div class="relative glass-panel rounded-3xl p-8 border border-white/10 card-hover-lift">
-            <div class="flex gap-3 mb-8">
-              <button type="button" id="fileTab" onclick="setUploadMethod('file')" class="flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-2xl transition-all font-semibold bg-gradient-to-r from-sky-600 to-cyan-600 text-white shadow-lg shadow-sky-500/50">
-                <i data-lucide="upload" class="w-5 h-5"></i>
-                파일 업로드              </button>
-              <button type="button" id="urlTab" onclick="setUploadMethod('url')" class="flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-2xl transition-all font-semibold bg-white/5 text-slate-400 hover:bg-white/10">
-                <i data-lucide="link" class="w-5 h-5"></i>
-                URL 입력
+            <div class="mb-5 grid grid-cols-2 gap-1 rounded-lg bg-[#0d1116] p-1">
+              <button type="button" id="fileTab" onclick="setUploadMethod('file')" class="flex items-center justify-center gap-2 rounded-md bg-[#242b34] px-4 py-3 text-sm font-semibold text-white transition-colors">
+                <i data-lucide="upload" class="h-4 w-4"></i>파일 업로드
+              </button>
+              <button type="button" id="urlTab" onclick="setUploadMethod('url')" class="flex items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-semibold text-[#929aa5] transition-colors hover:text-white">
+                <i data-lucide="link" class="h-4 w-4"></i>URL 입력
               </button>
             </div>
 
             <div id="fileUploadPanel">
-              <div id="dropZone" class="border-2 border-dashed rounded-2xl p-16 text-center transition-all border-white/20 hover:border-white/30 bg-white/5">
+              <div id="dropZone" class="upload-dropzone rounded-xl border border-dashed px-6 py-14 text-center transition-colors sm:py-16">
                 <div id="fileEmptyState">
-                  <div class="relative inline-block mb-6">
-                    <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-full blur-xl opacity-50"></div>
-                    <div class="relative w-20 h-20 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto">
-                      <i data-lucide="upload" class="w-10 h-10 text-white"></i>
-                    </div>
+                  <div class="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-[#343b45] bg-[#151a21] text-blue-400">
+                    <i data-lucide="image-up" class="h-6 w-6"></i>
                   </div>
-                  <p class="text-2xl mb-3 font-semibold">이미지를 드래그하거나 업로드</p>
-                  <p class="text-slate-400 mb-6">또는</p>
-                  <label class="inline-block">
+                  <p class="text-lg font-semibold text-white">검증할 이미지를 놓아주세요</p>
+                  <p class="mt-2 text-sm text-[#7f8792]">드래그하거나 컴퓨터에서 파일을 선택할 수 있습니다.</p>
+                  <label class="mt-6 inline-block">
                     <input id="fileInput" type="file" accept="image/*" class="hidden">
-                    <span class="px-8 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 text-white rounded-full cursor-pointer inline-block transition-all shadow-lg shadow-sky-500/50 font-semibold">파일 선택</span>
+                    <span class="inline-block cursor-pointer rounded-lg bg-[#3b82f6] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#4d8ff7]">파일 선택</span>
                   </label>
-                  <p class="text-sm text-slate-500 mt-6">JPG, PNG 지원 (최대 10MB)</p>
                 </div>
-
-                <div id="filePreviewState" class="hidden space-y-6">
-                  <div class="relative inline-block">
-                    <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-2xl blur-xl opacity-50"></div>
-                    <img id="filePreviewImage" src="" alt="Preview" class="relative max-h-80 mx-auto rounded-2xl shadow-2xl">
-                  </div>
-                  <p id="fileNameLabel" class="text-slate-400"></p>
-                  <button type="button" onclick="clearFileSelection()" class="text-sky-400 hover:text-sky-300 font-medium">다른 파일 선택</button>
+                <div id="filePreviewState" class="hidden space-y-4">
+                  <img id="filePreviewImage" src="" alt="선택한 이미지 미리보기" class="mx-auto max-h-72 rounded-lg border border-[#272d35] object-contain">
+                  <p id="fileNameLabel" class="truncate text-sm text-[#929aa5]"></p>
+                  <button type="button" onclick="clearFileSelection()" class="text-sm font-semibold text-blue-400 hover:text-blue-300">다른 파일 선택</button>
                 </div>
               </div>
             </div>
 
             <div id="urlUploadPanel" class="hidden">
-              <div class="border-2 border-dashed border-white/20 rounded-2xl p-16 text-center">
-                <div class="relative inline-block mb-6">
-                  <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-full blur-xl opacity-50"></div>
-                  <div class="relative w-20 h-20 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto">
-                    <i data-lucide="link" class="w-10 h-10 text-white"></i>
-                  </div>
+              <div class="upload-dropzone rounded-xl border border-dashed px-6 py-12 text-center">
+                <div class="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-[#343b45] bg-[#151a21] text-blue-400">
+                  <i data-lucide="link" class="h-6 w-6"></i>
                 </div>
-                <p class="text-2xl mb-6 font-semibold">이미지 URL 입력</p>
-                <input id="imageUrlInput" type="url" placeholder="https://example.com/image.jpg" class="w-full px-6 py-4 bg-white/5 border border-white/20 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 mb-6 backdrop-blur-xl">
-                <div id="urlPreviewWrap" class="hidden mt-8">
-                  <div class="relative inline-block">
-                    <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-2xl blur-xl opacity-50"></div>
-                    <img id="urlPreviewImage" src="" alt="Preview" class="relative max-h-80 mx-auto rounded-2xl shadow-2xl">
-                  </div>
+                <label for="imageUrlInput" class="mb-3 block text-left text-sm font-semibold text-white">이미지 주소</label>
+                <input id="imageUrlInput" type="url" placeholder="https://example.com/image.jpg" class="w-full rounded-lg border border-[#343b45] bg-[#090b0e] px-4 py-3 text-white placeholder-[#59616c] outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20">
+                <div id="urlPreviewWrap" class="hidden mt-6">
+                  <img id="urlPreviewImage" src="" alt="URL 이미지 미리보기" class="mx-auto max-h-64 rounded-lg border border-[#272d35] object-contain">
                 </div>
-                <p class="text-sm text-slate-500 mt-6">이미지 파일의 직접 링크를 입력하세요.</p>
+                <p class="mt-3 text-left text-xs text-[#7f8792]">공개적으로 접근할 수 있는 이미지 직접 링크를 입력해주세요.</p>
               </div>
             </div>
 
-            <div id="errorBox" class="hidden mt-6 p-4 bg-red-500/10 border border-red-500/50 rounded-xl text-red-400 text-center"></div>
-
-            <button id="analyzeButton" type="button" onclick="handleAnalyze()" class="hidden w-full mt-8 px-8 py-5 bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 text-white rounded-2xl transition-all items-center justify-center gap-3 shadow-2xl shadow-sky-500/50 font-bold text-lg">
-              <i data-lucide="zap" class="w-6 h-6"></i>
-              이미지 분석하기
+            <div id="errorBox" class="hidden mt-4 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300"></div>
+            <button id="analyzeButton" type="button" onclick="handleAnalyze()" class="hidden mt-5 w-full items-center justify-center gap-2 rounded-lg bg-[#3b82f6] px-6 py-3.5 text-base font-semibold text-white transition-colors hover:bg-[#4d8ff7] disabled:cursor-wait disabled:opacity-60">
+              <i data-lucide="scan-line" class="h-5 w-5"></i>이미지 검증 시작
             </button>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section id="features" class="py-32 px-4 relative">
-      <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-20 reveal" data-reveal>
-          <h2 class="text-5xl md:text-6xl font-bold mb-6">
-            강력한            <span class="bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">기능</span>
-          </h2>
-          <p class="text-xl text-slate-400 max-w-2xl mx-auto">조작된 콘텐츠로부터 사용자를 보호하는 첨단 AI 기능</p>
-        </div>
+      <section id="features" class="px-4 py-24 md:py-32">
+        <div class="mx-auto max-w-7xl">
+          <div class="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-24">
+            <div class="reveal lg:sticky lg:top-32 lg:self-start" data-reveal>
+              <p class="eyebrow mb-4">What you get</p>
+              <h2 class="text-4xl font-bold tracking-[-0.035em] text-white md:text-5xl">판정만 보여주지 않습니다.</h2>
+              <p class="mt-5 max-w-md text-base leading-7 text-[#929aa5]">결과를 이해하고 다음 행동을 판단할 수 있도록 서로 다른 분석 신호를 함께 제공합니다.</p>
+              <a href="#upload" class="mt-8 inline-flex items-center gap-2 rounded-lg border border-[#343b45] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:border-[#59616c] hover:bg-[#11151a]">이미지 검증하기<i data-lucide="arrow-up-right" class="h-4 w-4"></i></a>
+            </div>
 
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div class="relative group reveal" style="--reveal-delay: 0ms;" data-reveal>
-            <div class="absolute inset-0 bg-gradient-to-r from-sky-500 to-blue-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-50 transition-opacity"></div>
-            <div class="relative glass-panel p-8 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift h-full">
-              <div class="w-14 h-14 bg-gradient-to-r from-sky-500 to-blue-500 rounded-2xl flex items-center justify-center mb-6"><i data-lucide="brain" class="w-7 h-7 text-white"></i></div>
-              <h3 class="text-xl font-bold mb-3">AI 탐지</h3>
-              <p class="text-slate-400 leading-relaxed">대규모 이미지 데이터로 학습한 모델이 미세한 조작 흔적까지 정밀하게 감지합니다.</p>
-            </div>
-          </div>
-          <div class="relative group reveal" style="--reveal-delay: 70ms;" data-reveal>
-            <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-50 transition-opacity"></div>
-            <div class="relative glass-panel p-8 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift h-full">
-              <div class="w-14 h-14 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-2xl flex items-center justify-center mb-6"><i data-lucide="zap" class="w-7 h-7 text-white"></i></div>
-              <h3 class="text-xl font-bold mb-3">즉시 결과</h3>
-              <p class="text-slate-400 leading-relaxed">빠른 분석과 함께 신뢰도 점수, 판정 결과, 핵심 근거를 즉시 제공합니다.</p>
-            </div>
-          </div>
-          <div class="relative group reveal" style="--reveal-delay: 140ms;" data-reveal>
-            <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-50 transition-opacity"></div>
-            <div class="relative glass-panel p-8 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift h-full">
-              <div class="w-14 h-14 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center mb-6"><i data-lucide="eye" class="w-7 h-7 text-white"></i></div>
-              <h3 class="text-xl font-bold mb-3">시각적 분석</h3>
-              <p class="text-slate-400 leading-relaxed">의심 영역을 오버레이 방식으로 표시해 어떤 부분이 문제인지 바로 확인할 수 있습니다.</p>
-            </div>
-          </div>
-          <div class="relative group reveal" style="--reveal-delay: 210ms;" data-reveal>
-            <div class="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-50 transition-opacity"></div>
-            <div class="relative glass-panel p-8 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift h-full">
-              <div class="w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mb-6"><i data-lucide="fingerprint" class="w-7 h-7 text-white"></i></div>
-              <h3 class="text-xl font-bold mb-3">메타데이터 확인</h3>
-              <p class="text-slate-400 leading-relaxed">파일 정보와 생성 흔적을 함께 확인해 이미지 신뢰도를 다각도로 점검합니다.</p>
-            </div>
-          </div>
-          <div class="relative group reveal" style="--reveal-delay: 280ms;" data-reveal>
-            <div class="absolute inset-0 bg-gradient-to-r from-orange-500 to-red-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-50 transition-opacity"></div>
-            <div class="relative glass-panel p-8 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift h-full">
-              <div class="w-14 h-14 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mb-6"><i data-lucide="shield" class="w-7 h-7 text-white"></i></div>
-              <h3 class="text-xl font-bold mb-3">보안 및 프라이버시</h3>
-              <p class="text-slate-400 leading-relaxed">업로드 데이터는 안전하게 처리되며, 분석 과정에서 개인정보 보호를 우선합니다.</p>
-            </div>
-          </div>
-          <div class="relative group reveal" style="--reveal-delay: 350ms;" data-reveal>
-            <div class="absolute inset-0 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-50 transition-opacity"></div>
-            <div class="relative glass-panel p-8 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift h-full">
-              <div class="w-14 h-14 bg-gradient-to-r from-indigo-500 to-violet-500 rounded-2xl flex items-center justify-center mb-6"><i data-lucide="globe" class="w-7 h-7 text-white"></i></div>
-              <h3 class="text-xl font-bold mb-3">API 연동</h3>
-              <p class="text-slate-400 leading-relaxed">탐지 기능을 외부 서비스와 연결해 자체 워크플로우에 통합할 수 있습니다.</p>
+            <div>
+              <article class="feature-row reveal grid gap-5 py-8 sm:grid-cols-[72px_1fr]" data-reveal>
+                <span class="font-mono text-sm text-[#59616c]">01</span>
+                <div><div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400"><i data-lucide="scan-search" class="h-5 w-5"></i></div><h3 class="text-2xl font-semibold text-white">의심 영역 시각화</h3><p class="mt-3 leading-7 text-[#929aa5]">조작 가능성이 높은 위치를 이미지 위에 표시해 판정이 나온 이유를 직접 확인할 수 있습니다.</p></div>
+              </article>
+              <article class="feature-row reveal grid gap-5 py-8 sm:grid-cols-[72px_1fr]" style="--reveal-delay: 70ms;" data-reveal>
+                <span class="font-mono text-sm text-[#59616c]">02</span>
+                <div><div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400"><i data-lucide="fingerprint" class="h-5 w-5"></i></div><h3 class="text-2xl font-semibold text-white">다각도 검증 근거</h3><p class="mt-3 leading-7 text-[#929aa5]">모델 판정과 파일 정보, 생성 흔적을 함께 살펴 단일 점수에 의존하지 않는 결과를 제공합니다.</p></div>
+              </article>
+              <article class="feature-row reveal grid gap-5 py-8 sm:grid-cols-[72px_1fr]" style="--reveal-delay: 140ms;" data-reveal>
+                <span class="font-mono text-sm text-[#59616c]">03</span>
+                <div><div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400"><i data-lucide="file-check-2" class="h-5 w-5"></i></div><h3 class="text-2xl font-semibold text-white">보관 가능한 분석 기록</h3><p class="mt-3 leading-7 text-[#929aa5]">검증 이력을 다시 확인하고 필요한 경우 상세 결과를 리포트 형태로 정리할 수 있습니다.</p></div>
+              </article>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <section class="py-32 px-4 relative">
-      <div class="max-w-5xl mx-auto">
-        <div class="text-center mb-20 reveal" data-reveal>
-          <h2 class="text-5xl md:text-6xl font-bold mb-6">
-            이용
-            <span class="bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">방법</span>
-          </h2>
-          <p class="text-xl text-slate-400">간단한 3단계로 이미지를 검증해보세요</p>
+      <section class="border-y border-[#272d35] bg-[#0c0f13] px-4 py-20">
+        <div class="reveal mx-auto flex max-w-7xl flex-col gap-8 md:flex-row md:items-center md:justify-between" data-reveal>
+          <div><p class="eyebrow mb-3">Start verification</p><h2 class="text-3xl font-bold tracking-tight text-white md:text-4xl">확인이 필요한 이미지가 있나요?</h2><p class="mt-3 text-[#929aa5]">이미지를 올리면 분석부터 결과 정리까지 한 번에 진행됩니다.</p></div>
+          <a href="#upload" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-bold text-[#090b0e] transition-colors hover:bg-[#e5e7eb]">검증 시작하기<i data-lucide="arrow-up" class="h-4 w-4"></i></a>
         </div>
+      </section>
+    </main>
 
-        <div class="space-y-12">
-          <div class="relative group reveal" style="--reveal-delay: 0ms;" data-reveal>
-            <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-opacity"></div>
-            <div class="relative glass-panel p-10 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift flex items-start gap-8">
-              <div class="flex-shrink-0"><div class="text-6xl font-bold text-white/10">01</div></div>
-              <div class="flex-1">
-                <div class="flex items-center gap-4 mb-4">
-                  <div class="w-12 h-12 bg-gradient-to-r from-sky-500 to-cyan-500 rounded-xl flex items-center justify-center"><i data-lucide="upload" class="w-6 h-6 text-white"></i></div>
-                  <h3 class="text-2xl font-bold">이미지 업로드</h3>
-                </div>
-                <p class="text-slate-400 text-lg leading-relaxed">이미지를 업로드하거나 URL을 입력하세요. 일반적인 이미지 형식을 폭넓게 지원합니다.</p>
-              </div>
-            </div>
-          </div>
-          <div class="relative group reveal" style="--reveal-delay: 100ms;" data-reveal>
-            <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-opacity"></div>
-            <div class="relative glass-panel p-10 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift flex items-start gap-8">
-              <div class="flex-shrink-0"><div class="text-6xl font-bold text-white/10">02</div></div>
-              <div class="flex-1">
-                <div class="flex items-center gap-4 mb-4">
-                  <div class="w-12 h-12 bg-gradient-to-r from-sky-500 to-cyan-500 rounded-xl flex items-center justify-center"><i data-lucide="brain" class="w-6 h-6 text-white"></i></div>
-                  <h3 class="text-2xl font-bold">AI 분석</h3>
-                </div>
-                <p class="text-slate-400 text-lg leading-relaxed">AI가 조작 패턴, 불일치 신호, 딥페이크 징후를 자동으로 분석합니다.</p>
-              </div>
-            </div>
-          </div>
-          <div class="relative group reveal" style="--reveal-delay: 200ms;" data-reveal>
-            <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-3xl blur-xl opacity-0 group-hover:opacity-30 transition-opacity"></div>
-            <div class="relative glass-panel p-10 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift flex items-start gap-8">
-              <div class="flex-shrink-0"><div class="text-6xl font-bold text-white/10">03</div></div>
-              <div class="flex-1">
-                <div class="flex items-center gap-4 mb-4">
-                  <div class="w-12 h-12 bg-gradient-to-r from-sky-500 to-cyan-500 rounded-xl flex items-center justify-center"><i data-lucide="check-circle" class="w-6 h-6 text-white"></i></div>
-                  <h3 class="text-2xl font-bold">결과 확인</h3>
-                </div>
-                <p class="text-slate-400 text-lg leading-relaxed">신뢰도 점수와 시각적 근거를 포함한 상세 결과를 바로 확인하세요.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="py-32 px-4 relative">
-      <div class="max-w-4xl mx-auto text-center reveal" data-reveal>
-        <div class="relative group">
-          <div class="absolute inset-0 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-600 rounded-3xl blur-3xl opacity-40"></div>
-          <div class="relative bg-gradient-to-r from-sky-600/20 via-cyan-600/20 to-blue-600/20 backdrop-blur-xl p-16 rounded-3xl border border-white/20">
-            <h2 class="text-5xl md:text-6xl font-bold mb-6">지금 검증하시겠어요?</h2>
-            <p class="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">딥페이크와 조작된 콘텐츠로부터 스스로를 보호할 수 있도록 지금 바로 분석을 시작해보세요.</p>
-            <a href="#upload" class="inline-flex items-center gap-3 px-10 py-5 bg-white text-slate-900 hover:bg-slate-100 rounded-full transition-all shadow-2xl font-bold text-lg">
-              지금 분석 시작하기
-              <i data-lucide="arrow-right" class="w-6 h-6"></i>
-            </a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <footer class="py-12 px-4 border-t border-white/10">
+    <footer class="border-t border-[#272d35] px-4 py-10">
       <div class="max-w-7xl mx-auto">
         <div class="flex flex-col md:flex-row justify-between items-center gap-6">
           <div class="flex items-center gap-3">
             <img src="<%= contextPath %>/resources/image/deepscan-mark.svg?v=30" alt="" class="h-10 w-10" width="40" height="40">
-            <span class="text-xl font-bold"><span class="text-white">Deep</span><span class="text-cyan-400">Scan</span></span>
+            <span class="text-xl font-bold"><span class="text-white">Deep</span><span class="text-blue-400">Scan</span></span>
           </div>
           <div class="flex gap-8 text-sm text-slate-400">
             <button type="button" onclick="goPage('<%= contextPath %>/news')" class="hover:text-white transition-colors">뉴스</button>
@@ -637,15 +422,15 @@
       const urlInput = document.getElementById("imageUrlInput");
 
       if (method === "file") {
-        fileTab.className = "flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-2xl transition-all font-semibold bg-gradient-to-r from-sky-600 to-cyan-600 text-white shadow-lg shadow-sky-500/50";
-        urlTab.className = "flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-2xl transition-all font-semibold bg-white/5 text-slate-400 hover:bg-white/10";
+        fileTab.className = "flex items-center justify-center gap-2 rounded-md bg-[#242b34] px-4 py-3 text-sm font-semibold text-white transition-colors";
+        urlTab.className = "flex items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-semibold text-[#929aa5] transition-colors hover:text-white";
         filePanel.classList.remove("hidden");
         urlPanel.classList.add("hidden");
         urlInput.value = "";
         hideUrlPreview();
       } else {
-        urlTab.className = "flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-2xl transition-all font-semibold bg-gradient-to-r from-sky-600 to-cyan-600 text-white shadow-lg shadow-sky-500/50";
-        fileTab.className = "flex-1 flex items-center justify-center gap-3 px-6 py-4 rounded-2xl transition-all font-semibold bg-white/5 text-slate-400 hover:bg-white/10";
+        urlTab.className = "flex items-center justify-center gap-2 rounded-md bg-[#242b34] px-4 py-3 text-sm font-semibold text-white transition-colors";
+        fileTab.className = "flex items-center justify-center gap-2 rounded-md px-4 py-3 text-sm font-semibold text-[#929aa5] transition-colors hover:text-white";
         urlPanel.classList.remove("hidden");
         filePanel.classList.add("hidden");
         clearFileSelection();
@@ -937,16 +722,16 @@
 
       dropZone.addEventListener("dragover", function (event) {
         event.preventDefault();
-        dropZone.className = "border-2 border-dashed rounded-2xl p-16 text-center transition-all border-sky-500 bg-sky-500/10";
+        dropZone.className = "upload-dropzone rounded-xl border border-dashed border-blue-500 bg-blue-500/5 px-6 py-14 text-center transition-colors sm:py-16";
       });
 
       dropZone.addEventListener("dragleave", function () {
-        dropZone.className = "border-2 border-dashed rounded-2xl p-16 text-center transition-all border-white/20 hover:border-white/30 bg-white/5";
+        dropZone.className = "upload-dropzone rounded-xl border border-dashed px-6 py-14 text-center transition-colors sm:py-16";
       });
 
       dropZone.addEventListener("drop", function (event) {
         event.preventDefault();
-        dropZone.className = "border-2 border-dashed rounded-2xl p-16 text-center transition-all border-white/20 hover:border-white/30 bg-white/5";
+        dropZone.className = "upload-dropzone rounded-xl border border-dashed px-6 py-14 text-center transition-colors sm:py-16";
         handleFileSelect(event.dataTransfer.files[0]);
       });
 

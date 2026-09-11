@@ -26,7 +26,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-white pt-32 pb-12 px-4 relative">
+<body class="ds-page min-h-screen bg-slate-950 text-white pt-32 pb-12 px-4 relative">
   <div class="absolute inset-0 overflow-hidden">
     <div class="absolute top-20 left-1/4 w-96 h-96 bg-sky-600/30 rounded-full blur-3xl"></div>
     <div class="absolute bottom-20 right-1/4 w-96 h-96 bg-cyan-600/30 rounded-full blur-3xl"></div>

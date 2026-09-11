@@ -152,7 +152,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-white overflow-x-hidden">
+<body class="ds-page min-h-screen bg-slate-950 text-white overflow-x-hidden">
   <div id="toastRoot" class="pointer-events-none fixed left-1/2 top-6 z-[100] hidden w-full max-w-md -translate-x-1/2 px-4">
     <div id="toastCard" class="rounded-2xl border border-white/10 bg-slate-900/95 px-6 py-4 shadow-2xl backdrop-blur-xl transition-all">
       <div class="flex items-start gap-3">

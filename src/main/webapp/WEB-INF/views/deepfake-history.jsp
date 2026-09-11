@@ -14,6 +14,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/deepscan-theme.css?v=6">
   <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/resources/image/deepscan-mark.svg?v=30">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -202,30 +203,32 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-white">
+<body class="ds-page history-page min-h-screen bg-slate-950 text-white">
 <% if (!isAuthenticated) { %>
-  <div class="min-h-screen bg-slate-950 flex items-center justify-center p-4 relative overflow-hidden">
-    <div class="absolute inset-0">
-      <div class="absolute top-20 left-1/4 w-96 h-96 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-full blur-3xl opacity-20"></div>
-      <div class="absolute bottom-20 right-1/4 w-96 h-96 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-full blur-3xl opacity-20"></div>
-    </div>
+  <div class="history-guest relative min-h-screen overflow-hidden">
+    <nav class="history-topbar">
+      <a href="<%= contextPath %>/" class="history-brand" aria-label="DeepScan 홈">
+        <img src="<%= contextPath %>/resources/image/deepscan-mark.svg?v=30" alt="" class="h-8 w-8">
+        <span>DeepScan</span>
+      </a>
+      <span class="history-nav-label">VERIFICATION ARCHIVE</span>
+    </nav>
 
-    <div class="text-center relative z-10">
-      <div class="relative inline-block mb-6">
-        <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-3xl blur-2xl opacity-75"></div>
-        <div class="relative w-24 h-24 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-3xl flex items-center justify-center mx-auto shadow-lg shadow-sky-500/50">
-          <i data-lucide="shield" class="w-12 h-12 text-white"></i>
+    <main class="history-guest-main">
+      <div class="history-guest-card">
+        <div class="history-heading-mark">
+          <i data-lucide="shield-check" class="h-7 w-7"></i>
         </div>
-      </div>
-      <h2 class="text-4xl font-bold text-white mb-4">&#xB85C;&#xADF8;&#xC778;&#xC774; &#xD544;&#xC694;&#xD569;&#xB2C8;&#xB2E4;</h2>
-      <p class="text-slate-400 mb-8 text-lg">
-        &#xAC80;&#xC99D; &#xAE30;&#xB85D;&#xC744; &#xD655;&#xC778;&#xD558;&#xB824;&#xBA74; &#xB85C;&#xADF8;&#xC778;&#xD574;&#xC8FC;&#xC138;&#xC694;
-      </p>
-      <div class="flex gap-3 justify-center">
+        <div class="history-eyebrow">PRIVATE ARCHIVE</div>
+        <h1 class="history-guest-title">검증 기록은 로그인 후<br class="hidden sm:block"> 확인할 수 있습니다</h1>
+        <p class="history-guest-copy">
+          분석한 이미지와 판정 결과를 안전하게 보관하고,<br class="hidden sm:block"> 이전 리포트를 다시 확인해 보세요.
+        </p>
+        <div class="history-guest-actions">
         <button
           type="button"
           onclick="location.href='<%= contextPath %>/login'"
-          class="px-8 py-4 bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 text-white rounded-xl transition-all shadow-lg shadow-sky-500/50 flex items-center gap-2 font-semibold text-lg"
+          class="history-primary-button"
         >
           <i data-lucide="log-in" class="w-5 h-5"></i>
           &#xB85C;&#xADF8;&#xC778;
@@ -233,33 +236,30 @@
         <button
           type="button"
           onclick="location.href='<%= contextPath %>/'"
-          class="px-8 py-4 bg-white/10 hover:bg-white/20 backdrop-blur-xl text-white rounded-xl transition-all border border-white/20 font-semibold text-lg"
+          class="history-secondary-button"
         >
           &#xD648;&#xC73C;&#xB85C;
         </button>
       </div>
     </div>
+    </main>
   </div>
   <script>
     lucide.createIcons();
   </script>
 <% } else { %>
-  <div class="relative min-h-screen overflow-hidden">
+  <div class="history-shell relative min-h-screen overflow-hidden">
     <div class="pointer-events-none absolute inset-0">
       <div class="absolute top-20 left-1/4 h-96 w-96 rounded-full bg-sky-500 blur-3xl opacity-15"></div>
       <div class="absolute bottom-16 right-1/4 h-96 w-96 rounded-full bg-cyan-500 blur-3xl opacity-10"></div>
     </div>
 
-    <nav class="fixed left-0 right-0 top-0 z-40 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
+    <nav class="history-topbar fixed left-0 right-0 top-0 z-40">
       <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <button
-          type="button"
-          onclick="location.href='<%= contextPath %>/'"
-          class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium text-white backdrop-blur-xl transition-all hover:bg-white/20"
-        >
-          <i data-lucide="arrow-left" class="h-4 w-4"></i>
-          &#xD648;&#xC73C;&#xB85C;
-        </button>
+        <a href="<%= contextPath %>/" class="history-brand" aria-label="DeepScan 홈">
+          <img src="<%= contextPath %>/resources/image/deepscan-mark.svg?v=30" alt="" class="h-8 w-8">
+          <span>DeepScan</span>
+        </a>
         <div class="text-sm text-slate-400">
           <span class="font-medium text-sky-400"><%= userName %></span>&#xB2D8;&#xC758; &#xAC80;&#xC99D;&#xAE30;&#xB85D;
         </div>
@@ -267,15 +267,16 @@
     </nav>
 
     <div class="relative mx-auto max-w-7xl px-4 pb-12 pt-24">
-      <div class="mb-10 text-center">
-        <div class="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-2xl bg-gradient-to-br from-sky-500 to-cyan-500 shadow-lg shadow-sky-500/50">
-          <i data-lucide="calendar" class="h-10 w-10 text-white"></i>
+      <div class="history-heading mb-10 text-center">
+        <div class="history-heading-mark mx-auto mb-5">
+          <i data-lucide="archive" class="h-6 w-6"></i>
         </div>
+        <div class="history-eyebrow">ANALYSIS ARCHIVE</div>
         <h1 class="mb-3 text-5xl font-bold">&#xAC80;&#xC99D;&#xAE30;&#xB85D;</h1>
         <p class="text-xl text-slate-400">&#xCD1D; <span id="resultCount" class="font-semibold text-sky-400">0&#xAC1C;</span>&#xC758; &#xAC80;&#xC99D; &#xACB0;&#xACFC;</p>
       </div>
 
-      <div class="mb-8 rounded-3xl border border-white/10 bg-slate-900/60 p-6 backdrop-blur-xl">
+      <div class="history-filter-panel mb-8 rounded-3xl border border-white/10 bg-slate-900/60 p-6 backdrop-blur-xl">
         <div class="relative mb-4">
           <i data-lucide="search" class="absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-500"></i>
           <input
@@ -309,7 +310,7 @@
     </div>
 
     <div id="detailBackdrop" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-sm"></div>
-    <aside id="detailPanel" class="fixed bottom-0 right-0 top-0 z-50 w-full translate-x-full overflow-y-auto border-l border-white/10 bg-slate-900 transition-transform duration-300 md:w-1/2">
+    <aside id="detailPanel" class="history-detail-panel fixed bottom-0 right-0 top-0 z-50 w-full translate-x-full overflow-y-auto border-l border-white/10 bg-slate-900 transition-transform duration-300 md:w-1/2">
       <div class="sticky top-0 z-10 border-b border-white/10 bg-slate-900/95 p-6 backdrop-blur-xl">
         <div class="flex items-center justify-between gap-4">
           <div>

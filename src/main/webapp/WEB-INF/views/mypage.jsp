@@ -38,7 +38,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-white relative">
+<body class="ds-page min-h-screen bg-slate-950 text-white relative">
   <div class="absolute inset-0 overflow-hidden">
     <div class="absolute top-1/4 left-1/4 w-96 h-96 bg-sky-600/20 rounded-full blur-3xl"></div>
     <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl"></div>

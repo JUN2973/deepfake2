@@ -13,6 +13,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/deepscan-theme.css?v=3">
   <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/resources/image/deepscan-mark.svg?v=30">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -40,7 +41,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-white relative overflow-hidden">
+<body class="ds-page min-h-screen bg-slate-950 text-white relative overflow-hidden">
   <div class="absolute inset-0">
     <div class="absolute top-20 left-1/4 h-96 w-96 rounded-full bg-gradient-to-r from-sky-600 to-cyan-600 opacity-20 blur-3xl"></div>
     <div class="absolute bottom-20 right-1/3 h-96 w-96 rounded-full bg-gradient-to-r from-cyan-600 to-blue-600 opacity-20 blur-3xl"></div>

@@ -69,7 +69,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-white relative overflow-x-hidden">
+<body class="ds-page min-h-screen bg-slate-950 text-white relative overflow-x-hidden">
   <div class="hero-glow"></div>
 
   <%@ include file="common/dashboard-nav.jspf" %>

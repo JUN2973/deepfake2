@@ -77,7 +77,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-white relative">
+<body class="ds-page min-h-screen bg-slate-950 text-white relative">
   <div class="absolute inset-0 pointer-events-none">
     <div class="absolute top-20 left-1/4 w-96 h-96 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-full blur-3xl opacity-20"></div>
     <div class="absolute bottom-20 right-1/4 w-96 h-96 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full blur-3xl opacity-20"></div>

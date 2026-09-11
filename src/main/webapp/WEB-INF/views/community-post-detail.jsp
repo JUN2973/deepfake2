@@ -23,6 +23,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/deepscan-theme.css?v=3">
   <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/resources/image/deepscan-mark.svg?v=30">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -76,7 +77,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-white relative overflow-x-hidden">
+<body class="ds-page min-h-screen bg-slate-950 text-white relative overflow-x-hidden">
   <div class="hero-glow"></div>
 
   <button

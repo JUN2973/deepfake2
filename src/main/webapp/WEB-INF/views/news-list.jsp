@@ -131,7 +131,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen overflow-x-hidden bg-slate-950 text-white">
+<body class="ds-page min-h-screen overflow-x-hidden bg-slate-950 text-white">
   <%@ include file="common/dashboard-nav.jspf" %>
 
   <div class="relative min-h-screen px-4 pb-16 pt-28 sm:px-6 lg:px-8">

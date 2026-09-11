@@ -6,19 +6,20 @@
   boolean dashboardAuthenticated = (dashboardUserId != null);
   String dashboardFeaturesHref = "home".equals(dashboardActivePage) ? "#features" : dashboardContextPath + "/#features";
 %>
+<link rel="stylesheet" href="<%= dashboardContextPath %>/resources/css/deepscan-theme.css?v=8">
 <style>
   html {
     scrollbar-gutter: stable;
   }
 </style>
-<nav class="fixed top-0 left-0 right-0 z-50 bg-slate-950/50 backdrop-blur-xl border-b border-white/10">
+<nav class="fixed left-0 right-0 top-0 z-50 border-b border-[#272d35] bg-[#090b0e]/95 backdrop-blur-lg">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex items-center justify-between h-20">
+    <div class="flex h-16 items-center justify-between">
       <a href="<%= dashboardContextPath %>/" class="flex items-center gap-3 cursor-pointer no-underline">
-        <span class="relative flex h-12 w-12 items-center justify-center">
-          <img src="<%= dashboardContextPath %>/resources/image/deepscan-mark.svg?v=30" alt="" class="h-12 w-12" width="48" height="48">
+        <span class="relative flex h-10 w-10 items-center justify-center">
+          <img src="<%= dashboardContextPath %>/resources/image/deepscan-mark.svg?v=30" alt="" class="h-10 w-10" width="40" height="40">
         </span>
-        <span class="text-2xl font-bold"><span class="text-white">Deep</span><span class="text-cyan-400">Scan</span></span>
+        <span class="text-xl font-bold"><span class="text-white">Deep</span><span class="text-blue-400">Scan</span></span>
       </a>
 
       <div class="hidden md:flex items-center gap-7">
@@ -35,11 +36,11 @@
             <span><%= dashboardUserName %></span>
           </a>
           <form action="<%= dashboardContextPath %>/api/v1/auth/logout" method="post" class="m-0 dashboard-logout-form">
-            <button type="submit" class="px-6 py-3 bg-white/10 hover:bg-white/20 rounded-full transition-all text-base font-medium backdrop-blur-xl border border-white/10 text-white">&#47196;&#44536;&#50500;&#50883;</button>
+            <button type="submit" class="rounded-lg border border-[#343b45] bg-[#11151a] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1a2028]">&#47196;&#44536;&#50500;&#50883;</button>
           </form>
         </div>
         <% } else { %>
-        <a href="<%= dashboardContextPath %>/login" class="px-7 py-3 bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 rounded-full transition-all text-base font-semibold shadow-lg shadow-sky-500/50 text-white no-underline">&#47196;&#44536;&#51064;</a>
+        <a href="<%= dashboardContextPath %>/login" class="rounded-lg bg-white px-5 py-2.5 text-sm font-semibold text-[#090b0e] no-underline transition-colors hover:bg-slate-200">&#47196;&#44536;&#51064;</a>
         <% } %>
       </div>
 
@@ -49,7 +50,7 @@
     </div>
   </div>
 
-  <div id="dashboardMobileMenu" class="hidden md:hidden bg-slate-900/95 backdrop-blur-xl border-t border-white/10">
+  <div id="dashboardMobileMenu" class="hidden border-t border-[#272d35] bg-[#0c0f13] md:hidden">
     <div class="px-4 py-6 space-y-4">
       <a href="<%= dashboardFeaturesHref %>" class="block <%= "home".equals(dashboardActivePage) ? "text-white" : "text-slate-300" %> hover:text-white transition-colors py-2">&#44592;&#45733;</a>
       <a href="<%= dashboardContextPath %>/news" class="block <%= "news".equals(dashboardActivePage) ? "text-sky-400 font-medium" : "text-slate-300" %> hover:text-white transition-colors py-2">&#45684;&#49828;</a>
@@ -66,7 +67,7 @@
         <button type="submit" class="block w-full px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors text-center text-white border border-white/10">&#47196;&#44536;&#50500;&#50883;</button>
       </form>
       <% } else { %>
-      <a href="<%= dashboardContextPath %>/login" class="block w-full px-4 py-2 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-lg transition-colors text-center font-semibold text-white no-underline">&#47196;&#44536;&#51064;</a>
+      <a href="<%= dashboardContextPath %>/login" class="block w-full rounded-lg bg-white px-4 py-2.5 text-center font-semibold text-[#090b0e] no-underline transition-colors hover:bg-slate-200">&#47196;&#44536;&#51064;</a>
       <% } %>
     </div>
   </div>

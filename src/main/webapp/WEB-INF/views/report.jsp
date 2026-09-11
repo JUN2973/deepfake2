@@ -294,8 +294,8 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-white">
-  <div id="submittedView" class="hidden min-h-screen bg-slate-950 flex items-center justify-center p-4">
+<body class="ds-page report-page min-h-screen bg-slate-950 text-white">
+  <div id="submittedView" class="report-submitted hidden min-h-screen bg-slate-950 flex items-center justify-center p-4">
     <div class="text-center">
       <div class="relative inline-block mb-6">
         <div class="absolute inset-0 bg-gradient-to-r from-green-600 to-emerald-600 rounded-full blur-xl opacity-75"></div>
@@ -314,10 +314,10 @@
 
     <div class="pt-24 pb-12 px-4">
       <div class="max-w-6xl mx-auto">
-        <div class="text-center mb-12">
+        <div class="report-hero text-center mb-12">
           <div class="relative inline-block mb-6">
-            <div class="absolute inset-0 bg-gradient-to-r from-red-600 to-orange-600 rounded-2xl blur-xl opacity-75"></div>
-            <div class="relative w-16 h-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto">
+            <div class="report-hero-glow absolute inset-0 bg-gradient-to-r from-red-600 to-orange-600 rounded-2xl blur-xl opacity-75"></div>
+            <div class="report-hero-mark relative w-16 h-16 bg-gradient-to-br from-red-500 to-orange-500 rounded-2xl flex items-center justify-center mx-auto">
               <i data-lucide="alert-triangle" class="w-8 h-8 text-white"></i>
             </div>
           </div>
@@ -331,7 +331,7 @@
         <div class="grid lg:grid-cols-2 gap-8 mb-12">
           <div class="relative group h-full">
             <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-3xl blur-2xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
-            <div class="relative h-full bg-slate-900/50 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all flex flex-col">
+            <div class="report-panel relative h-full bg-slate-900/50 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all flex flex-col">
             <div class="flex items-center gap-3 mb-6">
               <i data-lucide="shield" class="w-8 h-8 text-sky-400"></i>
               <h2 class="text-2xl font-bold">경찰청 사이버안전국</h2>
@@ -390,7 +390,7 @@
 
           <div class="relative group h-full">
             <div class="absolute inset-0 bg-gradient-to-r from-cyan-600 to-blue-600 rounded-3xl blur-2xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
-            <div class="relative h-full bg-slate-900/50 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all flex flex-col">
+            <div class="report-panel relative h-full bg-slate-900/50 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all flex flex-col">
             <div class="flex items-center gap-3 mb-6">
               <i data-lucide="eye" class="w-8 h-8 text-cyan-400"></i>
               <h2 class="text-2xl font-bold">딥페이크 예방 가이드</h2>
@@ -399,7 +399,7 @@
             <div class="space-y-6 flex-1">
               <div class="relative group/card">
                 <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-sky-500 rounded-2xl blur-xl opacity-0 group-hover/card:opacity-30 transition-opacity"></div>
-                <div class="relative p-4 bg-cyan-500/10 border border-cyan-500/30 hover:border-cyan-300/50 rounded-lg transition-all">
+                <div class="report-guide-card relative p-4 bg-cyan-500/10 border border-cyan-500/30 hover:border-cyan-300/50 rounded-lg transition-all">
                 <div class="flex items-center gap-3 mb-3">
                   <div class="w-10 h-10 bg-cyan-600 rounded-full flex items-center justify-center flex-shrink-0">
                     <i data-lucide="check-circle" class="w-5 h-5 text-white"></i>
@@ -416,7 +416,7 @@
 
               <div class="relative group/card">
                 <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl blur-xl opacity-0 group-hover/card:opacity-30 transition-opacity"></div>
-                <div class="relative p-4 bg-blue-500/10 border border-blue-500/30 hover:border-blue-300/50 rounded-lg transition-all">
+                <div class="report-guide-card relative p-4 bg-blue-500/10 border border-blue-500/30 hover:border-blue-300/50 rounded-lg transition-all">
                 <div class="flex items-center gap-3 mb-3">
                   <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center flex-shrink-0">
                     <i data-lucide="lock" class="w-5 h-5 text-white"></i>
@@ -433,7 +433,7 @@
 
               <div class="relative group/card">
                 <div class="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl blur-xl opacity-0 group-hover/card:opacity-30 transition-opacity"></div>
-                <div class="relative p-4 bg-green-500/10 border border-green-500/30 hover:border-green-300/50 rounded-lg transition-all">
+                <div class="report-guide-card relative p-4 bg-green-500/10 border border-green-500/30 hover:border-green-300/50 rounded-lg transition-all">
                 <div class="flex items-center gap-3 mb-3">
                   <div class="w-10 h-10 bg-green-600 rounded-full flex items-center justify-center flex-shrink-0">
                     <i data-lucide="users" class="w-5 h-5 text-white"></i>
@@ -450,7 +450,7 @@
 
               <div class="relative group/card">
                 <div class="absolute inset-0 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl blur-xl opacity-0 group-hover/card:opacity-30 transition-opacity"></div>
-                <div class="relative p-4 bg-orange-500/10 border border-orange-500/30 hover:border-orange-300/50 rounded-lg transition-all">
+                <div class="report-guide-card relative p-4 bg-orange-500/10 border border-orange-500/30 hover:border-orange-300/50 rounded-lg transition-all">
                 <div class="flex items-center gap-3 mb-3">
                   <div class="w-10 h-10 bg-orange-600 rounded-full flex items-center justify-center flex-shrink-0">
                     <i data-lucide="alert-circle" class="w-5 h-5 text-white"></i>
@@ -477,7 +477,7 @@
 
         <div class="relative group mb-12">
           <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-3xl blur-2xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
-          <div class="relative bg-slate-900/50 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all">
+          <div class="report-panel relative bg-slate-900/50 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all">
           <div class="flex items-center gap-3 mb-6">
             <i data-lucide="trending-up" class="w-8 h-8 text-sky-400"></i>
             <h2 class="text-2xl font-bold">딥페이크 범죄 통계</h2>
@@ -539,7 +539,7 @@
 
         <div class="relative group mb-12">
           <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-3xl blur-2xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
-          <div class="relative bg-slate-900/50 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all">
+          <div class="report-panel relative bg-slate-900/50 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all">
           <h3 class="text-2xl font-bold mb-3">가까운 경찰서 찾기</h3>
           <p class="text-slate-400 mb-6">직접 방문 신고가 필요하면 가까운 경찰서를 확인하고, 지도와 목록에서 바로 전화 정보까지 보세요.</p>
           <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
@@ -603,7 +603,7 @@
 
         <div class="relative group">
           <div class="absolute inset-0 bg-gradient-to-r from-cyan-600 to-sky-600 rounded-3xl blur-2xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
-          <div class="relative bg-slate-900/50 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all">
+          <div class="report-panel relative bg-slate-900/50 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all">
           <h3 class="text-xl font-bold mb-6">신고 시 유의사항</h3>
           <div class="grid md:grid-cols-2 gap-6">
             <div>

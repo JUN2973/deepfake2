@@ -7,6 +7,7 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+  <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/deepscan-theme.css?v=3">
   <link rel="icon" type="image/svg+xml" href="${pageContext.request.contextPath}/resources/image/deepscan-mark.svg?v=30">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,7 +23,7 @@
     }
   </style>
 </head>
-<body class="min-h-screen bg-slate-950 text-white relative overflow-x-hidden">
+<body class="ds-page min-h-screen bg-slate-950 text-white relative overflow-x-hidden">
   <!-- 회원가입 화면의 배경 효과 영역이다. 실제 회원가입 로직과는 분리되어 있다. -->
   <div class="absolute inset-0 pointer-events-none">
     <div class="absolute top-20 left-1/4 w-96 h-96 bg-sky-600/30 rounded-full blur-3xl"></div>

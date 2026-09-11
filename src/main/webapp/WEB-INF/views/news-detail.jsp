@@ -61,7 +61,7 @@
     }
   </style>
 </head>
-<body class="relative min-h-screen overflow-x-hidden bg-slate-950 text-white" data-news-id="<c:out value='${news.id}'/>">
+<body class="ds-page relative min-h-screen overflow-x-hidden bg-slate-950 text-white" data-news-id="<c:out value='${news.id}'/>">
   <c:choose>
     <c:when test="${empty news}">
       <div class="flex min-h-screen items-center justify-center bg-slate-950 px-4 text-white">
