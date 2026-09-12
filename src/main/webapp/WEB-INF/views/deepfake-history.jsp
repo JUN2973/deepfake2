@@ -484,6 +484,33 @@
           </div>
         </section>
 
+        <section class="rounded-3xl border border-sky-500/20 bg-slate-800/40 p-6">
+          <div class="mb-4 flex items-center gap-2">
+            <i data-lucide="file-down" class="h-5 w-5 text-sky-300"></i>
+            <h3 class="text-lg font-semibold text-white">신고 제출용 PDF</h3>
+          </div>
+          <form id="historyReportPdfForm" class="space-y-4">
+            <div>
+              <div class="mb-2 flex items-center justify-between gap-3">
+                <label for="historyReportPdfReason" class="text-sm font-semibold text-slate-300">신고 사유</label>
+                <span id="historyReportPdfReasonCount" class="text-xs text-slate-500">0 / 2000</span>
+              </div>
+              <textarea id="historyReportPdfReason" maxlength="2000" rows="3" required class="w-full resize-y rounded-xl border border-white/10 bg-slate-950/80 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-slate-600 focus:border-sky-300/60 focus:ring-2 focus:ring-sky-300/20" placeholder="신고 기관에 전달할 내용을 작성해 주세요."></textarea>
+            </div>
+            <input id="historyReportPdfSourceUrl" type="url" maxlength="1000" class="min-h-11 w-full rounded-xl border border-white/10 bg-slate-950/80 px-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-sky-300/60 focus:ring-2 focus:ring-sky-300/20" placeholder="발견한 페이지 주소 (선택)">
+            <div class="flex flex-wrap gap-4 text-sm text-slate-300">
+              <label class="flex cursor-pointer items-center gap-2"><input id="historyReportPdfOriginal" type="checkbox" class="h-4 w-4 accent-sky-400">원본 이미지</label>
+              <label class="flex cursor-pointer items-center gap-2"><input id="historyReportPdfHeatmap" type="checkbox" class="h-4 w-4 accent-sky-400">히트맵</label>
+              <label class="flex cursor-pointer items-center gap-2"><input id="historyReportPdfAiDraft" type="checkbox" class="h-4 w-4 accent-sky-400">AI 신고 문구</label>
+            </div>
+            <button id="historyReportPdfSubmitButton" type="submit" class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-sky-400 px-4 text-sm font-bold text-slate-950 transition hover:bg-sky-300 disabled:cursor-wait disabled:opacity-60">
+              <i data-lucide="file-plus-2" class="h-4 w-4"></i><span>PDF 신고자료 만들기</span>
+            </button>
+          </form>
+          <div id="historyReportPdfError" class="mt-4 hidden text-sm leading-6 text-rose-300" role="alert"></div>
+          <div id="historyReportPdfList" class="mt-5 space-y-3 border-t border-white/10 pt-5"></div>
+        </section>
+
         <div class="rounded-3xl border border-white/10 bg-slate-800/40 p-6">
           <h3 class="mb-4 text-lg font-semibold text-white">상세 정보</h3>
           <div class="grid gap-4 sm:grid-cols-2">
@@ -1464,12 +1491,144 @@
       }
     }
 
+    function resetHistoryReportPdfs() {
+      document.getElementById("historyReportPdfReason").value = "";
+      document.getElementById("historyReportPdfSourceUrl").value = "";
+      document.getElementById("historyReportPdfReasonCount").textContent = "0 / 2000";
+      document.getElementById("historyReportPdfError").classList.add("hidden");
+      document.getElementById("historyReportPdfList").innerHTML = '<p class="text-sm text-slate-400">생성된 신고자료를 확인하고 있습니다.</p>';
+    }
+
+    function renderHistoryReportPdfs(reports, verificationId) {
+      const list = document.getElementById("historyReportPdfList");
+      list.innerHTML = "";
+      const matched = (Array.isArray(reports) ? reports : []).filter(function(report) {
+        return String(report.verificationId) === String(verificationId);
+      });
+      if (matched.length === 0) {
+        list.innerHTML = '<p class="text-sm text-slate-400">아직 생성된 신고자료가 없습니다.</p>';
+        return;
+      }
+      matched.forEach(function(report) {
+        const row = document.createElement("div");
+        row.className = "flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-slate-950/50 p-3";
+        const info = document.createElement("div");
+        info.className = "min-w-0";
+        const name = document.createElement("p");
+        name.className = "truncate text-sm font-semibold text-white";
+        name.textContent = report.fileName || "신고 제출용 PDF";
+        const meta = document.createElement("p");
+        meta.className = "mt-1 text-xs text-slate-500";
+        meta.textContent = report.regDt || "";
+        info.append(name, meta);
+        const actions = document.createElement("div");
+        actions.className = "flex items-center gap-2";
+        const link = document.createElement("a");
+        link.className = "inline-flex min-h-10 items-center gap-2 rounded-lg bg-sky-400 px-3 text-sm font-bold text-slate-950 transition hover:bg-sky-300";
+        link.href = contextPath + (report.downloadUrl || ("/api/v1/reports/" + report.id + "/download"));
+        link.innerHTML = '<i data-lucide="download" class="h-4 w-4"></i><span>다운로드</span>';
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "inline-flex h-10 w-10 items-center justify-center rounded-lg border border-rose-500/30 text-rose-300 transition hover:bg-rose-500/15";
+        remove.title = "신고자료 삭제";
+        remove.setAttribute("aria-label", "신고자료 삭제");
+        remove.innerHTML = '<i data-lucide="trash-2" class="h-4 w-4"></i>';
+        remove.addEventListener("click", function() { deleteHistoryReportPdf(report.id, verificationId); });
+        actions.append(link, remove);
+        row.append(info, actions);
+        list.appendChild(row);
+      });
+      lucide.createIcons();
+    }
+
+    async function loadHistoryReportPdfs(verificationId) {
+      try {
+        const response = await fetch(contextPath + "/api/v1/reports", { credentials: "same-origin" });
+        const payload = await response.json();
+        if (!selectedItem || String(selectedItem.id) !== String(verificationId)) return;
+        if (!response.ok || !payload.success) throw new Error(payload.error && payload.error.message);
+        renderHistoryReportPdfs(payload.data, verificationId);
+      } catch (error) {
+        if (selectedItem && String(selectedItem.id) === String(verificationId)) {
+          document.getElementById("historyReportPdfList").innerHTML = '<p class="text-sm text-rose-300">신고자료를 불러오지 못했습니다.</p>';
+        }
+      }
+    }
+
+    async function deleteHistoryReportPdf(reportId, verificationId) {
+      if (!window.confirm("이 신고자료를 삭제하시겠습니까?")) return;
+      const errorBox = document.getElementById("historyReportPdfError");
+      errorBox.classList.add("hidden");
+      try {
+        const response = await fetch(contextPath + "/api/v1/reports/" + encodeURIComponent(reportId), {
+          method: "DELETE",
+          credentials: "same-origin"
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.success) {
+          throw new Error(payload.error && payload.error.message || "신고자료를 삭제하지 못했습니다.");
+        }
+        await loadHistoryReportPdfs(verificationId);
+      } catch (error) {
+        errorBox.textContent = error.message || "신고자료를 삭제하지 못했습니다.";
+        errorBox.classList.remove("hidden");
+      }
+    }
+
+    async function createHistoryReportPdf(event) {
+      event.preventDefault();
+      if (!selectedItem) return;
+      const verificationId = selectedItem.id;
+      const reasonInput = document.getElementById("historyReportPdfReason");
+      const reason = reasonInput.value.trim();
+      const errorBox = document.getElementById("historyReportPdfError");
+      if (!reason) {
+        errorBox.textContent = "신고 사유를 입력해 주세요.";
+        errorBox.classList.remove("hidden");
+        reasonInput.focus();
+        return;
+      }
+      const button = document.getElementById("historyReportPdfSubmitButton");
+      button.disabled = true;
+      button.innerHTML = '<i data-lucide="loader-circle" class="h-4 w-4 animate-spin"></i><span>생성 중</span>';
+      errorBox.classList.add("hidden");
+      lucide.createIcons();
+      try {
+        const response = await fetch(contextPath + "/api/v1/verifications/" + encodeURIComponent(verificationId) + "/reports", {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            reportReason: reason,
+            sourceUrl: document.getElementById("historyReportPdfSourceUrl").value.trim(),
+            includeOriginalImage: document.getElementById("historyReportPdfOriginal").checked,
+            includeHeatmap: document.getElementById("historyReportPdfHeatmap").checked,
+            includeAiReportDraft: document.getElementById("historyReportPdfAiDraft").checked
+          })
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload.success || !payload.data) {
+          throw new Error(payload.error && payload.error.message || "PDF 신고자료를 생성하지 못했습니다.");
+        }
+        await loadHistoryReportPdfs(verificationId);
+        window.location.href = contextPath + payload.data.downloadUrl;
+      } catch (error) {
+        errorBox.textContent = error.message || "PDF 신고자료를 생성하지 못했습니다.";
+        errorBox.classList.remove("hidden");
+      } finally {
+        button.disabled = false;
+        button.innerHTML = '<i data-lucide="file-plus-2" class="h-4 w-4"></i><span>PDF 신고자료 만들기</span>';
+        lucide.createIcons();
+      }
+    }
+
     function openDetail(id) {
       selectedItem = rawHistory.find(function(item) { return String(item.id) === String(id); }) || null;
       if (!selectedItem) return;
 
       resetSavedAiResults();
       resetHistoryReviewRequest();
+      resetHistoryReportPdfs();
 
       fetch(contextPath + "/api/v1/verifications/" + encodeURIComponent(id))
         .then(function(response) {
@@ -1484,6 +1643,7 @@
           openPanel();
           loadSavedAiResults(id);
           loadSavedReviewRequest(id);
+          loadHistoryReportPdfs(id);
         })
         .catch(function() {
           alert(TEXT.detailLoadFailed);
@@ -1551,6 +1711,10 @@
     document.getElementById("historyReviewRequestForm").addEventListener("submit", submitHistoryReviewRequest);
     document.getElementById("historyReviewRequestReason").addEventListener("input", function() {
       document.getElementById("historyReviewRequestReasonCount").textContent = this.value.length + " / 1000";
+    });
+    document.getElementById("historyReportPdfForm").addEventListener("submit", createHistoryReportPdf);
+    document.getElementById("historyReportPdfReason").addEventListener("input", function() {
+      document.getElementById("historyReportPdfReasonCount").textContent = this.value.length + " / 2000";
     });
     document.getElementById("deleteCancelIcon").addEventListener("click", closeDeleteModal);
     document.getElementById("deleteCancelButton").addEventListener("click", closeDeleteModal);

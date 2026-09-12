@@ -302,6 +302,55 @@
                     </div>
                 </div>
 
+                <div class="rounded-3xl border border-sky-500/20 bg-slate-900/60 p-6 backdrop-blur-xl">
+                    <div class="flex items-center gap-3">
+                        <div class="rounded-2xl bg-sky-400/10 p-2.5 text-sky-300">
+                            <i data-lucide="file-down" class="h-5 w-5"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-lg font-semibold text-white">신고 제출용 PDF</h2>
+                            <p class="mt-1 text-sm text-slate-400">현재 검증 결과와 저장된 AI 해설을 신고자료로 정리합니다.</p>
+                        </div>
+                    </div>
+
+                    <form id="reportPdfForm" class="mt-5 space-y-4 border-t border-white/10 pt-5">
+                        <div>
+                            <div class="mb-2 flex items-center justify-between gap-3">
+                                <label for="reportPdfReason" class="text-sm font-semibold text-slate-300">신고 사유</label>
+                                <span id="reportPdfReasonCount" class="text-xs text-slate-500">0 / 2000</span>
+                            </div>
+                            <textarea id="reportPdfReason" maxlength="2000" rows="4" required class="w-full resize-y rounded-xl border border-white/10 bg-slate-950/80 px-3 py-3 text-sm leading-6 text-white outline-none transition placeholder:text-slate-600 focus:border-sky-300/60 focus:ring-2 focus:ring-sky-300/20" placeholder="신고 기관에 전달할 사실과 요청 사항을 작성해 주세요."></textarea>
+                        </div>
+                        <div>
+                            <label for="reportPdfSourceUrl" class="mb-2 block text-sm font-semibold text-slate-300">발견한 페이지 주소 <span class="font-normal text-slate-500">선택</span></label>
+                            <input id="reportPdfSourceUrl" type="url" maxlength="1000" class="min-h-11 w-full rounded-xl border border-white/10 bg-slate-950/80 px-3 text-sm text-white outline-none transition placeholder:text-slate-600 focus:border-sky-300/60 focus:ring-2 focus:ring-sky-300/20" placeholder="https://example.com/post/123">
+                        </div>
+                        <div class="grid gap-3 sm:grid-cols-3">
+                            <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-slate-950/50 px-3 text-sm text-slate-300">
+                                <input id="reportPdfOriginal" type="checkbox" class="h-4 w-4 accent-sky-400">
+                                원본 이미지
+                            </label>
+                            <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-slate-950/50 px-3 text-sm text-slate-300">
+                                <input id="reportPdfHeatmap" type="checkbox" class="h-4 w-4 accent-sky-400">
+                                히트맵
+                            </label>
+                            <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-slate-950/50 px-3 text-sm text-slate-300">
+                                <input id="reportPdfAiDraft" type="checkbox" class="h-4 w-4 accent-sky-400">
+                                AI 신고 문구
+                            </label>
+                        </div>
+                        <button id="createReportPdfButton" type="submit" class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-sky-400 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-sky-300 disabled:cursor-wait disabled:opacity-60">
+                            <i data-lucide="file-plus-2" class="h-4 w-4"></i>
+                            <span>PDF 신고자료 만들기</span>
+                        </button>
+                    </form>
+                    <div id="reportPdfError" class="mt-4 hidden text-sm leading-6 text-rose-300" role="alert"></div>
+                    <div id="reportPdfListWrap" class="mt-5 hidden border-t border-white/10 pt-5">
+                        <p class="mb-3 text-sm font-semibold text-slate-300">생성된 신고자료</p>
+                        <div id="reportPdfList" class="space-y-3"></div>
+                    </div>
+                </div>
+
                 <div class="rounded-3xl border border-white/10 bg-slate-900/60 p-6 backdrop-blur-xl">
                     <h2 class="mb-3 text-lg font-semibold text-white">분석 설명</h2>
                     <p id="explanationText" class="mb-4 leading-7 text-slate-300"></p>
@@ -1254,6 +1303,128 @@
         }
     }
 
+    function reportPdfItem(report) {
+        const row = document.createElement("div");
+        row.className = "flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/10 bg-slate-950/50 p-3";
+
+        const info = document.createElement("div");
+        info.className = "min-w-0";
+        const name = document.createElement("p");
+        name.className = "truncate text-sm font-semibold text-white";
+        name.textContent = report.fileName || "신고 제출용 PDF";
+        const meta = document.createElement("p");
+        meta.className = "mt-1 text-xs text-slate-500";
+        meta.textContent = [report.regDt, report.aiReportDraftIncluded ? "AI 신고 문구 포함" : ""].filter(Boolean).join(" · ");
+        info.append(name, meta);
+
+        const actions = document.createElement("div");
+        actions.className = "flex items-center gap-2";
+        const download = document.createElement("a");
+        download.className = "inline-flex min-h-10 items-center gap-2 rounded-lg bg-sky-400 px-3 text-sm font-bold text-slate-950 transition hover:bg-sky-300";
+        download.href = contextPath + (report.downloadUrl || ("/api/v1/reports/" + report.id + "/download"));
+        download.innerHTML = '<i data-lucide="download" class="h-4 w-4"></i><span>다운로드</span>';
+        const remove = document.createElement("button");
+        remove.type = "button";
+        remove.className = "inline-flex h-10 w-10 items-center justify-center rounded-lg border border-rose-500/30 text-rose-300 transition hover:bg-rose-500/15";
+        remove.title = "신고자료 삭제";
+        remove.setAttribute("aria-label", "신고자료 삭제");
+        remove.innerHTML = '<i data-lucide="trash-2" class="h-4 w-4"></i>';
+        remove.addEventListener("click", function() { deleteReportPdf(report.id); });
+        actions.append(download, remove);
+        row.append(info, actions);
+        return row;
+    }
+
+    function renderReportPdfs(reports) {
+        const list = document.getElementById("reportPdfList");
+        list.innerHTML = "";
+        const matched = (Array.isArray(reports) ? reports : []).filter(function(report) {
+            return String(report.verificationId) === String(resultId);
+        });
+        matched.forEach(function(report) { list.appendChild(reportPdfItem(report)); });
+        document.getElementById("reportPdfListWrap").classList.toggle("hidden", matched.length === 0);
+        lucide.createIcons();
+    }
+
+    async function loadReportPdfs() {
+        try {
+            const response = await fetch(contextPath + "/api/v1/reports", { credentials: "same-origin" });
+            const payload = await response.json();
+            if (response.ok && payload.success) renderReportPdfs(payload.data);
+        } catch (error) {
+            console.debug("신고자료 목록을 불러오지 못했습니다.", error);
+        }
+    }
+
+    async function deleteReportPdf(reportId) {
+        if (!window.confirm("이 신고자료를 삭제하시겠습니까?")) return;
+        const errorBox = document.getElementById("reportPdfError");
+        errorBox.classList.add("hidden");
+        try {
+            const response = await fetch(contextPath + "/api/v1/reports/" + encodeURIComponent(reportId), {
+                method: "DELETE",
+                credentials: "same-origin"
+            });
+            const payload = await response.json();
+            if (!response.ok || !payload.success) {
+                throw new Error(payload.error?.message || "신고자료를 삭제하지 못했습니다.");
+            }
+            await loadReportPdfs();
+        } catch (error) {
+            errorBox.textContent = error.message || "신고자료를 삭제하지 못했습니다.";
+            errorBox.classList.remove("hidden");
+        }
+    }
+
+    async function createReportPdf(event) {
+        event.preventDefault();
+        const reasonInput = document.getElementById("reportPdfReason");
+        const reason = reasonInput.value.trim();
+        const errorBox = document.getElementById("reportPdfError");
+        if (!reason) {
+            errorBox.textContent = "신고 사유를 입력해 주세요.";
+            errorBox.classList.remove("hidden");
+            reasonInput.focus();
+            return;
+        }
+
+        const button = document.getElementById("createReportPdfButton");
+        button.disabled = true;
+        button.innerHTML = '<i data-lucide="loader-circle" class="h-4 w-4 animate-spin"></i><span>신고자료 생성 중</span>';
+        errorBox.classList.add("hidden");
+        lucide.createIcons();
+        try {
+            const response = await fetch(
+                contextPath + "/api/v1/verifications/" + encodeURIComponent(resultId) + "/reports",
+                {
+                    method: "POST",
+                    credentials: "same-origin",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        reportReason: reason,
+                        sourceUrl: document.getElementById("reportPdfSourceUrl").value.trim(),
+                        includeOriginalImage: document.getElementById("reportPdfOriginal").checked,
+                        includeHeatmap: document.getElementById("reportPdfHeatmap").checked,
+                        includeAiReportDraft: document.getElementById("reportPdfAiDraft").checked
+                    })
+                }
+            );
+            const payload = await response.json();
+            if (!response.ok || !payload.success || !payload.data) {
+                throw new Error(payload.error?.message || "PDF 신고자료를 생성하지 못했습니다.");
+            }
+            await loadReportPdfs();
+            window.location.href = contextPath + payload.data.downloadUrl;
+        } catch (error) {
+            errorBox.textContent = error.message || "PDF 신고자료를 생성하지 못했습니다.";
+            errorBox.classList.remove("hidden");
+        } finally {
+            button.disabled = false;
+            button.innerHTML = '<i data-lucide="file-plus-2" class="h-4 w-4"></i><span>PDF 신고자료 만들기</span>';
+            lucide.createIcons();
+        }
+    }
+
     document.getElementById("topGlow").classList.add(config.glowClass);
     document.getElementById("verdictGlow").classList.add(config.glowClass);
     document.getElementById("verdictIconWrap").innerHTML = '<i data-lucide="' + config.icon + '" class="h-6 w-6 ' + config.badgeClass + '"></i>';
@@ -1303,12 +1474,17 @@
     document.getElementById("reviewRequestReason").addEventListener("input", function() {
         document.getElementById("reviewRequestReasonCount").textContent = this.value.length + " / 1000";
     });
+    document.getElementById("reportPdfForm").addEventListener("submit", createReportPdf);
+    document.getElementById("reportPdfReason").addEventListener("input", function() {
+        document.getElementById("reportPdfReasonCount").textContent = this.value.length + " / 2000";
+    });
 
     renderDetailedAnalysisRows(getDetailedAnalysisRows(combinedResult));
     setViewMode("overlay");
     loadSavedAiExplanation();
     loadSavedImageReview();
     loadSavedReviewRequest();
+    loadReportPdfs();
     lucide.createIcons();
 </script>
 </body>
