@@ -499,8 +499,8 @@
             </div>
             <input id="historyReportPdfSourceUrl" type="url" maxlength="1000" class="min-h-11 w-full rounded-xl border border-white/10 bg-slate-950/80 px-3 text-sm text-white outline-none placeholder:text-slate-600 focus:border-sky-300/60 focus:ring-2 focus:ring-sky-300/20" placeholder="발견한 페이지 주소 (선택)">
             <div class="flex flex-wrap gap-4 text-sm text-slate-300">
-              <label class="flex cursor-pointer items-center gap-2"><input id="historyReportPdfOriginal" type="checkbox" class="h-4 w-4 accent-sky-400">원본 이미지</label>
-              <label class="flex cursor-pointer items-center gap-2"><input id="historyReportPdfHeatmap" type="checkbox" class="h-4 w-4 accent-sky-400">히트맵</label>
+              <label class="flex cursor-pointer items-center gap-2"><input id="historyReportPdfOriginal" type="checkbox" checked class="h-4 w-4 accent-sky-400">원본 이미지</label>
+              <label class="flex cursor-pointer items-center gap-2"><input id="historyReportPdfHeatmap" type="checkbox" checked class="h-4 w-4 accent-sky-400">히트맵</label>
               <label class="flex cursor-pointer items-center gap-2"><input id="historyReportPdfAiDraft" type="checkbox" class="h-4 w-4 accent-sky-400">AI 신고 문구</label>
             </div>
             <button id="historyReportPdfSubmitButton" type="submit" class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-sky-400 px-4 text-sm font-bold text-slate-950 transition hover:bg-sky-300 disabled:cursor-wait disabled:opacity-60">

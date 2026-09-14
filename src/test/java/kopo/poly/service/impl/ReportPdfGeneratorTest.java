@@ -6,9 +6,14 @@ import kopo.poly.dto.ReportPdfResponseDTO;
 import kopo.poly.dto.VerifyDTO;
 import org.apache.pdfbox.Loader;
 import org.apache.pdfbox.pdmodel.PDDocument;
+import org.apache.pdfbox.pdmodel.graphics.image.PDImageXObject;
 import org.apache.pdfbox.text.PDFTextStripper;
 import org.junit.jupiter.api.Test;
 
+import javax.imageio.ImageIO;
+import java.awt.Color;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
@@ -45,6 +50,49 @@ class ReportPdfGeneratorTest {
             assertThat(text).contains("신고 제출 문구");
             assertThat(text).contains("판정 재검토를 요청합니다");
         }
+    }
+
+    @Test
+    void includesOriginalAndHeatmapImagesWhenRequested() throws Exception {
+        Path fontPath = Path.of("C:/Windows/Fonts/malgun.ttf");
+        assumeTrue(Files.isRegularFile(fontPath), "Korean test font is unavailable");
+
+        ReportPdfResponseDTO report = report();
+        report.setOriginalImageIncluded(true);
+        report.setHeatmapIncluded(true);
+        byte[] original = png(Color.GRAY);
+        byte[] heatmap = png(Color.RED);
+
+        byte[] pdf = new ReportPdfGenerator(fontPath.toString()).generate(
+                report, verification(), explanation(), imageReview(), original, heatmap
+        );
+        Path previewPath = Path.of("build/reports/pdf/report-pdf-images-preview.pdf");
+        Files.createDirectories(previewPath.getParent());
+        Files.write(previewPath, pdf);
+
+        try (PDDocument document = Loader.loadPDF(pdf)) {
+            int imageCount = 0;
+            for (var page : document.getPages()) {
+                for (var name : page.getResources().getXObjectNames()) {
+                    if (page.getResources().getXObject(name) instanceof PDImageXObject) {
+                        imageCount++;
+                    }
+                }
+            }
+            assertThat(imageCount).isGreaterThanOrEqualTo(2);
+            assertThat(new PDFTextStripper().getText(document)).contains("히트맵 참고 이미지");
+        }
+    }
+
+    private byte[] png(Color color) throws Exception {
+        BufferedImage image = new BufferedImage(32, 24, BufferedImage.TYPE_INT_RGB);
+        var graphics = image.createGraphics();
+        graphics.setColor(color);
+        graphics.fillRect(0, 0, image.getWidth(), image.getHeight());
+        graphics.dispose();
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ImageIO.write(image, "png", output);
+        return output.toByteArray();
     }
 
     private ReportPdfResponseDTO report() {

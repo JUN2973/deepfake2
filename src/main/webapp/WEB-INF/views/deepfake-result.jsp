@@ -327,11 +327,11 @@
                         </div>
                         <div class="grid gap-3 sm:grid-cols-3">
                             <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-slate-950/50 px-3 text-sm text-slate-300">
-                                <input id="reportPdfOriginal" type="checkbox" class="h-4 w-4 accent-sky-400">
+                                <input id="reportPdfOriginal" type="checkbox" checked class="h-4 w-4 accent-sky-400">
                                 원본 이미지
                             </label>
                             <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-slate-950/50 px-3 text-sm text-slate-300">
-                                <input id="reportPdfHeatmap" type="checkbox" class="h-4 w-4 accent-sky-400">
+                                <input id="reportPdfHeatmap" type="checkbox" checked class="h-4 w-4 accent-sky-400">
                                 히트맵
                             </label>
                             <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-slate-950/50 px-3 text-sm text-slate-300">

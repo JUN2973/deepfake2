@@ -16,11 +16,13 @@ import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.stubbing.Answer;
 
+import java.util.Base64;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
@@ -132,6 +134,37 @@ class ReportPdfServiceTest {
         verify(aiAnalysisService).getLatest(7L);
         verify(aiAnalysisService, never()).analyze(any(), any());
         verify(pdfGenerator).generate(any(), any(), any(), any(), any(), any());
+    }
+
+    @Test
+    void generatePdfDecodesProcessedHeatmapFromAnalysisJson() {
+        byte[] processedHeatmap = "processed-heatmap".getBytes();
+        byte[] rawHeatmap = "raw-heatmap".getBytes();
+        ReportPdfResponseDTO report = savedReport();
+        report.setOriginalImageIncluded(false);
+        report.setHeatmapIncluded(true);
+        VerifyDTO verification = verification();
+        verification.setAnalysisJson("""
+                {
+                  "imdHeatmapResult": {
+                    "rawHeatmap": {"type":"image/png","data":"%s"},
+                    "processedHeatmap": {"type":"image/png","data":"%s"}
+                  }
+                }
+                """.formatted(
+                Base64.getEncoder().encodeToString(rawHeatmap),
+                Base64.getEncoder().encodeToString(processedHeatmap)
+        ));
+        when(reportPdfMapper.selectByIdAndUserId(21L, 3L)).thenReturn(report);
+        when(verifyMapper.selectVerificationByIdAndUserId(7L, 3L)).thenReturn(verification);
+        when(pdfGenerator.generate(any(), any(), any(), any(), isNull(), any(byte[].class)))
+                .thenReturn("%PDF-test".getBytes());
+
+        service.generatePdf(21L, 3L);
+
+        ArgumentCaptor<byte[]> heatmapCaptor = ArgumentCaptor.forClass(byte[].class);
+        verify(pdfGenerator).generate(any(), any(), any(), any(), isNull(), heatmapCaptor.capture());
+        assertThat(heatmapCaptor.getValue()).isEqualTo(processedHeatmap);
     }
 
     @Test

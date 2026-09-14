@@ -40,6 +40,18 @@ public class ReportPdfService implements IReportPdfService {
     private static final int MAX_SOURCE_URL_LENGTH = 1_000;
     private static final int MAX_INLINE_IMAGE_BYTES = 16 * 1024 * 1024;
     private static final DateTimeFormatter FILE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyyMMdd-HHmmss");
+    private static final List<String> HEATMAP_IMAGE_POINTERS = List.of(
+            "/processedHeatmap",
+            "/heatmap",
+            "/overlayHeatmap",
+            "/overlay",
+            "/imdHeatmapResult/processedHeatmap",
+            "/imdHeatmapResult/heatmap",
+            "/imdHeatmapResult/overlayHeatmap",
+            "/imdHeatmapResult/overlay",
+            "/rawHeatmap",
+            "/imdHeatmapResult/rawHeatmap"
+    );
 
     private final IReportPdfMapper reportPdfMapper;
     private final IVerifyMapper verifyMapper;
@@ -163,6 +175,10 @@ public class ReportPdfService implements IReportPdfService {
         byte[] heatmapImage = Boolean.TRUE.equals(report.getHeatmapIncluded())
                 ? readHeatmapImage(verification)
                 : null;
+        if (Boolean.TRUE.equals(report.getHeatmapIncluded()) && heatmapImage == null) {
+            log.warn("Heatmap requested for report but no inline heatmap was found. reportId={} verificationId={}",
+                    report.getId(), report.getVerificationId());
+        }
 
         try {
             byte[] pdf = pdfGenerator.generate(
@@ -234,19 +250,43 @@ public class ReportPdfService implements IReportPdfService {
         if (verification == null) {
             return null;
         }
-        byte[] bytes = findInlineHeatmap(verification.getAnalysisJson());
-        return bytes != null ? bytes : findInlineHeatmap(verification.getApiRaw());
+        byte[] bytes = findPreferredHeatmap(verification.getAnalysisJson());
+        return bytes != null ? bytes : findPreferredHeatmap(verification.getApiRaw());
     }
 
-    private byte[] findInlineHeatmap(String json) {
+    private byte[] findPreferredHeatmap(String json) {
         if (isBlank(json)) {
             return null;
         }
         try {
-            return findInlineHeatmap(objectMapper.readTree(json), false);
+            JsonNode root = objectMapper.readTree(json);
+            for (String pointer : HEATMAP_IMAGE_POINTERS) {
+                byte[] preferred = decodeImageNode(root.at(pointer));
+                if (preferred != null) {
+                    return preferred;
+                }
+            }
+            return findInlineHeatmap(root, false);
         } catch (Exception e) {
             return null;
         }
+    }
+
+    private byte[] decodeImageNode(JsonNode node) {
+        if (node == null || node.isNull() || node.isMissingNode()) {
+            return null;
+        }
+        if (node.isTextual()) {
+            return decodeInlineImage(node.asText());
+        }
+        if (!node.isObject()) {
+            return null;
+        }
+        JsonNode data = node.get("data");
+        if (data == null || !data.isTextual()) {
+            data = node.get("base64");
+        }
+        return data != null && data.isTextual() ? decodeInlineImage(data.asText()) : null;
     }
 
     private byte[] findInlineHeatmap(JsonNode node, boolean heatmapContext) {

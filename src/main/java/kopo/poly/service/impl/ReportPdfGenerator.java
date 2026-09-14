@@ -78,18 +78,29 @@ public class ReportPdfGenerator {
             canvas.keyValue("분석 점수", scoreLabel(report.getScore()));
             canvas.keyValue("분석 일시", value(verification.getRegDt()));
 
-            if (originalImage != null) {
+            boolean originalRequested = Boolean.TRUE.equals(report.getOriginalImageIncluded());
+            boolean heatmapRequested = Boolean.TRUE.equals(report.getHeatmapIncluded());
+
+            if (originalRequested) {
                 canvas.section("3. 원본 이미지");
-                canvas.image(originalImage, "원본 이미지");
+                if (originalImage == null) {
+                    canvas.paragraph("저장된 원본 이미지를 불러올 수 없습니다.", 9f, Color.MUTED);
+                } else {
+                    canvas.image(originalImage, "원본 이미지");
+                }
             }
-            if (heatmapImage != null) {
-                canvas.section(originalImage == null ? "3. 히트맵 참고 이미지" : "4. 히트맵 참고 이미지");
-                canvas.image(heatmapImage, "히트맵 참고 이미지");
-                canvas.paragraph("히트맵은 픽셀 패턴 차이를 보여주는 참고 시각화이며 최종 판정 기준이 아닙니다.",
-                        9f, Color.MUTED);
+            if (heatmapRequested) {
+                canvas.section(originalRequested ? "4. 히트맵 참고 이미지" : "3. 히트맵 참고 이미지");
+                if (heatmapImage == null) {
+                    canvas.paragraph("이 검증 기록에는 저장된 히트맵 이미지가 없습니다.", 9f, Color.MUTED);
+                } else {
+                    canvas.image(heatmapImage, "히트맵 참고 이미지");
+                    canvas.paragraph("히트맵은 픽셀 패턴 차이를 보여주는 참고 시각화이며 최종 판정 기준이 아닙니다.",
+                            9f, Color.MUTED);
+                }
             }
 
-            int nextSection = 3 + (originalImage == null ? 0 : 1) + (heatmapImage == null ? 0 : 1);
+            int nextSection = 3 + (originalRequested ? 1 : 0) + (heatmapRequested ? 1 : 0);
             canvas.section(nextSection++ + ". Gemini 상세 해설");
             if (explanation == null) {
                 canvas.paragraph("저장된 Gemini 상세 해설이 없습니다.", 10f, Color.MUTED);
