@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.imageio.ImageIO;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -90,12 +92,19 @@ public class ReportPdfGenerator {
                 }
             }
             if (heatmapRequested) {
-                canvas.section(originalRequested ? "4. 히트맵 참고 이미지" : "3. 히트맵 참고 이미지");
+                byte[] overlayImage = createHeatmapOverlay(originalImage, heatmapImage);
+                boolean overlayAvailable = overlayImage != null;
+                canvas.section(originalRequested
+                        ? "4. 히트맵 오버레이"
+                        : "3. 히트맵 오버레이");
                 if (heatmapImage == null) {
                     canvas.paragraph("이 검증 기록에는 저장된 히트맵 이미지가 없습니다.", 9f, Color.MUTED);
                 } else {
-                    canvas.image(heatmapImage, "히트맵 참고 이미지");
-                    canvas.paragraph("히트맵은 픽셀 패턴 차이를 보여주는 참고 시각화이며 최종 판정 기준이 아닙니다.",
+                    canvas.image(overlayAvailable ? overlayImage : heatmapImage,
+                            overlayAvailable ? "원본 이미지 히트맵 오버레이" : "히트맵 참고 이미지");
+                    canvas.paragraph(overlayAvailable
+                                    ? "원본 이미지 위에 히트맵을 반투명하게 겹쳐 표시했습니다. 강조 영역은 참고용이며 최종 판정 기준이 아닙니다."
+                                    : "원본 이미지를 불러올 수 없어 히트맵만 표시했습니다. 히트맵은 최종 판정 기준이 아닙니다.",
                             9f, Color.MUTED);
                 }
             }
@@ -149,6 +158,74 @@ public class ReportPdfGenerator {
         } catch (IOException | IllegalArgumentException e) {
             throw new ReportPdfServiceException("REPORT-PDF", "PDF 문서를 생성하지 못했습니다.", e);
         }
+    }
+
+    private byte[] createHeatmapOverlay(byte[] originalBytes, byte[] heatmapBytes) {
+        if (originalBytes == null || heatmapBytes == null) {
+            return null;
+        }
+        try {
+            BufferedImage original = ImageIO.read(new ByteArrayInputStream(originalBytes));
+            BufferedImage heatmap = ImageIO.read(new ByteArrayInputStream(heatmapBytes));
+            if (!isUsableImage(original) || !isUsableImage(heatmap)) {
+                return null;
+            }
+
+            int width = original.getWidth();
+            int height = original.getHeight();
+            BufferedImage resizedHeatmap = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+            Graphics2D resizeGraphics = resizedHeatmap.createGraphics();
+            resizeGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION,
+                    RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+            resizeGraphics.drawImage(heatmap, 0, 0, width, height, null);
+            resizeGraphics.dispose();
+
+            BufferedImage overlay = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+            Graphics2D overlayGraphics = overlay.createGraphics();
+            overlayGraphics.drawImage(original, 0, 0, null);
+            overlayGraphics.dispose();
+
+            for (int y = 0; y < height; y++) {
+                for (int x = 0; x < width; x++) {
+                    int base = overlay.getRGB(x, y);
+                    int heat = resizedHeatmap.getRGB(x, y);
+                    int sourceAlpha = (heat >>> 24) & 0xff;
+                    int heatRed = (heat >>> 16) & 0xff;
+                    int heatGreen = (heat >>> 8) & 0xff;
+                    int heatBlue = heat & 0xff;
+                    int intensity = Math.max(heatRed, Math.max(heatGreen, heatBlue));
+                    int alpha = sourceAlpha * intensity * 175 / (255 * 255);
+                    if (alpha == 0) {
+                        continue;
+                    }
+
+                    int baseRed = (base >>> 16) & 0xff;
+                    int baseGreen = (base >>> 8) & 0xff;
+                    int baseBlue = base & 0xff;
+                    int red = blend(baseRed, heatRed, alpha);
+                    int green = blend(baseGreen, heatGreen, alpha);
+                    int blue = blend(baseBlue, heatBlue, alpha);
+                    overlay.setRGB(x, y, (red << 16) | (green << 8) | blue);
+                }
+            }
+
+            ByteArrayOutputStream output = new ByteArrayOutputStream();
+            ImageIO.write(overlay, "png", output);
+            return output.toByteArray();
+        } catch (IOException | RuntimeException e) {
+            return null;
+        }
+    }
+
+    private boolean isUsableImage(BufferedImage image) {
+        return image != null
+                && image.getWidth() > 0
+                && image.getHeight() > 0
+                && (long) image.getWidth() * image.getHeight() <= MAX_IMAGE_PIXELS;
+    }
+
+    private int blend(int base, int heat, int alpha) {
+        return (base * (255 - alpha) + heat * alpha) / 255;
     }
 
     private PDFont loadFont(PDDocument document) throws IOException {

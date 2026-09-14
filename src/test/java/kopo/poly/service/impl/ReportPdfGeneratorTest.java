@@ -61,7 +61,7 @@ class ReportPdfGeneratorTest {
         report.setOriginalImageIncluded(true);
         report.setHeatmapIncluded(true);
         byte[] original = png(Color.GRAY);
-        byte[] heatmap = png(Color.RED);
+        byte[] heatmap = heatmapPng();
 
         byte[] pdf = new ReportPdfGenerator(fontPath.toString()).generate(
                 report, verification(), explanation(), imageReview(), original, heatmap
@@ -72,15 +72,24 @@ class ReportPdfGeneratorTest {
 
         try (PDDocument document = Loader.loadPDF(pdf)) {
             int imageCount = 0;
+            boolean redOverlayFound = false;
             for (var page : document.getPages()) {
                 for (var name : page.getResources().getXObjectNames()) {
-                    if (page.getResources().getXObject(name) instanceof PDImageXObject) {
+                    if (page.getResources().getXObject(name) instanceof PDImageXObject image) {
                         imageCount++;
+                        int rgb = image.getImage().getRGB(16, 12);
+                        int red = (rgb >>> 16) & 0xff;
+                        int green = (rgb >>> 8) & 0xff;
+                        int corner = image.getImage().getRGB(1, 1);
+                        int cornerRed = (corner >>> 16) & 0xff;
+                        int cornerGreen = (corner >>> 8) & 0xff;
+                        redOverlayFound |= red > green + 50 && Math.abs(cornerRed - cornerGreen) < 5;
                     }
                 }
             }
             assertThat(imageCount).isGreaterThanOrEqualTo(2);
-            assertThat(new PDFTextStripper().getText(document)).contains("히트맵 참고 이미지");
+            assertThat(redOverlayFound).isTrue();
+            assertThat(new PDFTextStripper().getText(document)).contains("히트맵 오버레이");
         }
     }
 
@@ -89,6 +98,19 @@ class ReportPdfGeneratorTest {
         var graphics = image.createGraphics();
         graphics.setColor(color);
         graphics.fillRect(0, 0, image.getWidth(), image.getHeight());
+        graphics.dispose();
+        ByteArrayOutputStream output = new ByteArrayOutputStream();
+        ImageIO.write(image, "png", output);
+        return output.toByteArray();
+    }
+
+    private byte[] heatmapPng() throws Exception {
+        BufferedImage image = new BufferedImage(32, 24, BufferedImage.TYPE_INT_RGB);
+        var graphics = image.createGraphics();
+        graphics.setColor(Color.BLACK);
+        graphics.fillRect(0, 0, image.getWidth(), image.getHeight());
+        graphics.setColor(Color.RED);
+        graphics.fillRect(8, 6, 16, 12);
         graphics.dispose();
         ByteArrayOutputStream output = new ByteArrayOutputStream();
         ImageIO.write(image, "png", output);

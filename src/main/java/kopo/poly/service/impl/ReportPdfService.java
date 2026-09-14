@@ -169,7 +169,9 @@ public class ReportPdfService implements IReportPdfService {
 
         AiAnalysisResponseDTO explanation = aiAnalysisService.getLatest(report.getVerificationId());
         AiImageVerificationResponseDTO imageReview = aiImageVerificationService.getLatest(report.getVerificationId());
-        byte[] originalImage = Boolean.TRUE.equals(report.getOriginalImageIncluded())
+        boolean originalNeeded = Boolean.TRUE.equals(report.getOriginalImageIncluded())
+                || Boolean.TRUE.equals(report.getHeatmapIncluded());
+        byte[] originalImage = originalNeeded
                 ? readOriginalImage(verification)
                 : null;
         byte[] heatmapImage = Boolean.TRUE.equals(report.getHeatmapIncluded())
