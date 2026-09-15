@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kopo.poly.mapper.IStatsMapper">
+
+    <sql id="verificationPeriodCondition">
+        v.user_id = #{userId}
+        AND v.reg_dt &gt;= CONCAT(#{request.startDate}, ' 00:00:00')
+        AND v.reg_dt &lt; DATE_ADD(#{request.endDate}, INTERVAL 1 DAY)
+    </sql>
+
+    <sql id="reviewPeriodCondition">
+        rr.user_id = #{userId}
+        AND rr.reg_dt &gt;= CONCAT(#{request.startDate}, ' 00:00:00')
+        AND rr.reg_dt &lt; DATE_ADD(#{request.endDate}, INTERVAL 1 DAY)
+    </sql>
+
+    <select id="selectSummary" resultType="kopo.poly.dto.StatsResponseDTO">
+        SELECT
+            #{request.startDate} AS startDate,
+            #{request.endDate} AS endDate,
+            summary.totalVerificationCount,
+            summary.aiDetectionCount,
+            summary.realCount,
+            summary.unknownCount,
+            ROUND(
+                CASE
+                    WHEN summary.totalVerificationCount = 0 THEN 0
+                    ELSE summary.aiDetectionCount * 100.0 / summary.totalVerificationCount
+                END,
+                1
+            ) AS aiDetectionRatio,
+            summary.averageConfidence,
+            summary.reviewRequestCount,
+            ROUND(
+                CASE
+                    WHEN summary.totalVerificationCount = 0 THEN 0
+                    ELSE summary.falsePositiveReportCount * 100.0 / summary.totalVerificationCount
+                END,
+                1
+            ) AS falsePositiveReportRatio
+        FROM (
+            SELECT
+                COUNT(*) AS totalVerificationCount,
+                COALESCE(SUM(CASE WHEN UPPER(COALESCE(v.verdict, '')) = 'FAKE' THEN 1 ELSE 0 END), 0)
+                    AS aiDetectionCount,
+                COALESCE(SUM(CASE WHEN UPPER(COALESCE(v.verdict, '')) = 'REAL' THEN 1 ELSE 0 END), 0)
+                    AS realCount,
+                COALESCE(SUM(CASE
+                    WHEN UPPER(COALESCE(v.verdict, '')) NOT IN ('FAKE', 'REAL') THEN 1 ELSE 0 END), 0)
+                    AS unknownCount,
+                ROUND(COALESCE(AVG(v.score), 0), 1) AS averageConfidence,
+                (
+                    SELECT COUNT(*)
+                    FROM review_request rr
+                    WHERE <include refid="reviewPeriodCondition"/>
+                ) AS reviewRequestCount,
+                (
+                    SELECT COUNT(*)
+                    FROM review_request rr
+                    WHERE <include refid="reviewPeriodCondition"/>
+                      AND rr.request_type = 'FALSE_POSITIVE'
+                ) AS falsePositiveReportCount
+            FROM verification v
+            WHERE <include refid="verificationPeriodCondition"/>
+        ) summary
+    </select>
+
+    <select id="selectDailyStats" resultType="kopo.poly.dto.DailyStatsDTO">
+        SELECT
+            daily.statisticsDate,
+            daily.totalCount,
+            daily.aiDetectionCount,
+            daily.realCount,
+            daily.unknownCount,
+            daily.averageConfidence,
+            (
+                SELECT COUNT(*)
+                FROM review_request rr
+                WHERE rr.user_id = #{userId}
+                  AND DATE_FORMAT(rr.reg_dt, '%Y-%m-%d') = daily.statisticsDate
+            ) AS reviewRequestCount
+        FROM (
+            SELECT
+                DATE_FORMAT(v.reg_dt, '%Y-%m-%d') AS statisticsDate,
+                COUNT(*) AS totalCount,
+                COALESCE(SUM(CASE WHEN UPPER(COALESCE(v.verdict, '')) = 'FAKE' THEN 1 ELSE 0 END), 0)
+                    AS aiDetectionCount,
+                COALESCE(SUM(CASE WHEN UPPER(COALESCE(v.verdict, '')) = 'REAL' THEN 1 ELSE 0 END), 0)
+                    AS realCount,
+                COALESCE(SUM(CASE
+                    WHEN UPPER(COALESCE(v.verdict, '')) NOT IN ('FAKE', 'REAL') THEN 1 ELSE 0 END), 0)
+                    AS unknownCount,
+                ROUND(COALESCE(AVG(v.score), 0), 1) AS averageConfidence
+            FROM verification v
+            WHERE <include refid="verificationPeriodCondition"/>
+            GROUP BY DATE_FORMAT(v.reg_dt, '%Y-%m-%d')
+        ) daily
+        ORDER BY daily.statisticsDate
+    </select>
+
+</mapper>
