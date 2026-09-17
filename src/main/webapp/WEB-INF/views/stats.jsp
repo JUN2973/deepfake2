@@ -256,7 +256,7 @@
       <div>
         <div class="eyebrow">VERIFICATION STATISTICS</div>
         <h1>검증 통계</h1>
-        <p class="heading-copy">이미지 검증 결과와 재검토 요청 현황을 기간별로 확인합니다.</p>
+        <p class="heading-copy">전체 사용자의 이미지 검증 결과와 재검토 요청 현황을 기간별로 확인합니다.</p>
       </div>
       <span class="data-badge"><i data-lucide="database" width="14" height="14"></i> DB 통계</span>
     </div>
@@ -284,7 +284,7 @@
       <article class="kpi">
         <div class="kpi-top"><span class="kpi-label">전체 검증</span><span class="kpi-icon blue"><i data-lucide="scan-search" width="17" height="17"></i></span></div>
         <div id="totalValue" class="kpi-value">0건</div>
-        <div id="totalMeta" class="kpi-meta">선택 기간 누적 검증 수</div>
+        <div id="totalMeta" class="kpi-meta">전체 사용자 누적 검증 수</div>
       </article>
       <article class="kpi">
         <div class="kpi-top"><span class="kpi-label">AI 이미지 판정</span><span class="kpi-icon cyan"><i data-lucide="sparkles" width="17" height="17"></i></span></div>

@@ -5,14 +5,12 @@
 <mapper namespace="kopo.poly.mapper.IStatsMapper">
 
     <sql id="verificationPeriodCondition">
-        v.user_id = #{userId}
-        AND v.reg_dt &gt;= CONCAT(#{request.startDate}, ' 00:00:00')
+        v.reg_dt &gt;= CONCAT(#{request.startDate}, ' 00:00:00')
         AND v.reg_dt &lt; DATE_ADD(#{request.endDate}, INTERVAL 1 DAY)
     </sql>
 
     <sql id="reviewPeriodCondition">
-        rr.user_id = #{userId}
-        AND rr.reg_dt &gt;= CONCAT(#{request.startDate}, ' 00:00:00')
+        rr.reg_dt &gt;= CONCAT(#{request.startDate}, ' 00:00:00')
         AND rr.reg_dt &lt; DATE_ADD(#{request.endDate}, INTERVAL 1 DAY)
     </sql>
 
@@ -78,8 +76,7 @@
             (
                 SELECT COUNT(*)
                 FROM review_request rr
-                WHERE rr.user_id = #{userId}
-                  AND DATE_FORMAT(rr.reg_dt, '%Y-%m-%d') = daily.statisticsDate
+                WHERE DATE_FORMAT(rr.reg_dt, '%Y-%m-%d') = daily.statisticsDate
             ) AS reviewRequestCount
         FROM (
             SELECT

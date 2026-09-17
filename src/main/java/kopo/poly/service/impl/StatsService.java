@@ -31,11 +31,9 @@ public class StatsService implements IStatsService {
     }
 
     @Override
-    public StatsResponseDTO getStats(Long userId, StatsRequestDTO request) {
-        requireUserId(userId);
-
+    public StatsResponseDTO getStats(StatsRequestDTO request) {
         StatsRequestDTO normalizedRequest = normalizePeriod(request);
-        StatsResponseDTO summary = statsMapper.selectSummary(userId, normalizedRequest);
+        StatsResponseDTO summary = statsMapper.selectSummary(normalizedRequest);
         if (summary == null) {
             summary = new StatsResponseDTO();
         }
@@ -44,7 +42,7 @@ public class StatsService implements IStatsService {
         summary.setEndDate(normalizedRequest.getEndDate());
         normalizeSummary(summary);
 
-        List<DailyStatsDTO> dailyStats = statsMapper.selectDailyStats(userId, normalizedRequest);
+        List<DailyStatsDTO> dailyStats = statsMapper.selectDailyStats(normalizedRequest);
         summary.setDailyStatistics(fillMissingDates(normalizedRequest, dailyStats));
         return summary;
     }
@@ -159,9 +157,4 @@ public class StatsService implements IStatsService {
         return value.trim();
     }
 
-    private void requireUserId(Long userId) {
-        if (userId == null) {
-            throw new StatsServiceException("STATS-AUTH", "로그인이 필요합니다.");
-        }
-    }
 }

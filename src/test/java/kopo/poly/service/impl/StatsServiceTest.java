@@ -14,7 +14,6 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -47,10 +46,10 @@ class StatsServiceTest {
         firstDay.setRealCount(1L);
         firstDay.setAverageConfidence(0.824);
 
-        when(statsMapper.selectSummary(eq(3L), any())).thenReturn(summary);
-        when(statsMapper.selectDailyStats(eq(3L), any())).thenReturn(List.of(firstDay));
+        when(statsMapper.selectSummary(any())).thenReturn(summary);
+        when(statsMapper.selectDailyStats(any())).thenReturn(List.of(firstDay));
 
-        StatsResponseDTO result = service.getStats(3L, request);
+        StatsResponseDTO result = service.getStats(request);
 
         assertThat(result.getStartDate()).isEqualTo("2026-09-01");
         assertThat(result.getEndDate()).isEqualTo("2026-09-03");
@@ -64,13 +63,13 @@ class StatsServiceTest {
     void getStatsUsesSevenDayDefaultEndingAtRequestedEndDate() {
         StatsRequestDTO request = new StatsRequestDTO();
         request.setEndDate("2026-09-15");
-        when(statsMapper.selectSummary(eq(3L), any())).thenReturn(new StatsResponseDTO());
-        when(statsMapper.selectDailyStats(eq(3L), any())).thenReturn(List.of());
+        when(statsMapper.selectSummary(any())).thenReturn(new StatsResponseDTO());
+        when(statsMapper.selectDailyStats(any())).thenReturn(List.of());
 
-        service.getStats(3L, request);
+        service.getStats(request);
 
         ArgumentCaptor<StatsRequestDTO> captor = ArgumentCaptor.forClass(StatsRequestDTO.class);
-        verify(statsMapper).selectSummary(eq(3L), captor.capture());
+        verify(statsMapper).selectSummary(captor.capture());
         assertThat(captor.getValue().getStartDate()).isEqualTo("2026-09-09");
         assertThat(captor.getValue().getEndDate()).isEqualTo("2026-09-15");
     }
@@ -79,18 +78,10 @@ class StatsServiceTest {
     void getStatsRejectsInvalidPeriod() {
         StatsRequestDTO request = period("2026-09-15", "2026-09-01");
 
-        assertThatThrownBy(() -> service.getStats(3L, request))
+        assertThatThrownBy(() -> service.getStats(request))
                 .isInstanceOf(StatsServiceException.class)
                 .extracting(error -> ((StatsServiceException) error).getCode())
                 .isEqualTo("STATS-PERIOD");
-    }
-
-    @Test
-    void getStatsRequiresLogin() {
-        assertThatThrownBy(() -> service.getStats(null, period("2026-09-01", "2026-09-03")))
-                .isInstanceOf(StatsServiceException.class)
-                .extracting(error -> ((StatsServiceException) error).getCode())
-                .isEqualTo("STATS-AUTH");
     }
 
     private StatsRequestDTO period(String startDate, String endDate) {
