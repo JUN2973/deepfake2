@@ -2,6 +2,9 @@ package kopo.poly.service.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Timer;
 import kopo.poly.dto.DeepfakeResultDTO;
 import kopo.poly.dto.VerifyDTO;
 import kopo.poly.mapper.IVerifyMapper;
@@ -32,6 +35,7 @@ public class VerifyService implements IVerifyService {
     private final IDeepfakeClient deepfakeClient;
     private final ObjectProvider<IHeatmapClient> heatmapClientProvider;
     private final VerificationFilePreparer verificationFilePreparer;
+    private final MeterRegistry meterRegistry;
     private final ImageSuitabilityInspector imageSuitabilityInspector = new ImageSuitabilityInspector();
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final HeatmapResultMerger heatmapResultMerger = new HeatmapResultMerger(objectMapper);
@@ -40,11 +44,13 @@ public class VerifyService implements IVerifyService {
     public VerifyService(IVerifyMapper verifyMapper,
                          IObjectStorageService objectStorageService,
                          IDeepfakeClient deepfakeClient,
-                         ObjectProvider<IHeatmapClient> heatmapClientProvider) {
+                         ObjectProvider<IHeatmapClient> heatmapClientProvider,
+                         MeterRegistry meterRegistry) {
         this.verifyMapper = verifyMapper;
         this.deepfakeClient = deepfakeClient;
         this.heatmapClientProvider = heatmapClientProvider;
         this.verificationFilePreparer = new VerificationFilePreparer(objectStorageService);
+        this.meterRegistry = meterRegistry;
     }
 
     @Override
@@ -54,6 +60,26 @@ public class VerifyService implements IVerifyService {
 
     @Override
     public VerifyDTO createVerification(MultipartFile file, Long userId) throws Exception {
+        Timer.Sample sample = Timer.start(meterRegistry);
+        String outcome = "failure";
+        try {
+            VerifyDTO result = createVerificationInternal(file, userId);
+            outcome = "success";
+            Counter.builder("deepscan.verification.completed")
+                    .description("Completed verification analyses by verdict")
+                    .tag("verdict", metricVerdict(result.getVerdict()))
+                    .register(meterRegistry)
+                    .increment();
+            return result;
+        } finally {
+            sample.stop(Timer.builder("deepscan.verification.duration")
+                    .description("End-to-end verification processing time")
+                    .tag("outcome", outcome)
+                    .register(meterRegistry));
+        }
+    }
+
+    private VerifyDTO createVerificationInternal(MultipartFile file, Long userId) throws Exception {
         VerificationFilePreparer.PreparedUpload upload = verificationFilePreparer.prepare(file);
         DeepfakeResultDTO df;
         try (upload) {
@@ -84,6 +110,16 @@ public class VerifyService implements IVerifyService {
 
         verifyMapper.insertVerification(pDTO);
         return enrichVerification(verifyMapper.selectVerification(pDTO.getId()));
+    }
+
+    private String metricVerdict(String verdict) {
+        if (verdict == null || verdict.isBlank()) {
+            return "UNKNOWN";
+        }
+        return switch (verdict.toUpperCase()) {
+            case "REAL", "SUSPICIOUS", "FAKE", "NOT_APPLICABLE", "UNABLE_TO_EVALUATE" -> verdict.toUpperCase();
+            default -> "OTHER";
+        };
     }
 
     private String resolveApiProvider(String raw) {

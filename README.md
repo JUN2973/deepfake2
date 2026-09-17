@@ -215,6 +215,19 @@ imd-service
 
 ---
 
+## ✅ Quality and Operations
+
+* GitHub Actions 기반 자동 빌드, 테스트 및 WAR 생성
+* JaCoCo 테스트 커버리지 HTML/XML 리포트
+* Actuator 기반 health, liveness, readiness 확인
+* 요청별 `X-Request-ID` 로그 추적
+* 분석 성공 여부, 판정 분포 및 처리시간 메트릭
+* Dependabot 기반 Gradle/GitHub Actions 의존성 업데이트 확인
+
+상세 실행 및 운영 설정은 [`docs/operations-guide.md`](docs/operations-guide.md)를 참고합니다.
+
+---
+
 ## 📚 What I Learned
 
 * Spring Boot MVC 기반 웹 서비스 구조

@@ -33,6 +33,11 @@ APP_COOKIE_SECURE=true
 APP_COOKIE_SAME_SITE=lax
 SERVER_FORWARD_HEADERS_STRATEGY=framework
 
+# Operations. Keep detailed metrics private until /actuator is protected by
+# Spring Security, a reverse proxy allow-list, or a private monitoring network.
+MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE=health,info
+MANAGEMENT_HEALTH_SHOW_DETAILS=never
+
 # Object storage. Use s3 for production unless the server disk is persistent and backed up.
 APP_STORAGE_TYPE=s3
 AWS_REGION=ap-northeast-2
