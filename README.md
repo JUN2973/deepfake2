@@ -224,8 +224,10 @@ imd-service
 * 분석 성공 여부, 판정 분포 및 처리시간 메트릭
 * Dependabot 기반 Gradle/GitHub Actions 의존성 업데이트 확인
 * EC2 systemd 배포, readiness 검사 및 실패 시 자동 롤백
+* 라벨 데이터셋 기반 Precision, Recall, F1, ROC-AUC 및 신뢰구간 평가 도구
 
 상세 실행 및 운영 설정은 [`docs/operations-guide.md`](docs/operations-guide.md)를 참고합니다.
+탐지 정확도 평가 절차는 [`evaluation/README.md`](evaluation/README.md)를 참고합니다.
 
 ---
 

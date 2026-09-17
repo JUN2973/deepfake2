@@ -49,6 +49,8 @@ tmp_src_compare/
 __pycache__/
 *.pyc
 imd-service/.venv/
+evaluation/data/
+evaluation/output/
 live_news_response.html
 news_page_snapshot.html
 news_run.out.log

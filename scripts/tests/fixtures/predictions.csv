@@ -1,0 +1,10 @@
+sample_id,ground_truth,split,source,manipulation_type,file_sha256,score,verdict,provider,model_version,latency_ms,error
+val-fake-1,FAKE,validation,synthetic-test,face-swap,,0.90,FAKE,test-provider,test-model,120,
+val-fake-2,FAKE,validation,synthetic-test,reenactment,,0.40,SUSPICIOUS,test-provider,test-model,130,
+val-real-1,REAL,validation,synthetic-test,none,,0.60,SUSPICIOUS,test-provider,test-model,110,
+val-real-2,REAL,validation,synthetic-test,none,,0.10,REAL,test-provider,test-model,100,
+test-fake-1,FAKE,test,synthetic-test,face-swap,,0.90,FAKE,test-provider,test-model,150,
+test-fake-2,FAKE,test,synthetic-test,reenactment,,0.70,FAKE,test-provider,test-model,170,
+test-real-1,REAL,test,synthetic-test,none,,0.20,REAL,test-provider,test-model,90,
+test-real-2,REAL,test,synthetic-test,none,,0.30,REAL,test-provider,test-model,95,
+test-error-1,FAKE,test,synthetic-test,face-swap,,,,test-provider,test-model,,timeout

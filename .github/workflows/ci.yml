@@ -30,6 +30,9 @@ jobs:
       - name: Build, test and create coverage report
         run: ./gradlew clean test jacocoTestReport bootWar --no-daemon
 
+      - name: Test detection evaluation tools
+        run: python3 -m unittest discover -s scripts/tests -p 'test_*.py'
+
       - name: Upload test and coverage reports
         if: always()
         uses: actions/upload-artifact@v4
