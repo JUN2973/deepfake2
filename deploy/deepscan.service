@@ -1,0 +1,24 @@
+[Unit]
+Description=DeepScan Spring Boot application
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=ec2-user
+Group=ec2-user
+WorkingDirectory=/spring_module
+EnvironmentFile=/spring_module/.env.properties
+ExecStart=/usr/bin/java -Djava.net.preferIPv4Stack=true -jar /spring_module/current.war
+SuccessExitStatus=143
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=30
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=full
+ProtectHome=true
+UMask=0027
+
+[Install]
+WantedBy=multi-user.target

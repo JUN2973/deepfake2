@@ -101,11 +101,18 @@ cd /spring_module
 java -Djava.net.preferIPv4Stack=true -jar deepfake2-0.0.1-SNAPSHOT.war
 ```
 
-If it starts correctly, stop it and run in the background:
+If it starts correctly, stop it. For a persistent service and safe deployments,
+install the included systemd unit instead of using `nohup`:
 
 ```bash
-nohup java -Djava.net.preferIPv4Stack=true -jar deepfake2-0.0.1-SNAPSHOT.war 1> /dev/null 2>&1 &
+cd /path/to/deepfake2/deploy
+sudo bash install-systemd.sh ec2-user
 ```
+
+The first GitHub deployment creates `/spring_module/current.war`, starts the
+service, performs a readiness check, and rolls back automatically if a later
+release fails. See `docs/operations-guide.md` for required GitHub environment
+secrets and deployment steps.
 
 ## 6. EC2 Security Group
 
@@ -138,4 +145,11 @@ If the app page cannot be opened:
 
 ```bash
 netstat -tnlp | grep 11000
+```
+
+For systemd deployments, inspect the service with:
+
+```bash
+sudo systemctl status deepscan --no-pager
+sudo journalctl -u deepscan -n 100 --no-pager
 ```

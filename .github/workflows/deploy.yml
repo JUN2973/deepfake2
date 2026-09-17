@@ -1,0 +1,84 @@
+name: Deploy to EC2
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: Git branch, tag, or commit to deploy
+        required: true
+        default: master
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-deployment
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment: production
+
+    steps:
+      - name: Checkout requested revision
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+      - name: Test and build WAR
+        run: ./gradlew clean test bootWar --no-daemon
+
+      - name: Record release metadata
+        shell: bash
+        run: |
+          echo "DEPLOY_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          echo "WAR_PATH=$(find build/libs -maxdepth 1 -name '*.war' -print -quit)" >> "$GITHUB_ENV"
+
+      - name: Configure verified SSH access
+        shell: bash
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          SSH_HOST_KEY: ${{ secrets.EC2_HOST_KEY }}
+        run: |
+          test -n "$SSH_PRIVATE_KEY"
+          test -n "$SSH_HOST_KEY"
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_deepscan
+          chmod 600 ~/.ssh/id_deepscan
+          printf '%s\n' "$SSH_HOST_KEY" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Upload and activate release
+        shell: bash
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+          EC2_USER: ${{ secrets.EC2_USER }}
+          EC2_PORT: ${{ secrets.EC2_SSH_PORT || '22' }}
+        run: |
+          test -n "$EC2_HOST"
+          test -n "$EC2_USER"
+          test -f "$WAR_PATH"
+
+          checksum="$(sha256sum "$WAR_PATH" | awk '{print $1}')"
+          remote_war="/tmp/deepscan-${DEPLOY_SHA}.war"
+          ssh_target="${EC2_USER}@${EC2_HOST}"
+          ssh_options=(-i ~/.ssh/id_deepscan -p "$EC2_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes)
+
+          scp -i ~/.ssh/id_deepscan -P "$EC2_PORT" -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            "$WAR_PATH" "${ssh_target}:${remote_war}"
+
+          ssh "${ssh_options[@]}" "$ssh_target" \
+            "sudo /usr/local/sbin/deepscan-deploy '$remote_war' '$DEPLOY_SHA' '$checksum'"
