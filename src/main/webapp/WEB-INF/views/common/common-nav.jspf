@@ -29,6 +29,7 @@
         <a href="<%= dashboardContextPath %>/report" class="<%= "report".equals(dashboardActivePage) ? "text-sky-400" : "text-slate-300" %> hover:text-white transition-colors text-base font-medium">&#49888;&#44256;&#54616;&#44592;</a>
         <a href="<%= dashboardContextPath %>/history" class="<%= "history".equals(dashboardActivePage) ? "text-sky-400" : "text-slate-300" %> hover:text-white transition-colors text-base font-medium">&#44160;&#51613; &#44592;&#47197;</a>
         <a href="<%= dashboardContextPath %>/faq" class="<%= "faq".equals(dashboardActivePage) ? "text-sky-400" : "text-slate-300" %> hover:text-white transition-colors text-base font-medium">FAQ</a>
+        <a href="<%= dashboardContextPath %>/stats" class="<%= "stats".equals(dashboardActivePage) ? "text-sky-400" : "text-slate-300" %> hover:text-white transition-colors text-base font-medium">&#53685;&#44228;</a>
         <% if (dashboardAuthenticated) { %>
         <div class="flex items-center gap-4">
           <a href="<%= dashboardContextPath %>/mypage" class="flex items-center gap-2 <%= "mypage".equals(dashboardActivePage) ? "text-white" : "text-slate-300" %> hover:text-white transition-colors text-base font-medium">
@@ -58,6 +59,7 @@
       <a href="<%= dashboardContextPath %>/report" class="block <%= "report".equals(dashboardActivePage) ? "text-sky-400 font-medium" : "text-slate-300" %> hover:text-white transition-colors py-2">&#49888;&#44256;&#54616;&#44592;</a>
       <a href="<%= dashboardContextPath %>/history" class="block <%= "history".equals(dashboardActivePage) ? "text-sky-400 font-medium" : "text-slate-300" %> hover:text-white transition-colors py-2">&#44160;&#51613; &#44592;&#47197;</a>
       <a href="<%= dashboardContextPath %>/faq" class="block <%= "faq".equals(dashboardActivePage) ? "text-sky-400 font-medium" : "text-slate-300" %> hover:text-white transition-colors py-2">FAQ</a>
+      <a href="<%= dashboardContextPath %>/stats" class="block <%= "stats".equals(dashboardActivePage) ? "text-sky-400 font-medium" : "text-slate-300" %> hover:text-white transition-colors py-2">&#53685;&#44228;</a>
       <% if (dashboardAuthenticated) { %>
       <a href="<%= dashboardContextPath %>/mypage" class="block <%= "mypage".equals(dashboardActivePage) ? "text-white" : "text-slate-300" %> hover:text-white transition-colors py-2">
         <i data-lucide="user-circle" class="w-5 h-5 inline mr-2"></i>
