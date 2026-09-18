@@ -304,7 +304,7 @@
         </div>
       </div>
       <h2 class="text-3xl font-bold text-white mb-4">신고가 접수되었습니다</h2>
-      <p class="text-slate-400 mb-2">빠른 시일 내에 검토하겠습니다.</p>
+      <p class="text-slate-400 mb-2">접수 내용을 확인한 뒤 안내합니다.</p>
       <p class="text-slate-500 text-sm">잠시 후 홈으로 이동합니다.</p>
     </div>
   </div>
@@ -323,8 +323,8 @@
           </div>
           <h1 class="text-4xl md:text-5xl font-bold mb-4">딥페이크 신고</h1>
           <p class="text-slate-400 max-w-2xl mx-auto">
-            딥페이크, 허위정보, 사이버 범죄를 발견하셨나요?<br>
-            즉시 사이버수사기관에 신고하여 안전한 온라인 환경을 만들어 주세요.
+            딥페이크나 허위정보로 인한 피해가 의심되면<br>
+            아래 신고 방법과 준비사항을 확인하세요.
           </p>
         </div>
 
@@ -363,7 +363,7 @@
                   </a>
                   <p class="text-sm text-slate-400 mt-2">
                     경찰청 사이버범죄 신고 시스템<br>
-                    온라인으로 편리하게 신고
+                    온라인 신고 접수
                   </p>
                 </div>
               </div>
@@ -375,9 +375,47 @@
                 <div class="flex-1">
                   <h3 class="text-lg font-semibold mb-2">방문 신고</h3>
                   <p class="text-sm text-slate-400">
-                    가까운 경찰서 또는 사이버수사대<br>
-                    직접 방문 신고가 가능합니다.
+                    가까운 경찰서 또는 사이버수사대에서<br>
+                    신고할 수 있습니다.
                   </p>
+                </div>
+              </div>
+
+              <div class="flex items-start gap-4">
+                <div class="w-12 h-12 bg-blue-500/20 rounded-lg flex items-center justify-center flex-shrink-0 border border-blue-500/30">
+                  <i data-lucide="mail" class="w-6 h-6 text-blue-400"></i>
+                </div>
+                <div class="min-w-0 flex-1">
+                  <h3 class="text-lg font-semibold mb-2">이메일 신고</h3>
+                  <p class="text-sm text-slate-400">
+                    전화·온라인·방문 신고가 어렵다면 요청서를 작성해<br class="hidden sm:block">
+                    DeepScan으로 보내 주세요.
+                  </p>
+                  <a href="mailto:support@deepscan.com"
+                     class="mt-2 inline-block text-sm font-medium text-blue-400 underline underline-offset-4 transition-colors hover:text-blue-300">
+                    support@deepscan.com
+                  </a>
+
+                  <div class="mt-4 rounded-xl border border-sky-500/20 bg-sky-500/5 p-4">
+                    <p class="text-sm font-semibold text-slate-200">디지털성범죄물 신고·삭제 요청서</p>
+                    <p class="mt-1 text-xs leading-relaxed text-slate-400">
+                      불법촬영물·성적 허위영상물·아동·청소년 성착취물 신고 시 아래 요청서를 작성해 이메일에 첨부하세요.
+                    </p>
+                    <div class="mt-3 flex flex-col gap-2 sm:flex-row">
+                      <a href="<%= contextPath %>/resources/docs/report-illegal-recording-doc.hwp"
+                         download="디지털성범죄물 신고 삭제 요청서.hwp"
+                         class="inline-flex flex-1 items-center gap-2 rounded-lg border border-sky-500/30 bg-slate-950/30 px-3 py-2 text-sm font-medium text-sky-400 transition-colors hover:border-sky-400/50 hover:bg-sky-500/10 hover:text-sky-300">
+                        <i data-lucide="file-down" class="h-4 w-4"></i>
+                        <span>신고 삭제 요청서.hwp</span>
+                      </a>
+                      <a href="<%= contextPath %>/resources/docs/report-illegal-recording-doc.pdf"
+                         download="디지털성범죄물 신고 삭제 요청서.pdf"
+                         class="inline-flex flex-1 items-center gap-2 rounded-lg border border-cyan-500/30 bg-slate-950/30 px-3 py-2 text-sm font-medium text-cyan-400 transition-colors hover:border-cyan-400/50 hover:bg-cyan-500/10 hover:text-cyan-300">
+                        <i data-lucide="file-down" class="h-4 w-4"></i>
+                        <span>신고 삭제 요청서.pdf</span>
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -468,7 +506,7 @@
 
             <div class="mt-6 p-4 bg-gradient-to-r from-sky-500/10 to-cyan-500/10 border border-sky-500/30 rounded-lg">
               <p class="text-sm text-slate-300 text-center">
-                <strong class="text-sky-400">TIP:</strong> DeepScan을 사용하여 의심스러운 이미지를 사전에 검증해보세요.
+                <strong class="text-sky-400">참고:</strong> 의심되는 이미지는 신고 전에 DeepScan에서 분석할 수 있습니다.
               </p>
             </div>
           </div>
@@ -480,21 +518,21 @@
           <div class="report-panel relative bg-slate-900/50 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all">
           <div class="flex items-center gap-3 mb-6">
             <i data-lucide="trending-up" class="w-8 h-8 text-sky-400"></i>
-            <h2 class="text-2xl font-bold">딥페이크 범죄 통계</h2>
+            <h2 class="text-2xl font-bold">피해 대응 요약</h2>
           </div>
 
           <div class="grid md:grid-cols-3 gap-6 mb-8">
             <div class="crime-stat-card crime-stat-card-red bg-red-500/10 p-6 rounded-xl border border-red-500/30">
-              <div class="text-3xl text-red-400 mb-2 font-bold">+273%</div>
-              <p class="text-slate-400">2023년 대비<br>딥페이크 범죄 증가율</p>
+              <div class="text-2xl text-red-400 mb-2 font-bold">증거 보관</div>
+              <p class="text-slate-400">화면 캡처와 URL,<br>계정 정보를 남겨 두세요.</p>
             </div>
             <div class="crime-stat-card crime-stat-card-blue bg-blue-500/10 p-6 rounded-xl border border-blue-500/30">
-              <div class="text-3xl text-blue-400 mb-2 font-bold">89%</div>
-              <p class="text-slate-400">성범죄 관련<br>딥페이크 비율</p>
+              <div class="text-2xl text-blue-400 mb-2 font-bold">신고 접수</div>
+              <p class="text-slate-400">긴급 신고는 112,<br>사이버범죄 상담은 182입니다.</p>
             </div>
             <div class="crime-stat-card crime-stat-card-purple bg-purple-500/10 p-6 rounded-xl border border-purple-500/30">
-              <div class="text-3xl text-purple-400 mb-2 font-bold">10대</div>
-              <p class="text-slate-400">가장 많은<br>피해 연령대</p>
+              <div class="text-2xl text-purple-400 mb-2 font-bold">삭제 요청</div>
+              <p class="text-slate-400">콘텐츠가 게시된 서비스에도<br>삭제를 요청하세요.</p>
             </div>
           </div>
 
@@ -505,10 +543,10 @@
                 <div>
                   <h4 class="text-lg font-semibold mb-2">주요 범죄 유형</h4>
                   <div class="grid md:grid-cols-2 gap-3 text-sm text-slate-400">
-                    <div class="flex items-center gap-2"><span class="w-2 h-2 bg-red-500 rounded-full"></span><span>성적 합성물 제작 및 유포 (67%)</span></div>
-                    <div class="flex items-center gap-2"><span class="w-2 h-2 bg-orange-500 rounded-full"></span><span>명의도용 및 사기 (18%)</span></div>
-                    <div class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-500 rounded-full"></span><span>허위정보 유포 (10%)</span></div>
-                    <div class="flex items-center gap-2"><span class="w-2 h-2 bg-blue-500 rounded-full"></span><span>기타 사이버 범죄 (5%)</span></div>
+                    <div class="flex items-center gap-2"><span class="w-2 h-2 bg-red-500 rounded-full"></span><span>성적 합성물 제작 및 유포</span></div>
+                    <div class="flex items-center gap-2"><span class="w-2 h-2 bg-orange-500 rounded-full"></span><span>명의도용 및 사기</span></div>
+                    <div class="flex items-center gap-2"><span class="w-2 h-2 bg-yellow-500 rounded-full"></span><span>허위정보 유포</span></div>
+                    <div class="flex items-center gap-2"><span class="w-2 h-2 bg-blue-500 rounded-full"></span><span>기타 사이버 범죄</span></div>
                   </div>
                 </div>
               </div>
@@ -518,10 +556,10 @@
               <div class="flex items-start gap-4">
                 <i data-lucide="alert-triangle" class="w-6 h-6 text-yellow-400 flex-shrink-0 mt-1"></i>
                 <div>
-                  <h4 class="text-lg font-semibold mb-2">경고: 처벌 강화</h4>
+                  <h4 class="text-lg font-semibold mb-2">처벌 규정 확인</h4>
                   <p class="text-sm text-slate-400 leading-relaxed">
-                    2024년부터 딥페이크 성범죄에 대한 처벌 규정이 강화되었습니다.
-                    <strong class="text-yellow-400">제작·유포·소지 모두 처벌 대상이며, 최대 징역 7년 또는 5천만원 이하의 벌금</strong>이 적용될 수 있습니다.
+                    적용되는 법률과 처벌 기준은 사건 유형과 발생 시점에 따라 달라질 수 있습니다.
+                    <strong class="text-yellow-400">신고 전에 경찰청 안내와 최신 법령을 확인하세요.</strong>
                   </p>
                 </div>
               </div>
@@ -541,7 +579,7 @@
           <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-3xl blur-2xl opacity-0 group-hover:opacity-20 transition-opacity"></div>
           <div class="report-panel relative bg-slate-900/50 backdrop-blur-xl rounded-2xl p-8 border border-white/10 hover:border-white/20 transition-all">
           <h3 class="text-2xl font-bold mb-3">가까운 경찰서 찾기</h3>
-          <p class="text-slate-400 mb-6">직접 방문 신고가 필요하면 가까운 경찰서를 확인하고, 지도와 목록에서 바로 전화 정보까지 보세요.</p>
+          <p class="text-slate-400 mb-6">경찰서 위치와 연락처를 지도와 목록에서 확인할 수 있습니다.</p>
           <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between mb-6">
             <div class="station-search-row">
               <input
@@ -580,7 +618,7 @@
                   <div>
                     <p class="text-xs uppercase tracking-[0.24em] text-sky-300/80 mb-2">선택 경찰서</p>
                     <h4 id="selectedStationName" class="text-xl font-bold text-white mb-2">경찰서를 선택해 주세요</h4>
-                    <p id="selectedStationAddress" class="text-sm text-slate-400">오른쪽 목록에서 경찰서를 선택하면 지도 위치와 연락처를 함께 확인할 수 있습니다.</p>
+                    <p id="selectedStationAddress" class="text-sm text-slate-400">목록에서 경찰서를 선택하면 위치와 연락처가 표시됩니다.</p>
                   </div>
                   <a id="selectedStationPhone" href="#" class="hidden shrink-0 inline-flex items-center gap-2 rounded-full border border-sky-400/30 bg-sky-500/10 px-4 py-2 text-sm font-semibold text-sky-300 hover:bg-sky-500/20">
                     <i data-lucide="phone" class="w-4 h-4"></i>
@@ -725,7 +763,7 @@
 
       if (!station) {
         name.textContent = "경찰서를 선택해 주세요";
-        address.textContent = "오른쪽 목록에서 경찰서를 선택하면 지도 위치와 연락처를 한 번에 확인할 수 있습니다.";
+        address.textContent = "목록에서 경찰서를 선택하면 위치와 연락처가 표시됩니다.";
         phoneLink.classList.add("hidden");
         phoneLink.setAttribute("href", "#");
         phoneLink.querySelector("span").textContent = "";
@@ -1017,7 +1055,7 @@
 
       const submittedTexts = document.querySelectorAll("#submittedView p");
       if (submittedTexts[0]) {
-        submittedTexts[0].textContent = "빠른 시일 내에 검토하겠습니다.";
+        submittedTexts[0].textContent = "접수 내용을 확인한 뒤 안내합니다.";
       }
       if (submittedTexts[1]) {
         submittedTexts[1].textContent = "잠시 후 홈으로 이동합니다.";
@@ -1030,7 +1068,7 @@
 
       const heroDesc = document.querySelector("#mainView .text-center p");
       if (heroDesc) {
-        heroDesc.innerHTML = "딥페이크, 허위정보, 사이버 범죄를 발견하셨나요?<br>즉시 사이버수사기관에 신고하여 안전한 온라인 환경을 만들어 주세요.";
+        heroDesc.innerHTML = "딥페이크나 허위정보로 인한 피해가 의심되면<br>아래 신고 방법과 준비사항을 확인하세요.";
       }
     }
 
