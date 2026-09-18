@@ -230,7 +230,11 @@
           </div>
           <div class="rounded-3xl border border-white/10 bg-slate-900/50 p-6 backdrop-blur-xl reveal" style="--reveal-delay: 320ms;" data-reveal>
             <div class="mb-3 flex items-center gap-2 text-sky-300"><i data-lucide="shield-check" class="h-5 w-5"></i><h3 class="font-bold text-white">안전한 커뮤니티</h3></div>
-            <p class="text-sm leading-6 text-slate-400">개인정보가 포함된 원본 이미지는 가린 뒤 공유하고, 확인되지 않은 정보는 사실처럼 단정하지 말아 주세요.</p>
+            <p class="text-sm leading-6 text-slate-400">개인정보와 원본 증거는 게시하지 말아 주세요. 실제 피해 신고나 삭제 요청이 필요하다면 공개 게시글 대신 신고 안내를 이용하세요.</p>
+            <a href="<%= contextPath %>/report" class="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-lg border border-sky-500/30 bg-sky-500/10 px-4 py-2.5 text-sm font-semibold text-sky-300 transition-colors hover:bg-sky-500/20">
+              <i data-lucide="shield-alert" class="h-4 w-4"></i>
+              <span>신고 안내 보기</span>
+            </a>
           </div>
         </aside>
       </div>

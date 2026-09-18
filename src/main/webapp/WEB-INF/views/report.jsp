@@ -386,10 +386,10 @@
                   <i data-lucide="mail" class="w-6 h-6 text-blue-400"></i>
                 </div>
                 <div class="min-w-0 flex-1">
-                  <h3 class="text-lg font-semibold mb-2">이메일 신고</h3>
+                  <h3 class="text-lg font-semibold mb-2">이메일 문의 및 삭제 요청 안내</h3>
                   <p class="text-sm text-slate-400">
-                    전화·온라인·방문 신고가 어렵다면 요청서를 작성해<br class="hidden sm:block">
-                    DeepScan으로 보내 주세요.
+                    커뮤니티에 부적절한 글 또는 사진이 올라왔다면<br class="hidden sm:block">
+                    DeepScan 이메일로 신고해 주세요.
                   </p>
                   <a href="mailto:support@deepscan.com"
                      class="mt-2 inline-block text-sm font-medium text-blue-400 underline underline-offset-4 transition-colors hover:text-blue-300">
@@ -399,7 +399,7 @@
                   <div class="mt-4 rounded-xl border border-sky-500/20 bg-sky-500/5 p-4">
                     <p class="text-sm font-semibold text-slate-200">디지털성범죄물 신고·삭제 요청서</p>
                     <p class="mt-1 text-xs leading-relaxed text-slate-400">
-                      불법촬영물·성적 허위영상물·아동·청소년 성착취물 신고 시 아래 요청서를 작성해 이메일에 첨부하세요.
+                      아래 요청서를 내려받아 신고기관 또는 콘텐츠가 게시된 플랫폼에 제출할 때 활용하세요.
                     </p>
                     <div class="mt-3 flex flex-col gap-2 sm:flex-row">
                       <a href="<%= contextPath %>/resources/docs/report-illegal-recording-doc.hwp"
