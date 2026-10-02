@@ -89,7 +89,7 @@
           &#xD648;&#xC73C;&#xB85C;
         </button>
         <div class="text-sm text-slate-400">
-          <span class="font-medium text-sky-400"><%= userName %></span>&#xB2D8;&#xC758; &#xAC80;&#xC99D;&#xAE30;&#xB85D;
+          <span class="font-medium text-sky-400"><%= org.springframework.web.util.HtmlUtils.htmlEscape(userName) %></span>&#xB2D8;&#xC758; &#xAC80;&#xC99D;&#xAE30;&#xB85D;
         </div>
       </div>
     </nav>

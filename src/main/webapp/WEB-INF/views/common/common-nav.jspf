@@ -34,7 +34,7 @@
         <div class="flex items-center gap-4">
           <a href="<%= dashboardContextPath %>/mypage" class="flex items-center gap-2 <%= "mypage".equals(dashboardActivePage) ? "text-white" : "text-slate-300" %> hover:text-white transition-colors text-base font-medium">
             <i data-lucide="user-circle" class="w-5 h-5"></i>
-            <span><%= dashboardUserName %></span>
+            <span><%= org.springframework.web.util.HtmlUtils.htmlEscape(dashboardUserName == null ? "" : dashboardUserName) %></span>
           </a>
           <form action="<%= dashboardContextPath %>/api/v1/auth/logout" method="post" class="m-0 dashboard-logout-form">
             <button type="submit" class="rounded-lg border border-[#343b45] bg-[#11151a] px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-[#1a2028]">&#47196;&#44536;&#50500;&#50883;</button>
@@ -63,7 +63,7 @@
       <% if (dashboardAuthenticated) { %>
       <a href="<%= dashboardContextPath %>/mypage" class="block <%= "mypage".equals(dashboardActivePage) ? "text-white" : "text-slate-300" %> hover:text-white transition-colors py-2">
         <i data-lucide="user-circle" class="w-5 h-5 inline mr-2"></i>
-        <span><%= dashboardUserName %></span>
+        <span><%= org.springframework.web.util.HtmlUtils.htmlEscape(dashboardUserName == null ? "" : dashboardUserName) %></span>
       </a>
       <form action="<%= dashboardContextPath %>/api/v1/auth/logout" method="post" class="m-0 dashboard-logout-form">
         <button type="submit" class="block w-full px-4 py-2 bg-white/10 hover:bg-white/20 rounded-lg transition-colors text-center text-white border border-white/10">&#47196;&#44536;&#50500;&#50883;</button>

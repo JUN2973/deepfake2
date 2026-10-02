@@ -9,8 +9,8 @@
     return;
   }
 
-  String escapedUserName = userName == null ? "" : userName.replace("\\", "\\\\").replace("\"", "\\\"");
-  String escapedUserEmail = userEmail == null ? "" : userEmail.replace("\\", "\\\\").replace("\"", "\\\"");
+  String escapedUserName = userName == null ? "" : org.springframework.web.util.JavaScriptUtils.javaScriptEscape(userName);
+  String escapedUserEmail = userEmail == null ? "" : org.springframework.web.util.JavaScriptUtils.javaScriptEscape(userEmail);
   request.setAttribute("activePage", "mypage");
 %>
 <!DOCTYPE html>
@@ -56,7 +56,7 @@
           </div>
         </div>
         <h1 class="text-3xl font-bold text-white mb-2">&#47560;&#51060;&#54168;&#51060;&#51648;</h1>
-        <p class="text-slate-400"><%= userName %>&#45784;&#51032; &#54532;&#47196;&#54596;</p>
+        <p class="text-slate-400"><%= org.springframework.web.util.HtmlUtils.htmlEscape(userName == null ? "" : userName) %>&#45784;&#51032; &#54532;&#47196;&#54596;</p>
       </div>
 
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -94,7 +94,7 @@
               <label class="block text-sm text-slate-300 mb-2 font-medium">&#51060;&#47700;&#51068;</label>
               <div class="relative">
                 <i data-lucide="mail" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500"></i>
-                <input type="email" value="<%= userEmail != null ? userEmail : "" %>" class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-slate-400 opacity-50 backdrop-blur-xl" disabled>
+                <input type="email" value="<%= userEmail != null ? org.springframework.web.util.HtmlUtils.htmlEscape(userEmail) : "" %>" class="w-full pl-10 pr-4 py-3 bg-white/5 border border-white/20 rounded-xl text-slate-400 opacity-50 backdrop-blur-xl" disabled>
               </div>
               <p class="text-xs text-slate-500 mt-1">&#51060;&#47700;&#51068;&#51008; &#48320;&#44221;&#54624; &#49688; &#50630;&#49845;&#45768;&#45796;.</p>
             </div>
