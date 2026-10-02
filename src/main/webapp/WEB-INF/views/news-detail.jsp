@@ -271,7 +271,8 @@
         button.addEventListener("click", function () {
           if (link.url.startsWith("http://") || link.url.startsWith("https://")) {
             window.open(link.url, "_blank", "noopener,noreferrer");
-          } else {
+          } else if (link.url.startsWith("/") && !link.url.startsWith("//")) {
+            // 내부 경로만 이동한다. javascript: 같은 스킴은 무시한다.
             window.location.href = link.url;
           }
         });

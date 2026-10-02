@@ -411,9 +411,10 @@ public class NewsService {
             displaySummary = "\uC694\uC57D \uC815\uBCF4\uAC00 \uC81C\uACF5\uB418\uC9C0 \uC54A\uC558\uC2B5\uB2C8\uB2E4.";
         }
 
+        // 상세 URL은 query parameter로도 들어오므로 http(s) 외 스킴(javascript: 등)은 버린다.
         String originalUrl = firstNonBlank(
-                news.getOriginallink(),
-                news.getLink()
+                safeHttpUrl(news.getOriginallink()),
+                safeHttpUrl(news.getLink())
         );
 
         NewsViewDTO view = NewsViewDTO.builder()
@@ -1145,6 +1146,24 @@ public class NewsService {
 
     private boolean isNewsApiMisconfigured() {
         return isBlank(naverClientId) || isBlank(naverClientSecret) || isBlank(naverNewsUrl);
+    }
+
+    static String safeHttpUrl(String value) {
+        if (value == null || value.isBlank()) {
+            return "";
+        }
+        try {
+            URI uri = URI.create(value.trim());
+            String scheme = uri.getScheme();
+            boolean httpScheme = "http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme);
+            if (!httpScheme || uri.getHost() == null) {
+                return "";
+            }
+            // 화면에서 http(s):// 접두사로 판별하므로 스킴을 소문자로 맞춘다.
+            return scheme.toLowerCase(Locale.ROOT) + uri.toString().substring(scheme.length());
+        } catch (IllegalArgumentException e) {
+            return "";
+        }
     }
 
     private String firstNonBlank(String... values) {
