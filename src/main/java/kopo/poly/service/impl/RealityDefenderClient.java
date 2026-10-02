@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestClient;
@@ -28,6 +29,7 @@ import org.springframework.web.client.RestClientResponseException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.net.URI;
+import java.time.Duration;
 import java.util.Map;
 
 /**
@@ -51,8 +53,19 @@ public class RealityDefenderClient implements IDeepfakeClient {
     @Value("${rd.poll.interval-ms:3000}")
     private long pollIntervalMs;
 
-    private final RestClient restClient = RestClient.create();
+    private final RestClient restClient;
     private final ObjectMapper om = new ObjectMapper();
+
+    public RealityDefenderClient(@Value("${rd.http.connect-timeout-ms:5000}") int connectTimeoutMs,
+                                 @Value("${rd.http.read-timeout-ms:30000}") int readTimeoutMs) {
+        // 업로드(최대 32MB)와 결과 조회가 무기한 대기하지 않도록 전용 timeout을 둔다.
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(Duration.ofMillis(connectTimeoutMs));
+        factory.setReadTimeout(Duration.ofMillis(readTimeoutMs));
+        this.restClient = RestClient.builder()
+                .requestFactory(factory)
+                .build();
+    }
 
     @Override
     public DeepfakeResultDTO analyze(Path savedFilePath) throws Exception {

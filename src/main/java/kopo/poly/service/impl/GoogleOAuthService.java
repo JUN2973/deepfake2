@@ -38,9 +38,10 @@ public class GoogleOAuthService implements IGoogleOAuthService {
     @Value("${spring.security.oauth2.client.registration.google.client-secret:}")
     private String googleClientSecret;
 
-    public GoogleOAuthService(IUserMapper userMapper) {
+    // AppConfig의 timeout이 적용된 공통 RestClient를 사용한다.
+    public GoogleOAuthService(IUserMapper userMapper, RestClient restClient) {
         this.userMapper = userMapper;
-        this.restClient = RestClient.create();
+        this.restClient = restClient;
     }
 
     @Override
