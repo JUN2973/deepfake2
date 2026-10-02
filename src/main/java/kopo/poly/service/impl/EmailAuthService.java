@@ -32,6 +32,7 @@ public class EmailAuthService {
     private static final int MAX_SENDS_PER_WINDOW = 3;
     private static final int MAX_VERIFY_FAILURES_PER_WINDOW = 5;
     private static final Duration RATE_LIMIT_WINDOW = Duration.ofMinutes(10);
+    private static final String VERIFY_LOCKED_MESSAGE = "인증 실패 횟수가 너무 많습니다. 잠시 후 인증번호를 다시 요청해 주세요.";
 
     private final IEmailAuthMapper emailAuthRepository;
     private final IMailService mailService;
@@ -84,9 +85,17 @@ public class EmailAuthService {
             return new EmailAuthResponseDTO(false, "인증 시간이 만료되었습니다. 인증번호를 다시 요청해 주세요.");
         }
 
+        // 잠금 여부는 코드 비교 전에 확인한다. 잠긴 뒤에는 정답을 입력해도 인증되지 않아야 대입 공격을 막을 수 있다.
+        if (isVerifyLocked(normalizedEmail)) {
+            emailAuthRepository.expireAllByEmail(normalizedEmail);
+            return new EmailAuthResponseDTO(false, VERIFY_LOCKED_MESSAGE);
+        }
+
         if (!authCode.equals(latest.getAuthCode())) {
-            if (isRateLimited(verifyFailureWindows, normalizedEmail, MAX_VERIFY_FAILURES_PER_WINDOW)) {
-                return new EmailAuthResponseDTO(false, "인증 실패 횟수가 너무 많습니다. 잠시 후 다시 시도해 주세요.");
+            if (recordVerifyFailure(normalizedEmail) >= MAX_VERIFY_FAILURES_PER_WINDOW) {
+                // 실패 한도에 도달하면 현재 인증번호를 폐기해 새 번호를 다시 받도록 한다.
+                emailAuthRepository.expireAllByEmail(normalizedEmail);
+                return new EmailAuthResponseDTO(false, VERIFY_LOCKED_MESSAGE);
             }
             return new EmailAuthResponseDTO(false, "인증번호가 일치하지 않습니다.");
         }
@@ -207,6 +216,23 @@ public class EmailAuthService {
             return new RateWindow(current.count() + 1, current.resetAt());
         });
         return window.count() > maxAttempts;
+    }
+
+    private boolean isVerifyLocked(String email) {
+        RateWindow window = verifyFailureWindows.get(email);
+        return window != null
+                && !LocalDateTime.now().isAfter(window.resetAt())
+                && window.count() >= MAX_VERIFY_FAILURES_PER_WINDOW;
+    }
+
+    private int recordVerifyFailure(String email) {
+        LocalDateTime now = LocalDateTime.now();
+        return verifyFailureWindows.compute(email, (ignored, current) -> {
+            if (current == null || now.isAfter(current.resetAt())) {
+                return new RateWindow(1, now.plus(RATE_LIMIT_WINDOW));
+            }
+            return new RateWindow(current.count() + 1, current.resetAt());
+        }).count();
     }
 
     private LocalDateTime parseDateTime(String value) {
