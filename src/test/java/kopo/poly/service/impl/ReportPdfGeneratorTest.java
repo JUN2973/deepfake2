@@ -109,7 +109,7 @@ class ReportPdfGeneratorTest {
         var graphics = image.createGraphics();
         graphics.setColor(Color.BLACK);
         graphics.fillRect(0, 0, image.getWidth(), image.getHeight());
-        graphics.setColor(Color.RED);
+        graphics.setColor(Color.YELLOW);
         graphics.fillRect(8, 6, 16, 12);
         graphics.dispose();
         ByteArrayOutputStream output = new ByteArrayOutputStream();

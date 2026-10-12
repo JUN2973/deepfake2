@@ -198,13 +198,14 @@ public class ReportPdfGenerator {
                     if (alpha == 0) {
                         continue;
                     }
+                    int[] highlight = highlightColor(intensity / 255.0);
 
                     int baseRed = (base >>> 16) & 0xff;
                     int baseGreen = (base >>> 8) & 0xff;
                     int baseBlue = base & 0xff;
-                    int red = blend(baseRed, heatRed, alpha);
-                    int green = blend(baseGreen, heatGreen, alpha);
-                    int blue = blend(baseBlue, heatBlue, alpha);
+                    int red = blend(baseRed, highlight[0], alpha);
+                    int green = blend(baseGreen, highlight[1], alpha);
+                    int blue = blend(baseBlue, highlight[2], alpha);
                     overlay.setRGB(x, y, (red << 16) | (green << 8) | blue);
                 }
             }
@@ -226,6 +227,27 @@ public class ReportPdfGenerator {
 
     private int blend(int base, int heat, int alpha) {
         return (base * (255 - alpha) + heat * alpha) / 255;
+    }
+
+    private int[] highlightColor(double value) {
+        double v = Math.max(0.0, Math.min(1.0, value));
+        int[][] stops = {
+                {190, 0, 120},
+                {255, 45, 149},
+                {255, 23, 68}
+        };
+        double scaled = v * (stops.length - 1);
+        int index = Math.min(stops.length - 2, (int) Math.floor(scaled));
+        double amount = scaled - index;
+        return new int[]{
+                interpolate(stops[index][0], stops[index + 1][0], amount),
+                interpolate(stops[index][1], stops[index + 1][1], amount),
+                interpolate(stops[index][2], stops[index + 1][2], amount)
+        };
+    }
+
+    private int interpolate(int start, int end, double amount) {
+        return (int) Math.round(start + ((end - start) * amount));
     }
 
     private PDFont loadFont(PDDocument document) throws IOException {
