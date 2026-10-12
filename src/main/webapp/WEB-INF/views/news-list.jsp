@@ -151,7 +151,7 @@
         <h1 class="mb-4 text-4xl font-bold md:text-5xl">
           딥페이크 <span class="bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">뉴스</span>
         </h1>
-        <p class="mx-auto max-w-2xl text-lg text-slate-400">최신 딥페이크 뉴스를 주제와 정렬 기준에 맞춰 빠르게 확인하세요.</p>
+        <p class="mx-auto max-w-2xl text-lg text-slate-400">딥페이크 관련 뉴스를 주제별로 모았습니다.</p>
       </div>
 
       <div class="mb-8 reveal" style="--reveal-delay: 100ms;" data-reveal>

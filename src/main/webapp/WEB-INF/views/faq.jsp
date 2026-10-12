@@ -45,7 +45,7 @@
       <h1 class="text-5xl md:text-6xl font-bold mb-4">
         <span class="bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">자주 묻는 질문</span>
       </h1>
-      <p class="text-xl text-slate-400 max-w-2xl mx-auto">DeepScan 이용 중 자주 받는 질문과 답변을 정리했습니다.</p>
+      <p class="text-xl text-slate-400 max-w-2xl mx-auto">서비스 이용에 필요한 내용을 항목별로 정리했습니다.</p>
     </div>
 
     <div class="mb-8">
@@ -54,7 +54,7 @@
         <input
           id="searchQuery"
           type="text"
-          placeholder="질문을 검색해보세요."
+          placeholder="궁금한 내용을 입력하세요."
           class="w-full pl-12 pr-4 py-4 bg-white/5 border border-white/20 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 transition-all backdrop-blur-xl"
         >
       </div>
@@ -72,8 +72,8 @@
       <div class="absolute inset-0 bg-gradient-to-r from-sky-600 to-cyan-600 rounded-3xl blur-2xl opacity-20"></div>
       <div class="relative bg-slate-900/50 backdrop-blur-xl rounded-3xl p-8 border border-white/10">
         <div class="text-center mb-8">
-          <h2 class="text-3xl font-bold mb-3">추가 문의가 필요하신가요?</h2>
-          <p class="text-slate-400">원하시는 답변이 없다면 아래 채널로 문의해 주세요.</p>
+          <h2 class="text-3xl font-bold mb-3">답을 찾지 못하셨나요?</h2>
+          <p class="text-slate-400">커뮤니티 또는 고객지원 채널을 이용해 주세요.</p>
         </div>
         <div class="grid md:grid-cols-3 gap-6">
           <button
@@ -83,7 +83,7 @@
           >
             <i data-lucide="message-circle" class="w-8 h-8 text-sky-400 mx-auto mb-3"></i>
             <h3 class="font-semibold mb-2">커뮤니티</h3>
-            <p class="text-sm text-slate-400">다른 사용자들과 정보 공유</p>
+            <p class="text-sm text-slate-400">사례와 검증 정보 확인</p>
           </button>
           <button type="button" class="p-6 bg-white/5 hover:bg-white/10 rounded-2xl transition-all border border-white/10 hover:border-white/20">
             <i data-lucide="mail" class="w-8 h-8 text-cyan-400 mx-auto mb-3"></i>
@@ -102,17 +102,17 @@
 
   <script>
     const faqs = [
-      { category: "일반", question: "DeepScan은 무엇인가요?", answer: "DeepScan은 AI 기반 이미지 검증 플랫폼으로 딥페이크와 조작 이미지를 탐지합니다. 업로드한 이미지의 진위 여부를 빠르게 분석해 결과를 제공합니다." },
+      { category: "일반", question: "DeepScan은 무엇인가요?", answer: "업로드한 이미지에서 조작 가능성과 관련 신호를 확인하는 서비스입니다." },
       { category: "일반", question: "서비스는 무료인가요?", answer: "기본적인 이미지 검증 기능은 무료로 이용할 수 있습니다. 추가 기능이나 API 연동은 별도 정책이 적용될 수 있습니다." },
       { category: "사용법", question: "어떤 이미지 형식을 지원하나요?", answer: "JPG, PNG, WebP 등 일반적인 이미지 형식을 지원합니다. 파일 크기는 최대 10MB까지 업로드할 수 있습니다." },
-      { category: "사용법", question: "분석에는 얼마나 시간이 걸리나요?", answer: "대부분의 이미지는 1~2초 내에 분석이 완료됩니다. 파일 크기와 서버 상태에 따라 조금 더 걸릴 수 있습니다." },
-      { category: "사용법", question: "업로드한 이미지는 어떻게 처리되나요?", answer: "업로드한 이미지는 분석 후 안전하게 처리되며, 서비스 정책에 따라 필요한 범위에서만 보관됩니다." },
-      { category: "정확도", question: "탐지 정확도는 어느 정도인가요?", answer: "DeepScan은 지속적인 모델 개선을 통해 높은 정확도를 유지하고 있습니다. 다만 모든 결과는 참고용으로 보고 추가 확인을 권장합니다." },
-      { category: "정확도", question: "모든 딥페이크를 탐지할 수 있나요?", answer: "최신 생성 기법으로 만들어진 고도화된 이미지의 경우 탐지가 어려울 수 있습니다. 따라서 판정 결과와 함께 제공되는 근거를 같이 확인하는 것이 좋습니다." },
-      { category: "보안", question: "내 데이터는 안전한가요?", answer: "모든 데이터는 안전한 방식으로 전송 및 처리되며, 개인정보 보호를 최우선으로 고려합니다." },
+      { category: "사용법", question: "분석에는 얼마나 시간이 걸리나요?", answer: "파일 크기와 서버 상태에 따라 달라집니다. 분석이 끝나면 결과 화면으로 이동합니다." },
+      { category: "사용법", question: "업로드한 이미지는 어떻게 처리되나요?", answer: "이미지는 분석과 기록 제공에 필요한 범위에서 처리됩니다. 보관 여부는 서비스 정책을 확인해 주세요." },
+      { category: "정확도", question: "탐지 정확도는 어느 정도인가요?", answer: "분석 결과는 참고용입니다. 점수와 근거를 검토하고, 중요한 판단에는 원본과 출처를 확인해 주세요." },
+      { category: "정확도", question: "모든 딥페이크를 탐지할 수 있나요?", answer: "새로운 생성 방식이나 화질이 낮은 이미지는 탐지가 어려울 수 있습니다. 결과만으로 진위를 단정하지 마세요." },
+      { category: "보안", question: "내 데이터는 안전한가요?", answer: "업로드한 데이터는 분석 기능에 필요한 범위에서 처리됩니다. 민감한 이미지라면 업로드 전에 서비스 정책을 확인해 주세요." },
       { category: "보안", question: "이미지 데이터를 외부와 공유하나요?", answer: "사용자 동의 없이 업로드한 이미지나 분석 결과를 외부에 공유하지 않습니다." },
-      { category: "기술", question: "어떤 AI 기술을 사용하나요?", answer: "이미지 패턴 분석, 이상 영역 탐지, 메타데이터 확인 등 복합적인 검증 방식을 활용합니다." },
-      { category: "기술", question: "메타데이터도 확인하나요?", answer: "가능한 경우 EXIF 등 이미지 메타데이터를 함께 분석해 생성 및 편집 흔적을 점검합니다." },
+      { category: "기술", question: "어떤 분석 방식을 사용하나요?", answer: "이미지 패턴, 이상 영역, 파일 메타데이터 등 여러 신호를 확인합니다." },
+      { category: "기술", question: "메타데이터도 확인하나요?", answer: "메타데이터가 남아 있으면 EXIF 등 파일 정보를 분석에 참고합니다." },
       { category: "계정", question: "회원가입은 필수인가요?", answer: "기본 기능은 비회원도 일부 이용할 수 있지만, 기록 저장이나 커뮤니티 기능은 로그인 후 사용할 수 있습니다." },
       { category: "계정", question: "계정은 어떻게 관리하나요?", answer: "마이페이지에서 프로필 수정, 비밀번호 변경, 계정 관련 작업을 진행할 수 있습니다." }
     ];

@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
+  request.setAttribute("activePage", "login");
 %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -23,23 +24,11 @@
     }
   </style>
 </head>
-<body class="ds-page ds-auth-page min-h-screen bg-slate-950 text-white flex items-center justify-center p-4 relative">
+<body class="ds-page ds-auth-page min-h-screen bg-slate-950 text-white flex items-center justify-center px-4 pb-4 pt-20 relative">
+  <%@ include file="common/dashboard-nav.jspf" %>
   <div class="absolute inset-0">
     <div class="absolute top-20 left-1/4 w-96 h-96 bg-sky-600/30 rounded-full blur-3xl"></div>
     <div class="absolute bottom-20 right-1/4 w-96 h-96 bg-cyan-600/30 rounded-full blur-3xl"></div>
-  </div>
-
-  <div class="pointer-events-none fixed inset-x-0 top-0 z-50 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
-    <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-      <button
-        type="button"
-        onclick="goPage('<%= contextPath %>/')"
-        class="pointer-events-auto flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur-xl transition-all hover:bg-white/20"
-      >
-        <i data-lucide="arrow-left" class="w-4 h-4"></i>
-        홈으로
-      </button>
-    </div>
   </div>
 
   <div class="w-full max-w-md relative">
@@ -51,7 +40,7 @@
       <h1 class="text-4xl font-bold mb-3">
         <span class="bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">로그인</span>
       </h1>
-      <p class="text-slate-400">DeepScan 계정으로 로그인해 주세요.</p>
+      <p class="text-slate-400">이메일과 비밀번호를 입력하세요.</p>
     </div>
 
     <div class="relative group">
@@ -184,8 +173,8 @@
         if (json && json.success) {
           sessionStorage.setItem("appToast", JSON.stringify({
             type: "success",
-            title: "로그인되었습니다",
-            description: "DeepScan에 오신 것을 환영합니다."
+            title: "로그인했습니다",
+            description: "계정에 로그인했습니다."
           }));
           window.location.href = contextPath + "/";
           return;

@@ -229,7 +229,7 @@
           <div class="reveal" data-reveal>
             <p class="eyebrow mb-5">Digital image verification</p>
             <h1 class="keep-words max-w-2xl text-5xl font-bold leading-[1.08] tracking-[-0.045em] text-white md:text-6xl">
-              이미지의 조작 흔적을 확인하세요.
+              이미지에 조작 흔적이 있는지 확인합니다.
             </h1>
             <p class="keep-words mt-7 max-w-xl text-lg leading-8 text-[#a9b0ba]">
               픽셀 패턴과 메타데이터, 모델 판정을 종합해 의심 영역과 판단 근거를 하나의 리포트로 정리합니다.
@@ -250,7 +250,7 @@
                 <p class="text-sm font-semibold text-white">새 이미지 검증</p>
                 <p class="mt-1 text-xs text-[#7f8792]">JPG, PNG, WEBP · 최대 10MB</p>
               </div>
-              <span class="rounded-md border border-[#303844] bg-[#0d1116] px-2.5 py-1 text-xs font-medium text-[#929aa5]">안전한 업로드</span>
+              <span class="rounded-md border border-[#303844] bg-[#0d1116] px-2.5 py-1 text-xs font-medium text-[#929aa5]">최대 10MB</span>
             </div>
 
             <div class="mb-5 grid grid-cols-2 gap-1 rounded-lg bg-[#0d1116] p-1">
@@ -268,8 +268,8 @@
                   <div class="mx-auto mb-5 flex h-12 w-12 items-center justify-center rounded-xl border border-[#343b45] bg-[#151a21] text-blue-400">
                     <i data-lucide="image-up" class="h-6 w-6"></i>
                   </div>
-                  <p class="text-lg font-semibold text-white">검증할 이미지를 놓아주세요</p>
-                  <p class="mt-2 text-sm text-[#7f8792]">드래그하거나 컴퓨터에서 파일을 선택할 수 있습니다.</p>
+                  <p class="text-lg font-semibold text-white">이미지를 여기에 끌어 놓으세요</p>
+                  <p class="mt-2 text-sm text-[#7f8792]">또는 컴퓨터에서 파일을 선택하세요.</p>
                   <label class="mt-6 inline-block">
                     <input id="fileInput" type="file" accept="image/*" class="hidden">
                     <span class="inline-block cursor-pointer rounded-lg bg-[#3b82f6] px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-[#4d8ff7]">파일 선택</span>
@@ -293,7 +293,7 @@
                 <div id="urlPreviewWrap" class="hidden mt-6">
                   <img id="urlPreviewImage" src="" alt="URL 이미지 미리보기" class="mx-auto max-h-64 rounded-lg border border-[#272d35] object-contain">
                 </div>
-                <p class="mt-3 text-left text-xs text-[#7f8792]">공개적으로 접근할 수 있는 이미지 직접 링크를 입력해주세요.</p>
+                <p class="mt-3 text-left text-xs text-[#7f8792]">외부에서 열 수 있는 이미지의 직접 주소를 입력하세요.</p>
               </div>
             </div>
 
@@ -310,8 +310,8 @@
           <div class="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-24">
             <div class="reveal lg:sticky lg:top-32 lg:self-start" data-reveal>
               <p class="eyebrow mb-4">What you get</p>
-              <h2 class="text-4xl font-bold tracking-[-0.035em] text-white md:text-5xl">판정만 보여주지 않습니다.</h2>
-              <p class="mt-5 max-w-md text-base leading-7 text-[#929aa5]">결과를 이해하고 다음 행동을 판단할 수 있도록 서로 다른 분석 신호를 함께 제공합니다.</p>
+              <h2 class="text-4xl font-bold tracking-[-0.035em] text-white md:text-5xl">판정 근거도 확인할 수 있습니다.</h2>
+              <p class="mt-5 max-w-md text-base leading-7 text-[#929aa5]">점수뿐 아니라 의심 영역과 파일 정보도 결과에 표시합니다.</p>
               <a href="#upload" class="mt-8 inline-flex items-center gap-2 rounded-lg border border-[#343b45] px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:border-[#59616c] hover:bg-[#11151a]">이미지 검증하기<i data-lucide="arrow-up-right" class="h-4 w-4"></i></a>
             </div>
 
@@ -322,11 +322,11 @@
               </article>
               <article class="feature-row reveal grid gap-5 py-8 sm:grid-cols-[72px_1fr]" style="--reveal-delay: 70ms;" data-reveal>
                 <span class="font-mono text-sm text-[#59616c]">02</span>
-                <div><div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400"><i data-lucide="fingerprint" class="h-5 w-5"></i></div><h3 class="text-2xl font-semibold text-white">다각도 검증 근거</h3><p class="mt-3 leading-7 text-[#929aa5]">모델 판정과 파일 정보, 생성 흔적을 함께 살펴 단일 점수에 의존하지 않는 결과를 제공합니다.</p></div>
+                <div><div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400"><i data-lucide="fingerprint" class="h-5 w-5"></i></div><h3 class="text-2xl font-semibold text-white">분석 근거</h3><p class="mt-3 leading-7 text-[#929aa5]">모델 판정, 파일 정보, 생성 흔적을 항목별로 표시합니다.</p></div>
               </article>
               <article class="feature-row reveal grid gap-5 py-8 sm:grid-cols-[72px_1fr]" style="--reveal-delay: 140ms;" data-reveal>
                 <span class="font-mono text-sm text-[#59616c]">03</span>
-                <div><div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400"><i data-lucide="file-check-2" class="h-5 w-5"></i></div><h3 class="text-2xl font-semibold text-white">보관 가능한 분석 기록</h3><p class="mt-3 leading-7 text-[#929aa5]">검증 이력을 다시 확인하고 필요한 경우 상세 결과를 리포트 형태로 정리할 수 있습니다.</p></div>
+                <div><div class="mb-4 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/10 text-blue-400"><i data-lucide="file-check-2" class="h-5 w-5"></i></div><h3 class="text-2xl font-semibold text-white">검증 기록</h3><p class="mt-3 leading-7 text-[#929aa5]">이전 검증 결과를 다시 열고 상세 내용을 확인할 수 있습니다.</p></div>
               </article>
             </div>
           </div>
@@ -335,7 +335,7 @@
 
       <section class="border-y border-[#272d35] bg-[#0c0f13] px-4 py-20">
         <div class="reveal mx-auto flex max-w-7xl flex-col gap-8 md:flex-row md:items-center md:justify-between" data-reveal>
-          <div><p class="eyebrow mb-3">Start verification</p><h2 class="text-3xl font-bold tracking-tight text-white md:text-4xl">확인이 필요한 이미지가 있나요?</h2><p class="mt-3 text-[#929aa5]">이미지를 올리면 분석부터 결과 정리까지 한 번에 진행됩니다.</p></div>
+          <div><p class="eyebrow mb-3">Start verification</p><h2 class="text-3xl font-bold tracking-tight text-white md:text-4xl">이미지 검증</h2><p class="mt-3 text-[#929aa5]">파일을 올리면 분석 결과와 판단 근거를 확인할 수 있습니다.</p></div>
           <a href="#upload" class="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-white px-6 py-3 text-sm font-bold text-[#090b0e] transition-colors hover:bg-[#e5e7eb]">검증 시작하기<i data-lucide="arrow-up" class="h-4 w-4"></i></a>
         </div>
       </section>
@@ -354,7 +354,7 @@
             <button type="button" onclick="goPage('<%= contextPath %>/report')" class="hover:text-white transition-colors">신고하기</button>
             <button type="button" onclick="goPage('<%= contextPath %>/faq')" class="hover:text-white transition-colors">FAQ</button>
           </div>
-          <p class="text-sm text-slate-500">© 2026 DeepScan. 디지털 이미지의 신뢰를 지킵니다.</p>
+          <p class="text-sm text-slate-500">© 2026 DeepScan. 이미지 검증 서비스.</p>
         </div>
       </div>
     </footer>
@@ -408,7 +408,7 @@
         sessionStorage.setItem("appToast", JSON.stringify({
           type: "info",
           title: "로그아웃되었습니다",
-          description: "안전하게 로그아웃되었습니다."
+          description: "로그아웃했습니다."
         }));
         window.location.href = contextPath + "/";
       }
@@ -458,7 +458,7 @@
         return;
       }
       if (!file.type.startsWith("image/")) {
-        setError("사진 파일만 업로드할 수 있습니다. JPG, PNG, WEBP 형식의 이미지를 선택해주세요.");
+        setError("JPG, PNG, WEBP 형식의 이미지 파일을 선택해 주세요.");
         return;
       }
       if (file.size > 10 * 1024 * 1024) {
@@ -512,12 +512,12 @@
     async function buildFileFromUrl(url) {
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error("이미지 URL을 불러올 수 없습니다. 주소가 올바른지 확인해주세요.");
+        throw new Error("이미지를 불러오지 못했습니다. 주소를 확인해 주세요.");
       }
 
       const blob = await response.blob();
       if (!blob.type.startsWith("image/")) {
-        throw new Error("URL 주소가 이미지 파일을 가리키지 않습니다. 실제 이미지 URL을 입력해주세요.");
+        throw new Error("이미지 파일의 직접 주소를 입력해 주세요.");
       }
 
       const fileName = url.split("/").pop() || "url-image";
@@ -755,7 +755,7 @@
         if (!previewUrl) {
           return;
         }
-        setError("이미지 URL을 불러올 수 없습니다. 주소가 올바른지 확인해주세요.");
+        setError("이미지를 불러오지 못했습니다. 주소를 확인해 주세요.");
         hideUrlPreview();
         updateAnalyzeVisibility();
       });

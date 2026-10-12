@@ -3,6 +3,7 @@
   // JSP가 현재 애플리케이션의 context path를 구해 JS와 링크에서 공통으로 사용한다.
   // 배포 경로가 바뀌어도 API 호출 주소가 깨지지 않게 하기 위한 값이다.
   String contextPath = request.getContextPath();
+  request.setAttribute("activePage", "signup");
 %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -24,21 +25,12 @@
   </style>
 </head>
 <body class="ds-page min-h-screen bg-slate-950 text-white relative overflow-x-hidden">
+  <%@ include file="common/dashboard-nav.jspf" %>
   <!-- 회원가입 화면의 배경 효과 영역이다. 실제 회원가입 로직과는 분리되어 있다. -->
   <div class="absolute inset-0 pointer-events-none">
     <div class="absolute top-20 left-1/4 w-96 h-96 bg-sky-600/30 rounded-full blur-3xl"></div>
     <div class="absolute bottom-20 right-1/4 w-96 h-96 bg-cyan-600/30 rounded-full blur-3xl"></div>
   </div>
-
-  <!-- 로그인 화면으로 돌아가는 버튼이다. contextPath를 붙여 배포 경로 차이를 흡수한다. -->
-  <nav class="fixed top-0 left-0 right-0 z-50 h-16 border-b border-white/10 bg-slate-950/80 backdrop-blur-xl">
-    <div class="mx-auto flex h-full max-w-7xl items-center px-4 sm:px-6 lg:px-8">
-      <button type="button" onclick="goPage('<%= contextPath %>/login')" class="inline-flex h-10 items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 text-sm font-semibold text-white shadow-lg shadow-black/20 transition-all hover:bg-white/15">
-        <i data-lucide="arrow-left" class="w-4 h-4"></i>
-        로그인으로
-      </button>
-    </div>
-  </nav>
 
   <main class="w-full max-w-2xl mx-auto relative z-10 pt-24 pb-12 px-4">
     <section class="text-center mb-8">
@@ -49,7 +41,7 @@
       <h1 class="text-4xl font-bold mb-3">
         <span class="bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">회원가입</span>
       </h1>
-      <p class="text-slate-400">DeepScan과 함께 안전한 검증을 시작해 보세요.</p>
+      <p class="text-slate-400">검증 기록과 커뮤니티 기능에 사용할 계정을 만드세요.</p>
     </section>
 
     <section class="relative group">
@@ -227,7 +219,7 @@
           <h2 class="text-2xl font-bold text-center mb-2">
             <span class="bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">인증이 완료되었습니다.</span>
           </h2>
-          <p class="text-center text-slate-400 mb-6">이메일 인증이 정상적으로 완료되었습니다.</p>
+          <p class="text-center text-slate-400 mb-6">이메일 인증을 마쳤습니다.</p>
           <button type="button" onclick="closeVerificationSuccessModal()" class="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 rounded-xl transition-all font-semibold text-white shadow-lg shadow-green-500/50">
             확인
           </button>

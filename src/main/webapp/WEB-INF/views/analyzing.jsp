@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
+  request.setAttribute("activePage", "analyzing");
 %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -24,7 +25,8 @@
   </style>
 </head>
 <body class="ds-page min-h-screen bg-slate-950">
-  <div class="relative flex min-h-screen items-center justify-center overflow-hidden p-4">
+  <%@ include file="common/dashboard-nav.jspf" %>
+  <div class="relative flex min-h-screen items-center justify-center overflow-hidden px-4 pb-4 pt-20">
     <div class="absolute inset-0">
       <div class="absolute left-1/4 top-20 h-96 w-96 animate-pulse rounded-full bg-sky-600/30 blur-3xl"></div>
       <div class="absolute bottom-20 right-1/4 h-96 w-96 animate-pulse rounded-full bg-cyan-600/30 blur-3xl"></div>
@@ -40,7 +42,7 @@
 
       <h2 id="title" class="mb-3 text-4xl font-bold text-white">이미지 분석 중...</h2>
       <p id="desc" class="mb-8 text-lg text-slate-400">
-        AI가 이미지의 조작 흔적과 생성 여부를 분석하고 있습니다.
+        이미지의 조작 흔적과 생성 가능성을 분석하고 있습니다.
       </p>
     </section>
   </div>
@@ -56,7 +58,7 @@
     async function pollResult() {
       if (!verificationId) {
         titleEl.textContent = "분석 대상을 찾을 수 없습니다";
-        descEl.textContent = "이전 화면으로 돌아가 다시 시도해주세요.";
+        descEl.textContent = "이전 화면으로 돌아가 다시 시도해 주세요.";
         return;
       }
 
@@ -86,7 +88,7 @@
       }
 
       titleEl.textContent = "결과 확인에 실패했습니다";
-      descEl.textContent = "잠시 후 다시 시도하거나 검증 기록에서 확인해주세요.";
+      descEl.textContent = "잠시 후 다시 시도하거나 검증 기록을 확인해 주세요.";
     }
 
     lucide.createIcons();

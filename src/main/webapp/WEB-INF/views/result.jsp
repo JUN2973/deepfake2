@@ -42,13 +42,13 @@
         </button>
         <div class="inline-flex items-center gap-2 text-sm text-slate-400">
             <i data-lucide="shield" class="h-4 w-4 text-sky-400"></i>
-            AI 분석 리포트
+            이미지 분석 리포트
         </div>
     </div>
 
     <div class="mb-8 text-center">
-        <h1 class="mb-2 text-4xl font-bold md:text-5xl">분석 결과 리포트</h1>
-        <p class="text-slate-400">검증 결과를 기반으로 생성한 이미지 진단 요약입니다.</p>
+        <h1 class="mb-2 text-4xl font-bold md:text-5xl">분석 결과</h1>
+        <p class="text-slate-400">판정과 주요 분석 정보를 정리했습니다.</p>
     </div>
 
     <div class="grid gap-8 lg:grid-cols-2">

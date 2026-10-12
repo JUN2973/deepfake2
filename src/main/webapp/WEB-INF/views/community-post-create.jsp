@@ -63,7 +63,7 @@
               커뮤니티 글쓰기
             </p>
             <h1 class="bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-4xl font-bold text-transparent">게시글 작성</h1>
-            <p class="mt-3 text-slate-400">딥페이크 사례, 검증 팁, 질문을 자연스럽게 공유할 수 있도록 제목과 내용을 작성해 주세요.</p>
+            <p class="mt-3 text-slate-400">사례, 검증 방법, 궁금한 점을 적어 주세요.</p>
           </div>
 
           <form id="postForm" class="space-y-6">

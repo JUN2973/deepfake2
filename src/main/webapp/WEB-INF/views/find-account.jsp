@@ -1,6 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%
   String contextPath = request.getContextPath();
+  request.setAttribute("activePage", "account");
 %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -28,21 +29,11 @@
   </style>
 </head>
 <body class="ds-page min-h-screen bg-slate-950 text-white relative">
+  <%@ include file="common/dashboard-nav.jspf" %>
   <div class="absolute inset-0">
     <div class="absolute top-20 left-1/4 w-96 h-96 bg-sky-600/20 rounded-full blur-3xl"></div>
     <div class="absolute bottom-20 right-1/4 w-96 h-96 bg-cyan-600/20 rounded-full blur-3xl"></div>
   </div>
-
-  <nav class="fixed top-0 left-0 right-0 z-50 bg-slate-950/50 backdrop-blur-xl border-b border-white/10">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex items-center h-16">
-        <button type="button" onclick="goPage('<%= contextPath %>/login')" class="flex items-center gap-2 text-slate-300 hover:text-white transition-colors">
-          <i data-lucide="arrow-left" class="w-5 h-5"></i>
-          <span>로그인으로 돌아가기</span>
-        </button>
-      </div>
-    </div>
-  </nav>
 
   <div class="pt-24 pb-12 px-4 flex items-center justify-center min-h-screen">
     <div class="w-full max-w-md relative z-10">
@@ -52,7 +43,7 @@
           <img src="<%= contextPath %>/resources/image/deepscan-mark.svg?v=30" alt="DeepScan" class="relative h-12 w-12" width="48" height="48">
         </div>
         <h1 class="text-3xl font-bold text-white mb-2">계정 찾기</h1>
-        <p class="text-slate-400">아이디 또는 비밀번호를 찾으세요</p>
+        <p class="text-slate-400">가입할 때 입력한 정보로 계정을 확인하세요.</p>
       </div>
 
       <div class="glass-panel rounded-2xl border border-white/10 overflow-hidden">
@@ -227,7 +218,7 @@
           <p class="text-center text-slate-400 mb-6">새 비밀번호로 다시 로그인할 수 있습니다.</p>
 
           <div class="bg-green-500/10 border border-green-500/30 rounded-xl p-4 mb-6">
-            <p class="text-green-400 text-sm text-center font-medium">비밀번호가 정상적으로 변경되었습니다.</p>
+            <p class="text-green-400 text-sm text-center font-medium">비밀번호를 변경했습니다.</p>
           </div>
 
           <button type="button" onclick="closePasswordResetSuccessModal()" class="w-full py-4 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 rounded-xl transition-all font-semibold text-white shadow-lg shadow-green-500/50">

@@ -95,7 +95,7 @@
           </div>
         </div>
         <h1 class="text-5xl md:text-6xl font-bold mb-4">커뮤니티</h1>
-        <p class="text-xl text-slate-400">딥페이크와 AI 이미지 관련 정보를 자유롭게 공유해보세요.</p>
+        <p class="text-xl text-slate-400">딥페이크와 AI 이미지 사례, 검증 정보를 나누는 공간입니다.</p>
       </div>
 
       <div class="mb-8 reveal" style="--reveal-delay: 100ms;" data-reveal>
@@ -138,7 +138,7 @@
             </div>
             <div class="relative">
               <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500"></i>
-              <input id="searchInput" type="text" placeholder="게시글 검색..." class="w-full pl-12 pr-4 py-3 bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all">
+              <input id="searchInput" type="text" placeholder="제목이나 내용 검색" class="w-full pl-12 pr-4 py-3 bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent transition-all">
             </div>
 
             <div class="flex items-center gap-2 flex-wrap">
@@ -157,11 +157,11 @@
 
           <div id="emptyState" class="hidden bg-slate-900/50 backdrop-blur-xl rounded-3xl p-12 border border-white/10 text-center">
             <i data-lucide="message-square" class="w-16 h-16 text-slate-700 mx-auto mb-4"></i>
-            <p class="text-slate-400 mb-6 text-lg">아직 게시글이 없습니다</p>
+            <p class="text-slate-400 mb-6 text-lg">등록된 게시글이 없습니다.</p>
             <% if (isAuthenticated) { %>
-            <button type="button" onclick="goPage('<%= contextPath %>/community/create')" class="px-8 py-4 bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 text-white rounded-xl transition-all shadow-lg shadow-sky-500/50 font-semibold">첫 게시글 작성하기</button>
+            <button type="button" onclick="goPage('<%= contextPath %>/community/create')" class="px-8 py-4 bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 text-white rounded-xl transition-all shadow-lg shadow-sky-500/50 font-semibold">게시글 작성</button>
             <% } else { %>
-            <button type="button" onclick="goPage('<%= contextPath %>/login')" class="px-8 py-4 bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 text-white rounded-xl transition-all shadow-lg shadow-sky-500/50 font-semibold">로그인하고 작성하기</button>
+            <button type="button" onclick="goPage('<%= contextPath %>/login')" class="px-8 py-4 bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 text-white rounded-xl transition-all shadow-lg shadow-sky-500/50 font-semibold">로그인</button>
             <% } %>
           </div>
 

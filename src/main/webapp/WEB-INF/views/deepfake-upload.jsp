@@ -180,20 +180,20 @@
         <div class="text-center mb-16">
           <div class="hero-pop inline-flex items-center gap-2 px-5 py-2 bg-white/10 backdrop-blur-xl rounded-full mb-8 border border-white/20" style="--hero-delay: 120ms;">
             <i data-lucide="sparkles" class="w-4 h-4 text-sky-400"></i>
-            <span class="text-sm font-medium text-slate-200">AI 기반 이미지 검증 플랫폼</span>
+            <span class="text-sm font-medium text-slate-200">이미지 조작 흔적 분석</span>
           </div>
           <h1 class="hero-pop text-6xl md:text-8xl mb-8 font-bold tracking-tight" style="--hero-delay: 220ms;">
-            <span class="block mb-2">딥페이크를</span>
-            <span class="block bg-gradient-to-r from-sky-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">빠르고 정확하게</span>
-            <span class="block">검증하세요</span>
+            <span class="block mb-2">이미지의</span>
+            <span class="block bg-gradient-to-r from-sky-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent">조작 흔적을</span>
+            <span class="block">확인합니다</span>
           </h1>
           <p class="hero-pop text-xl md:text-2xl text-slate-400 mb-12 max-w-3xl mx-auto leading-relaxed font-light" style="--hero-delay: 320ms;">
-            업로드한 이미지를 AI로 분석해 조작 가능성을 빠르게 확인하고,
-            <span class="block">신뢰도 점수와 근거를 함께 제공합니다.</span>
+            이미지의 조작 가능성을 분석하고,
+            <span class="block">점수와 판단 근거를 표시합니다.</span>
           </p>
           <div class="hero-pop flex justify-center items-center" style="--hero-delay: 420ms;">
             <a href="#upload" class="group px-8 py-4 bg-gradient-to-r from-sky-600 to-cyan-600 hover:from-sky-500 hover:to-cyan-500 rounded-full transition-all shadow-2xl shadow-sky-500/50 flex items-center gap-3 font-semibold text-lg">
-              지금 시작하기
+              이미지 검증
               <i data-lucide="arrow-right" class="w-5 h-5 group-hover:translate-x-1 transition-transform"></i>
             </a>
           </div>
@@ -217,8 +217,8 @@
                         AI Vision Monitor
                       </div>
                       <div>
-                        <h3 class="mb-3 text-3xl font-bold tracking-tight text-white md:text-4xl">딥페이크 탐지 흐름을 한눈에 확인하세요</h3>
-                        <p class="max-w-xl text-base leading-7 text-slate-300 md:text-lg">이미지 업로드부터 분석 결과 확인까지 이어지는 검증 과정을 시각 요소 중심으로 정리했습니다.</p>
+                        <h3 class="mb-3 text-3xl font-bold tracking-tight text-white md:text-4xl">이미지 검증 과정</h3>
+                        <p class="max-w-xl text-base leading-7 text-slate-300 md:text-lg">이미지 업로드부터 결과 확인까지의 과정을 보여줍니다.</p>
                       </div>
                       <div class="flex flex-wrap gap-3 text-sm text-slate-300">
                         <div class="rounded-full border border-white/10 bg-white/5 px-4 py-2">실시간 분석 상태</div>
@@ -242,7 +242,7 @@
                         <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
                           <div class="mb-2 flex items-center justify-between text-sm">
                             <span class="text-slate-400">검증 진행률</span>
-                            <span class="font-medium text-sky-300">92%</span>
+                            <span class="font-medium text-sky-300">진행 중</span>
                           </div>
                           <div class="h-2.5 rounded-full bg-slate-800">
                             <div class="h-2.5 w-[92%] rounded-full bg-gradient-to-r from-sky-500 to-cyan-400"></div>
@@ -250,16 +250,16 @@
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                           <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                            <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Confidence</p>
-                            <p class="mt-2 text-2xl font-bold text-white">98.7%</p>
+                            <p class="text-xs tracking-[0.2em] text-slate-500">신뢰도</p>
+                            <p class="mt-2 text-lg font-bold text-white">계산 중</p>
                           </div>
                           <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-                            <p class="text-xs uppercase tracking-[0.2em] text-slate-500">Status</p>
-                            <p class="mt-2 text-2xl font-bold text-cyan-300">Stable</p>
+                            <p class="text-xs tracking-[0.2em] text-slate-500">상태</p>
+                            <p class="mt-2 text-lg font-bold text-cyan-300">분석 중</p>
                           </div>
                         </div>
                         <div class="rounded-2xl border border-white/10 bg-white/5 p-4 text-sm text-slate-300">
-                          핵심 의심 구역, 메타데이터 단서, 모델 판정 근거를 함께 제공합니다.
+                          의심 영역, 메타데이터, 판정 근거를 결과에서 확인할 수 있습니다.
                         </div>
                       </div>
                     </div>
@@ -274,22 +274,22 @@
           <div class="relative group reveal" style="--reveal-delay: 0ms;" data-reveal>
             <div class="absolute inset-0 bg-gradient-to-r from-sky-500 to-blue-500 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
             <div class="relative glass-panel p-8 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift">
-              <div class="text-5xl font-bold mb-3 bg-gradient-to-r from-sky-500 to-blue-500 bg-clip-text text-transparent">98.7%</div>
-              <div class="text-slate-400 font-medium">탐지 정확도</div>
+              <div class="text-4xl font-bold mb-3 bg-gradient-to-r from-sky-500 to-blue-500 bg-clip-text text-transparent">JPG · PNG</div>
+              <div class="text-slate-400 font-medium">지원 파일 형식</div>
             </div>
           </div>
           <div class="relative group reveal" style="--reveal-delay: 90ms;" data-reveal>
             <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
             <div class="relative glass-panel p-8 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift">
-              <div class="text-5xl font-bold mb-3 bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">1.2초</div>
-              <div class="text-slate-400 font-medium">평균 분석 시간</div>
+              <div class="text-5xl font-bold mb-3 bg-gradient-to-r from-cyan-500 to-teal-500 bg-clip-text text-transparent">10MB</div>
+              <div class="text-slate-400 font-medium">최대 파일 크기</div>
             </div>
           </div>
           <div class="relative group reveal" style="--reveal-delay: 180ms;" data-reveal>
             <div class="absolute inset-0 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-3xl blur-xl opacity-50 group-hover:opacity-75 transition-opacity"></div>
             <div class="relative glass-panel p-8 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift">
-              <div class="text-5xl font-bold mb-3 bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">10,000+</div>
-              <div class="text-slate-400 font-medium">검증된 이미지</div>
+              <div class="text-5xl font-bold mb-3 bg-gradient-to-r from-blue-500 to-indigo-500 bg-clip-text text-transparent">3단계</div>
+              <div class="text-slate-400 font-medium">업로드 · 분석 · 결과</div>
             </div>
           </div>
         </div>
@@ -302,7 +302,7 @@
           <h2 class="text-5xl md:text-6xl font-bold mb-6">
             검증 <span class="bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">시작하기</span>
           </h2>
-          <p class="text-xl text-slate-400 max-w-2xl mx-auto">이미지를 업로드하거나 URL을 입력하여 즉시 AI 분석을 받아보세요.</p>
+          <p class="text-xl text-slate-400 max-w-2xl mx-auto">파일을 업로드하거나 이미지 주소를 입력하세요.</p>
         </div>
 
         <div class="relative group reveal" style="--reveal-delay: 120ms;" data-reveal>
@@ -382,9 +382,9 @@
       <div class="max-w-7xl mx-auto">
         <div class="text-center mb-20 reveal" data-reveal>
           <h2 class="text-5xl md:text-6xl font-bold mb-6">
-            강력한            <span class="bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">기능</span>
+            분석            <span class="bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">항목</span>
           </h2>
-          <p class="text-xl text-slate-400 max-w-2xl mx-auto">조작된 콘텐츠로부터 사용자를 보호하는 첨단 AI 기능</p>
+          <p class="text-xl text-slate-400 max-w-2xl mx-auto">결과 화면에서 확인할 수 있는 정보입니다.</p>
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -392,16 +392,16 @@
             <div class="absolute inset-0 bg-gradient-to-r from-sky-500 to-blue-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-50 transition-opacity"></div>
             <div class="relative glass-panel p-8 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift h-full">
               <div class="w-14 h-14 bg-gradient-to-r from-sky-500 to-blue-500 rounded-2xl flex items-center justify-center mb-6"><i data-lucide="brain" class="w-7 h-7 text-white"></i></div>
-              <h3 class="text-xl font-bold mb-3">AI 탐지</h3>
-              <p class="text-slate-400 leading-relaxed">대규모 이미지 데이터로 학습한 모델이 미세한 조작 흔적까지 정밀하게 감지합니다.</p>
+              <h3 class="text-xl font-bold mb-3">조작 신호 분석</h3>
+              <p class="text-slate-400 leading-relaxed">이미지 패턴을 분석해 조작이 의심되는 신호를 찾습니다.</p>
             </div>
           </div>
           <div class="relative group reveal" style="--reveal-delay: 70ms;" data-reveal>
             <div class="absolute inset-0 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-50 transition-opacity"></div>
             <div class="relative glass-panel p-8 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift h-full">
               <div class="w-14 h-14 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-2xl flex items-center justify-center mb-6"><i data-lucide="zap" class="w-7 h-7 text-white"></i></div>
-              <h3 class="text-xl font-bold mb-3">즉시 결과</h3>
-              <p class="text-slate-400 leading-relaxed">빠른 분석과 함께 신뢰도 점수, 판정 결과, 핵심 근거를 즉시 제공합니다.</p>
+              <h3 class="text-xl font-bold mb-3">판정 결과</h3>
+              <p class="text-slate-400 leading-relaxed">신뢰도 점수, 판정 상태, 주요 근거를 표시합니다.</p>
             </div>
           </div>
           <div class="relative group reveal" style="--reveal-delay: 140ms;" data-reveal>
@@ -417,15 +417,15 @@
             <div class="relative glass-panel p-8 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift h-full">
               <div class="w-14 h-14 bg-gradient-to-r from-green-500 to-emerald-500 rounded-2xl flex items-center justify-center mb-6"><i data-lucide="fingerprint" class="w-7 h-7 text-white"></i></div>
               <h3 class="text-xl font-bold mb-3">메타데이터 확인</h3>
-              <p class="text-slate-400 leading-relaxed">파일 정보와 생성 흔적을 함께 확인해 이미지 신뢰도를 다각도로 점검합니다.</p>
+              <p class="text-slate-400 leading-relaxed">파일에 남아 있는 메타데이터를 분석에 참고합니다.</p>
             </div>
           </div>
           <div class="relative group reveal" style="--reveal-delay: 280ms;" data-reveal>
             <div class="absolute inset-0 bg-gradient-to-r from-orange-500 to-red-500 rounded-3xl blur-xl opacity-0 group-hover:opacity-50 transition-opacity"></div>
             <div class="relative glass-panel p-8 rounded-3xl border border-white/10 hover:border-white/20 card-hover-lift h-full">
               <div class="w-14 h-14 bg-gradient-to-r from-orange-500 to-red-500 rounded-2xl flex items-center justify-center mb-6"><i data-lucide="shield" class="w-7 h-7 text-white"></i></div>
-              <h3 class="text-xl font-bold mb-3">보안 및 프라이버시</h3>
-              <p class="text-slate-400 leading-relaxed">업로드 데이터는 안전하게 처리되며, 분석 과정에서 개인정보 보호를 우선합니다.</p>
+              <h3 class="text-xl font-bold mb-3">업로드 데이터</h3>
+              <p class="text-slate-400 leading-relaxed">업로드한 데이터는 분석과 기록 제공에 필요한 범위에서 처리됩니다.</p>
             </div>
           </div>
           <div class="relative group reveal" style="--reveal-delay: 350ms;" data-reveal>
@@ -447,7 +447,7 @@
             이용
             <span class="bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-transparent">방법</span>
           </h2>
-          <p class="text-xl text-slate-400">간단한 3단계로 이미지를 검증해보세요</p>
+          <p class="text-xl text-slate-400">업로드, 분석, 결과 확인 순서로 진행됩니다.</p>
         </div>
 
         <div class="space-y-12">
@@ -471,9 +471,9 @@
               <div class="flex-1">
                 <div class="flex items-center gap-4 mb-4">
                   <div class="w-12 h-12 bg-gradient-to-r from-sky-500 to-cyan-500 rounded-xl flex items-center justify-center"><i data-lucide="brain" class="w-6 h-6 text-white"></i></div>
-                  <h3 class="text-2xl font-bold">AI 분석</h3>
+                  <h3 class="text-2xl font-bold">이미지 분석</h3>
                 </div>
-                <p class="text-slate-400 text-lg leading-relaxed">AI가 조작 패턴, 불일치 신호, 딥페이크 징후를 자동으로 분석합니다.</p>
+                <p class="text-slate-400 text-lg leading-relaxed">조작 패턴과 불일치 신호를 분석합니다.</p>
               </div>
             </div>
           </div>
@@ -486,7 +486,7 @@
                   <div class="w-12 h-12 bg-gradient-to-r from-sky-500 to-cyan-500 rounded-xl flex items-center justify-center"><i data-lucide="check-circle" class="w-6 h-6 text-white"></i></div>
                   <h3 class="text-2xl font-bold">결과 확인</h3>
                 </div>
-                <p class="text-slate-400 text-lg leading-relaxed">신뢰도 점수와 시각적 근거를 포함한 상세 결과를 바로 확인하세요.</p>
+                <p class="text-slate-400 text-lg leading-relaxed">신뢰도 점수와 시각적 근거를 결과 화면에서 확인합니다.</p>
               </div>
             </div>
           </div>
@@ -499,10 +499,10 @@
         <div class="relative group">
           <div class="absolute inset-0 bg-gradient-to-r from-sky-600 via-cyan-600 to-blue-600 rounded-3xl blur-3xl opacity-40"></div>
           <div class="relative bg-gradient-to-r from-sky-600/20 via-cyan-600/20 to-blue-600/20 backdrop-blur-xl p-16 rounded-3xl border border-white/20">
-            <h2 class="text-5xl md:text-6xl font-bold mb-6">지금 검증하시겠어요?</h2>
-            <p class="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">딥페이크와 조작된 콘텐츠로부터 스스로를 보호할 수 있도록 지금 바로 분석을 시작해보세요.</p>
+            <h2 class="text-5xl md:text-6xl font-bold mb-6">이미지 검증</h2>
+            <p class="text-xl text-slate-300 mb-10 max-w-2xl mx-auto">확인할 이미지를 업로드하면 분석을 시작합니다.</p>
             <a href="#upload" class="inline-flex items-center gap-3 px-10 py-5 bg-white text-slate-900 hover:bg-slate-100 rounded-full transition-all shadow-2xl font-bold text-lg">
-              지금 분석 시작하기
+              이미지 선택
               <i data-lucide="arrow-right" class="w-6 h-6"></i>
             </a>
           </div>
@@ -523,7 +523,7 @@
             <button type="button" onclick="goPage('<%= contextPath %>/report')" class="hover:text-white transition-colors">신고하기</button>
             <button type="button" onclick="goPage('<%= contextPath %>/faq')" class="hover:text-white transition-colors">FAQ</button>
           </div>
-          <p class="text-sm text-slate-500">© 2026 DeepScan. 디지털 이미지의 신뢰를 지킵니다.</p>
+          <p class="text-sm text-slate-500">© 2026 DeepScan. 이미지 검증 서비스.</p>
         </div>
       </div>
     </footer>
@@ -604,7 +604,7 @@
         return;
       }
       if (!file.type.startsWith("image/")) {
-        setError("사진 파일만 업로드할 수 있습니다. JPG, PNG, WEBP 형식의 이미지를 선택해주세요.");
+        setError("JPG, PNG, WEBP 형식의 이미지 파일을 선택해 주세요.");
         return;
       }
       if (file.size > 10 * 1024 * 1024) {
@@ -658,12 +658,12 @@
     async function buildFileFromUrl(url) {
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error("이미지 URL을 불러올 수 없습니다. 주소가 올바른지 확인해주세요.");
+        throw new Error("이미지를 불러오지 못했습니다. 주소를 확인해 주세요.");
       }
 
       const blob = await response.blob();
       if (!blob.type.startsWith("image/")) {
-        throw new Error("URL 주소가 이미지 파일을 가리키지 않습니다. 실제 이미지 URL을 입력해주세요.");
+        throw new Error("이미지 파일의 직접 주소를 입력해 주세요.");
       }
 
       const fileName = url.split("/").pop() || "url-image";
@@ -797,7 +797,7 @@
         if (!previewUrl) {
           return;
         }
-        setError("이미지 URL을 불러올 수 없습니다. 주소가 올바른지 확인해주세요.");
+        setError("이미지를 불러오지 못했습니다. 주소를 확인해 주세요.");
         hideUrlPreview();
         updateAnalyzeVisibility();
       });

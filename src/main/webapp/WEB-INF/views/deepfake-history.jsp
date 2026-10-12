@@ -7,9 +7,8 @@
 <%
   String contextPath = request.getContextPath();
   Object userIdObj = session.getAttribute("USER_ID");
-  Object userNameObj = session.getAttribute("USER_NAME");
   boolean isAuthenticated = (userIdObj != null);
-  String userName = userNameObj == null ? "" : String.valueOf(userNameObj);
+  request.setAttribute("activePage", "history");
 %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -204,16 +203,9 @@
   </style>
 </head>
 <body class="ds-page history-page min-h-screen bg-slate-950 text-white">
+<%@ include file="common/dashboard-nav.jspf" %>
 <% if (!isAuthenticated) { %>
-  <div class="history-guest relative min-h-screen overflow-hidden">
-    <nav class="history-topbar">
-      <a href="<%= contextPath %>/" class="history-brand" aria-label="DeepScan 홈">
-        <img src="<%= contextPath %>/resources/image/deepscan-mark.svg?v=30" alt="" class="h-8 w-8">
-        <span>DeepScan</span>
-      </a>
-      <span class="history-nav-label">VERIFICATION ARCHIVE</span>
-    </nav>
-
+  <div class="history-guest relative min-h-screen overflow-hidden pt-16">
     <main class="history-guest-main">
       <div class="history-guest-card">
         <div class="history-heading-mark">
@@ -222,7 +214,7 @@
         <div class="history-eyebrow">PRIVATE ARCHIVE</div>
         <h1 class="history-guest-title">검증 기록은 로그인 후<br class="hidden sm:block"> 확인할 수 있습니다</h1>
         <p class="history-guest-copy">
-          분석한 이미지와 판정 결과를 안전하게 보관하고,<br class="hidden sm:block"> 이전 리포트를 다시 확인해 보세요.
+          분석한 이미지와 판정 결과가 이곳에 저장됩니다.<br class="hidden sm:block"> 로그인하면 이전 결과를 다시 볼 수 있습니다.
         </p>
         <div class="history-guest-actions">
         <button
@@ -253,18 +245,6 @@
       <div class="absolute top-20 left-1/4 h-96 w-96 rounded-full bg-sky-500 blur-3xl opacity-15"></div>
       <div class="absolute bottom-16 right-1/4 h-96 w-96 rounded-full bg-cyan-500 blur-3xl opacity-10"></div>
     </div>
-
-    <nav class="history-topbar fixed left-0 right-0 top-0 z-40">
-      <div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
-        <a href="<%= contextPath %>/" class="history-brand" aria-label="DeepScan 홈">
-          <img src="<%= contextPath %>/resources/image/deepscan-mark.svg?v=30" alt="" class="h-8 w-8">
-          <span>DeepScan</span>
-        </a>
-        <div class="text-sm text-slate-400">
-          <span class="font-medium text-sky-400"><%= userName %></span>&#xB2D8;&#xC758; &#xAC80;&#xC99D;&#xAE30;&#xB85D;
-        </div>
-      </div>
-    </nav>
 
     <div class="relative mx-auto max-w-7xl px-4 pb-12 pt-24">
       <div class="history-heading mb-10 text-center">
@@ -385,16 +365,23 @@
         </div>
 
         <section class="rounded-3xl border border-cyan-500/20 bg-slate-800/40 p-6">
-          <div class="mb-4 flex items-center gap-2">
-            <i data-lucide="sparkles" class="h-5 w-5 text-cyan-300"></i>
-            <h3 class="text-lg font-semibold text-white">Gemini 상세 해설</h3>
+          <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <i data-lucide="sparkles" class="h-5 w-5 text-cyan-300"></i>
+              <h3 class="text-lg font-semibold text-white">Gemini 상세 해설</h3>
+            </div>
+            <button id="historyGenerateAiExplanationButton" type="button" class="hidden min-h-10 items-center justify-center gap-2 rounded-xl bg-cyan-400 px-3 py-2 text-sm font-bold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-wait disabled:opacity-60">
+              <i data-lucide="sparkles" class="h-4 w-4"></i>
+              <span>상세 해설 생성</span>
+            </button>
           </div>
           <div id="historyAiExplanationLoading" class="flex items-center gap-2 text-sm text-slate-400">
             <i data-lucide="loader-circle" class="h-4 w-4 animate-spin"></i>
             저장된 해설을 확인하고 있습니다.
           </div>
+          <div id="historyAiExplanationError" class="hidden text-sm leading-6 text-rose-300" role="alert"></div>
           <p id="historyAiExplanationEmpty" class="hidden text-sm leading-6 text-slate-400">
-            아직 생성된 상세 해설이 없습니다. 분석 결과 화면에서 한 번 생성하면 여기에 저장됩니다.
+            아직 생성된 상세 해설이 없습니다. 위 버튼을 눌러 이 기록의 해설을 생성할 수 있습니다.
           </p>
           <div id="historyAiExplanationResult" class="hidden space-y-4">
             <p id="historyAiSummary" class="font-semibold leading-7 text-cyan-100"></p>
@@ -408,16 +395,23 @@
         </section>
 
         <section class="rounded-3xl border border-emerald-500/20 bg-slate-800/40 p-6">
-          <div class="mb-4 flex items-center gap-2">
-            <i data-lucide="scan-search" class="h-5 w-5 text-emerald-300"></i>
-            <h3 class="text-lg font-semibold text-white">AI 이미지 2차 검증</h3>
+          <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div class="flex items-center gap-2">
+              <i data-lucide="scan-search" class="h-5 w-5 text-emerald-300"></i>
+              <h3 class="text-lg font-semibold text-white">이미지 2차 검증</h3>
+            </div>
+            <button id="historyGenerateImageReviewButton" type="button" class="hidden min-h-10 items-center justify-center gap-2 rounded-xl bg-emerald-400 px-3 py-2 text-sm font-bold text-slate-950 transition hover:bg-emerald-300 disabled:cursor-wait disabled:opacity-60">
+              <i data-lucide="scan-search" class="h-4 w-4"></i>
+              <span>이미지 다시 검토</span>
+            </button>
           </div>
           <div id="historyImageReviewLoading" class="flex items-center gap-2 text-sm text-slate-400">
             <i data-lucide="loader-circle" class="h-4 w-4 animate-spin"></i>
             저장된 2차 검증을 확인하고 있습니다.
           </div>
+          <div id="historyImageReviewError" class="hidden text-sm leading-6 text-rose-300" role="alert"></div>
           <p id="historyImageReviewEmpty" class="hidden text-sm leading-6 text-slate-400">
-            아직 생성된 이미지 2차 검증 결과가 없습니다. 분석 결과 화면에서 한 번 검토하면 여기에 저장됩니다.
+            아직 생성된 이미지 2차 검증 결과가 없습니다. 위 버튼을 눌러 이 기록을 다시 검토할 수 있습니다.
           </p>
           <div id="historyImageReviewResult" class="hidden space-y-4">
             <div class="flex items-center justify-between gap-3">
@@ -501,10 +495,10 @@
             <div class="flex flex-wrap gap-4 text-sm text-slate-300">
               <label class="flex cursor-pointer items-center gap-2"><input id="historyReportPdfOriginal" type="checkbox" checked class="h-4 w-4 accent-sky-400">원본 이미지</label>
               <label class="flex cursor-pointer items-center gap-2"><input id="historyReportPdfHeatmap" type="checkbox" checked class="h-4 w-4 accent-sky-400">히트맵</label>
-              <label class="flex cursor-pointer items-center gap-2"><input id="historyReportPdfAiDraft" type="checkbox" class="h-4 w-4 accent-sky-400">AI 신고 문구</label>
+              <label class="flex cursor-pointer items-center gap-2"><input id="historyReportPdfAiDraft" type="checkbox" class="h-4 w-4 accent-sky-400">신고 문구 초안</label>
             </div>
             <button id="historyReportPdfSubmitButton" type="submit" class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-sky-400 px-4 text-sm font-bold text-slate-950 transition hover:bg-sky-300 disabled:cursor-wait disabled:opacity-60">
-              <i data-lucide="file-plus-2" class="h-4 w-4"></i><span>PDF 신고자료 만들기</span>
+              <i data-lucide="file-plus-2" class="h-4 w-4"></i><span>신고자료 PDF 만들기</span>
             </button>
           </form>
           <div id="historyReportPdfError" class="mt-4 hidden text-sm leading-6 text-rose-300" role="alert"></div>
@@ -652,14 +646,14 @@
       deleteFailed: "검증기록 삭제에 실패했습니다.",
       confidenceVeryHigh: "강한 조작 의심 신호가 감지된 상태입니다.",
       confidenceHigh: "추가 확인이 필요한 신호가 있습니다.",
-      confidenceMedium: "일부 참고 신호가 있어 함께 확인하는 것이 좋습니다.",
+      confidenceMedium: "일부 의심 신호가 감지됐습니다. 원본과 출처를 확인하세요.",
       confidenceLow: "강한 조작 의심 신호는 크지 않습니다.",
       unavailable: "분석 제한",
       unavailableHint: "분석 기준을 충분히 만족하지 못해 점수를 제공하지 못했습니다.",
       explanationUnavailable: "현재 이미지는 분석 기준을 충분히 만족하지 못해 결과 해석에 제한이 있습니다.",
       explanationRisk: "이미지 내 일부 영역에서 비정상적인 패턴이 감지되었습니다. 추가 확인이 필요한 참고 신호로 볼 수 있습니다.",
       explanationSuspect: "일부 영역에서 주변과 다른 픽셀 패턴 차이가 관찰될 수 있습니다. 이 결과만으로 조작 여부를 단정할 수는 없습니다.",
-      explanationSafe: "강한 조작 의심 신호는 크지 않습니다. 다만 원본 출처와 촬영 맥락을 함께 확인하는 것이 좋습니다.",
+      explanationSafe: "뚜렷한 조작 신호는 감지되지 않았습니다. 중요한 판단이라면 원본과 출처를 따로 확인하세요.",
       deleteConfirmSuffix: "결과를 삭제하시겠습니까? 삭제한 결과는 복구할 수 없습니다.",
       tabOriginal: "원본 보기",
       tabAnomaly: "특이점 보기",
@@ -741,15 +735,15 @@
     function getDetailedAnalysisMessage(result) {
       const status = getNormalizedStatus(result && result.verdict, Number(result && result.score || 0) * 100);
       if (status === "NOT_APPLICABLE" || status === "UNABLE_TO_EVALUATE") {
-        return "이미지가 딥페이크 분석 기준을 충분히 충족하지 못해 판정을 보류했습니다. 얼굴이 너무 작거나 여러 명이 포함된 경우, 모델이 안정적으로 비교할 기준을 확보하지 못할 수 있습니다. 가능한 경우 더 선명한 원본 이미지로 다시 확인하는 것이 좋습니다.";
+        return "분석에 필요한 정보가 부족해 판정을 보류했습니다. 얼굴이 작거나 여러 명이 포함된 이미지라면 화질이 더 좋은 원본 파일로 다시 시도하세요.";
       }
       if (status === "HIGH_RISK") {
-        return "분석 결과, 이미지 내 여러 영역에서 비정상적인 패턴이 감지되었습니다. 특정 영역의 픽셀 구조, 경계선, 질감 차이가 주변과 다르게 나타날 가능성이 있습니다. 히트맵에서 밝게 표시되는 부분을 중심으로 원본 여부를 추가 확인하는 것이 좋습니다.";
+        return "여러 영역에서 주변과 다른 패턴이 감지됐습니다. 히트맵에 표시된 부분을 원본 파일과 비교하세요.";
       }
       if (status === "SUSPECT") {
-        return "분석 결과, 일부 영역에서 일반적인 이미지와 다른 픽셀 패턴 또는 질감 차이가 감지되었습니다. 이 결과는 조작을 확정하는 의미가 아니라, 추가 확인이 필요한 참고 신호입니다. 얼굴, 배경 경계선, 그림자, 압축 흔적이 강하게 나타나는 영역을 중심으로 확인해주세요.";
+        return "일부 영역에서 픽셀이나 질감 차이가 감지됐습니다. 얼굴 경계, 그림자, 압축 흔적을 원본과 비교하세요. 이 결과만으로 조작 여부를 확정할 수는 없습니다.";
       }
-      return "분석 결과, 이미지 전체에서 강한 조작 흔적은 확인되지 않았습니다. 다만 AI 분석 결과는 100% 확정값이 아니므로, 중요한 용도로 사용할 경우 원본 출처와 촬영 맥락을 함께 확인하는 것이 좋습니다. 픽셀 패턴, 압축 흔적, 질감 차이를 기준으로 확인했을 때 조작 가능성은 낮은 편입니다.";
+      return "뚜렷한 조작 신호는 감지되지 않았습니다. 이 결과만으로 원본 여부를 확정할 수는 없습니다. 중요한 판단이라면 원본 파일과 출처를 확인하세요.";
     }
 
     function getDetailedAnalysisMessage(detail) {
@@ -757,15 +751,15 @@
       const confidence = Math.round((Number(detail.score) || 0) * 100);
 
       if (status === "NOT_APPLICABLE" || status === "UNABLE_TO_EVALUATE") {
-        return "현재 이미지는 분석 기준을 충분히 만족하지 못해 결과 해석에 제한이 있습니다. Reality Defender 응답을 기준으로 최종 상태를 표시했으며, 히트맵 또는 영역 데이터가 제공된 경우에만 참고 시각화를 표시합니다. 가능한 경우 더 선명한 원본 이미지와 출처 정보를 함께 확인하는 것이 좋습니다.";
+        return "분석에 필요한 정보가 부족해 결과를 내기 어렵습니다. 가능하면 화질이 더 좋은 원본 파일로 다시 시도하세요.";
       }
       if (status === "HIGH_RISK" || status === "FAKE" || confidence >= 70) {
-        return "분석 결과, 이미지 내 일부 영역에서 비정상적인 패턴이 감지되었습니다. 이 결과는 조작 여부를 확정하는 것이 아니라, 추가 확인이 필요한 참고 신호로 볼 수 있습니다. 특히 히트맵에서 강조되는 부분과 픽셀 패턴 차이가 나타나는 영역을 중심으로 원본 여부를 함께 검토하는 것이 좋습니다.";
+        return "일부 영역에서 주변과 다른 패턴이 감지됐습니다. 강조된 영역을 확인하고 원본 파일·출처와 비교하세요. 이 결과만으로 조작 여부를 확정할 수는 없습니다.";
       }
       if (status === "SUSPECT" || status === "SUSPICIOUS" || confidence >= 35) {
-        return "분석 결과, 일부 영역에서 주변과 다른 픽셀 패턴 차이가 관찰될 수 있습니다. 다만 이 결과만으로 조작 여부를 단정할 수 없으며, 추가 확인이 필요한 참고용 신호로 해석하는 것이 적절합니다. 원본 출처, 촬영 맥락, 재저장 여부를 함께 확인하는 것이 좋습니다.";
+        return "일부 픽셀 패턴이 주변과 다르게 나타났습니다. 압축이나 재저장 과정에서도 생길 수 있는 신호이므로 원본과 출처를 확인하세요.";
       }
-      return "분석 결과, 강한 조작 의심 신호는 크지 않습니다. 다만 AI 분석은 참고용 결과이므로 원본 출처와 촬영 맥락을 함께 확인하는 것이 좋습니다. 히트맵이나 영역 데이터가 제공된 경우에도 최종 판정 기준은 Reality Defender 결과를 우선합니다.";
+      return "뚜렷한 조작 신호는 감지되지 않았습니다. 결과는 참고용이며, 중요한 판단에는 원본과 출처 확인이 필요합니다.";
     }
 
     function normalizeImageData(imageData) {
@@ -1180,8 +1174,8 @@
           }
         } else {
           notice.textContent = detailAnalysisState.heatmapLoadFailed
-            ? "히트맵 이미지를 불러오지 못했습니다. 파일 경로 또는 S3 URL을 확인해주세요."
-            : "IMD 히트맵 이미지가 응답에 포함되지 않았습니다. 백엔드 응답의 heatmapUrl 필드를 확인해주세요.";
+            ? "히트맵 이미지를 불러오지 못했습니다. 파일 주소를 확인해 주세요."
+            : "응답에 히트맵 이미지가 없습니다.";
           notice.classList.remove("hidden");
         }
       }
@@ -1258,6 +1252,23 @@
     function resetSavedAiResults() {
       ["historyAiExplanationResult", "historyAiExplanationEmpty", "historyImageReviewResult", "historyImageReviewEmpty"]
         .forEach(function(id) { document.getElementById(id).classList.add("hidden"); });
+      ["historyAiExplanationError", "historyImageReviewError"]
+        .forEach(function(id) {
+          const error = document.getElementById(id);
+          error.textContent = "";
+          error.classList.add("hidden");
+        });
+      ["historyGenerateAiExplanationButton", "historyGenerateImageReviewButton"]
+        .forEach(function(id) {
+          const button = document.getElementById(id);
+          button.classList.add("hidden");
+          button.classList.remove("flex");
+          button.disabled = false;
+        });
+      document.getElementById("historyAiExplanationLoading").innerHTML =
+        '<i data-lucide="loader-circle" class="h-4 w-4 animate-spin"></i><span>저장된 해설을 확인하고 있습니다.</span>';
+      document.getElementById("historyImageReviewLoading").innerHTML =
+        '<i data-lucide="loader-circle" class="h-4 w-4 animate-spin"></i><span>저장된 2차 검증을 확인하고 있습니다.</span>';
       ["historyAiExplanationLoading", "historyImageReviewLoading"]
         .forEach(function(id) {
           document.getElementById(id).classList.remove("hidden");
@@ -1271,13 +1282,43 @@
       loading.classList.remove("flex");
     }
 
+    function showHistoryAiButton(buttonId) {
+      const button = document.getElementById(buttonId);
+      button.classList.remove("hidden");
+      button.classList.add("flex");
+    }
+
+    function setHistoryAiGenerationLoading(type, loading) {
+      const isExplanation = type === "explanation";
+      const button = document.getElementById(isExplanation
+        ? "historyGenerateAiExplanationButton"
+        : "historyGenerateImageReviewButton");
+      const loadingBox = document.getElementById(isExplanation
+        ? "historyAiExplanationLoading"
+        : "historyImageReviewLoading");
+      button.disabled = loading;
+      button.innerHTML = loading
+        ? '<i data-lucide="loader-circle" class="h-4 w-4 animate-spin"></i><span>' + (isExplanation ? "생성 중" : "검토 중") + '</span>'
+        : '<i data-lucide="' + (isExplanation ? "sparkles" : "scan-search") + '" class="h-4 w-4"></i><span>' + (isExplanation ? "상세 해설 생성" : "이미지 다시 검토") + '</span>';
+      loadingBox.innerHTML = '<i data-lucide="loader-circle" class="h-4 w-4 animate-spin"></i><span>'
+        + (isExplanation ? "Gemini가 상세 해설을 생성하고 있습니다." : "Gemini가 원본 이미지를 독립적으로 검토하고 있습니다.")
+        + '</span>';
+      loadingBox.classList.toggle("hidden", !loading);
+      loadingBox.classList.toggle("flex", loading);
+      lucide.createIcons();
+    }
+
     function renderSavedAiExplanation(data) {
       finishSavedAiLoading("historyAiExplanationLoading");
       if (!data) {
         document.getElementById("historyAiExplanationEmpty").classList.remove("hidden");
+        showHistoryAiButton("historyGenerateAiExplanationButton");
         return;
       }
 
+      document.getElementById("historyAiExplanationEmpty").classList.add("hidden");
+      document.getElementById("historyAiExplanationError").classList.add("hidden");
+      showHistoryAiButton("historyGenerateAiExplanationButton");
       document.getElementById("historyAiSummary").textContent = data.summary || "";
       document.getElementById("historyAiExplanation").textContent = data.explanation || "";
       document.getElementById("historyAiActionGuide").textContent = data.actionGuide || "";
@@ -1291,9 +1332,13 @@
       finishSavedAiLoading("historyImageReviewLoading");
       if (!data) {
         document.getElementById("historyImageReviewEmpty").classList.remove("hidden");
+        showHistoryAiButton("historyGenerateImageReviewButton");
         return;
       }
 
+      document.getElementById("historyImageReviewEmpty").classList.add("hidden");
+      document.getElementById("historyImageReviewError").classList.add("hidden");
+      showHistoryAiButton("historyGenerateImageReviewButton");
       const statusMap = {
         AGREES: ["1차 판독과 일치", "border-emerald-500/30 bg-emerald-500/10 text-emerald-300"],
         DISAGREES: ["판독 결과 불일치", "border-rose-500/30 bg-rose-500/10 text-rose-300"],
@@ -1346,9 +1391,85 @@
           if (!selectedItem || String(selectedItem.id) !== String(id)) return;
           finishSavedAiLoading(request[2]);
           document.getElementById(request[3]).classList.remove("hidden");
+          showHistoryAiButton(request[0] === "/explanation"
+            ? "historyGenerateAiExplanationButton"
+            : "historyGenerateImageReviewButton");
         }
       }));
       lucide.createIcons();
+    }
+
+    async function generateHistoryAiExplanation() {
+      if (!selectedItem) return;
+      const verificationId = selectedItem.id;
+      const errorBox = document.getElementById("historyAiExplanationError");
+      errorBox.classList.add("hidden");
+      errorBox.textContent = "";
+      document.getElementById("historyAiExplanationEmpty").classList.add("hidden");
+      setHistoryAiGenerationLoading("explanation", true);
+
+      try {
+        const response = await fetch(
+          contextPath + "/api/v1/ai/verifications/" + encodeURIComponent(verificationId) + "/explanation",
+          {
+            method: "POST",
+            credentials: "same-origin",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              verificationId: Number(verificationId),
+              taskType: "EXPAND_EXISTING_EXPLANATION",
+              userQuestion: "기존 분석 설명을 바탕으로 판정의 의미와 확인 방법을 자세히 설명해 주세요.",
+              tone: "clear, calm, and detailed",
+              includeReportDraft: false
+            })
+          }
+        );
+        const payload = await response.json();
+        if (!response.ok || !payload.success || !payload.data) {
+          throw new Error(payload.error && payload.error.message || "상세 해설을 생성하지 못했습니다.");
+        }
+        if (!selectedItem || String(selectedItem.id) !== String(verificationId)) return;
+        renderSavedAiExplanation(payload.data);
+      } catch (error) {
+        if (!selectedItem || String(selectedItem.id) !== String(verificationId)) return;
+        errorBox.textContent = error.message || "상세 해설을 생성하지 못했습니다. 잠시 후 다시 시도해 주세요.";
+        errorBox.classList.remove("hidden");
+      } finally {
+        if (selectedItem && String(selectedItem.id) === String(verificationId)) {
+          setHistoryAiGenerationLoading("explanation", false);
+        }
+      }
+    }
+
+    async function generateHistoryImageReview() {
+      if (!selectedItem) return;
+      const verificationId = selectedItem.id;
+      const errorBox = document.getElementById("historyImageReviewError");
+      errorBox.classList.add("hidden");
+      errorBox.textContent = "";
+      document.getElementById("historyImageReviewEmpty").classList.add("hidden");
+      setHistoryAiGenerationLoading("image-review", true);
+
+      try {
+        const response = await fetch(
+          contextPath + "/api/v1/ai/verifications/" + encodeURIComponent(verificationId) + "/image-review",
+          { method: "POST", credentials: "same-origin" }
+        );
+        const payload = await response.json();
+        if (!response.ok || !payload.success || !payload.data) {
+          throw new Error(payload.error && payload.error.message || "이미지 2차 검증을 완료하지 못했습니다.");
+        }
+        if (!selectedItem || String(selectedItem.id) !== String(verificationId)) return;
+        renderSavedImageReview(payload.data);
+      } catch (error) {
+        if (!selectedItem || String(selectedItem.id) !== String(verificationId)) return;
+        errorBox.textContent = error.message || "이미지 2차 검증을 완료하지 못했습니다. 잠시 후 다시 시도해 주세요.";
+        errorBox.classList.remove("hidden");
+      } finally {
+        if (selectedItem && String(selectedItem.id) === String(verificationId)) {
+          setHistoryAiGenerationLoading("image-review", false);
+        }
+      }
     }
 
     function resetHistoryReviewRequest() {
@@ -1496,7 +1617,7 @@
       document.getElementById("historyReportPdfSourceUrl").value = "";
       document.getElementById("historyReportPdfReasonCount").textContent = "0 / 2000";
       document.getElementById("historyReportPdfError").classList.add("hidden");
-      document.getElementById("historyReportPdfList").innerHTML = '<p class="text-sm text-slate-400">생성된 신고자료를 확인하고 있습니다.</p>';
+      document.getElementById("historyReportPdfList").innerHTML = '<p class="text-sm text-slate-400">신고자료를 불러오는 중입니다.</p>';
     }
 
     function renderHistoryReportPdfs(reports, verificationId) {
@@ -1617,7 +1738,7 @@
         errorBox.classList.remove("hidden");
       } finally {
         button.disabled = false;
-        button.innerHTML = '<i data-lucide="file-plus-2" class="h-4 w-4"></i><span>PDF 신고자료 만들기</span>';
+        button.innerHTML = '<i data-lucide="file-plus-2" class="h-4 w-4"></i><span>신고자료 PDF 만들기</span>';
         lucide.createIcons();
       }
     }
@@ -1708,6 +1829,8 @@
       applyDetailTabStyles();
     });
     document.getElementById("detailDeleteButton").addEventListener("click", openDeleteModal);
+    document.getElementById("historyGenerateAiExplanationButton").addEventListener("click", generateHistoryAiExplanation);
+    document.getElementById("historyGenerateImageReviewButton").addEventListener("click", generateHistoryImageReview);
     document.getElementById("historyReviewRequestForm").addEventListener("submit", submitHistoryReviewRequest);
     document.getElementById("historyReviewRequestReason").addEventListener("input", function() {
       document.getElementById("historyReviewRequestReasonCount").textContent = this.value.length + " / 1000";

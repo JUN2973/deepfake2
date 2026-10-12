@@ -3,6 +3,7 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%
     String contextPath = request.getContextPath();
+    request.setAttribute("activePage", "history");
 %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -208,6 +209,7 @@
     </style>
 </head>
 <body class="ds-page min-h-screen bg-slate-950 text-white">
+<%@ include file="common/dashboard-nav.jspf" %>
 <script id="apiRawData" type="application/json"><c:out value="${safeApiRaw}" escapeXml="false"/></script>
 <script id="analysisJsonData" type="application/json"><c:out value="${safeAnalysisJson}" escapeXml="false"/></script>
 
@@ -216,7 +218,7 @@
     <div class="absolute bottom-20 right-1/4 h-96 w-96 rounded-full bg-cyan-500 blur-3xl opacity-10"></div>
 </div>
 
-<main class="relative mx-auto max-w-7xl px-4 py-8">
+<main class="relative mx-auto max-w-7xl px-4 pb-8 pt-24">
     <section class="report-shell overflow-hidden rounded-3xl">
         <header class="flex items-start justify-between border-b border-white/10 px-6 py-5">
             <div>
@@ -309,7 +311,7 @@
                         </div>
                         <div>
                             <h2 class="text-lg font-semibold text-white">신고 제출용 PDF</h2>
-                            <p class="mt-1 text-sm text-slate-400">현재 검증 결과와 저장된 AI 해설을 신고자료로 정리합니다.</p>
+                            <p class="mt-1 text-sm text-slate-400">현재 검증 결과와 분석 설명을 신고자료로 정리합니다.</p>
                         </div>
                     </div>
 
@@ -336,12 +338,12 @@
                             </label>
                             <label class="flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-slate-950/50 px-3 text-sm text-slate-300">
                                 <input id="reportPdfAiDraft" type="checkbox" class="h-4 w-4 accent-sky-400">
-                                AI 신고 문구
+                                신고 문구 초안
                             </label>
                         </div>
                         <button id="createReportPdfButton" type="submit" class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-sky-400 px-4 py-2.5 text-sm font-bold text-slate-950 transition hover:bg-sky-300 disabled:cursor-wait disabled:opacity-60">
                             <i data-lucide="file-plus-2" class="h-4 w-4"></i>
-                            <span>PDF 신고자료 만들기</span>
+                            <span>신고자료 PDF 만들기</span>
                         </button>
                     </form>
                     <div id="reportPdfError" class="mt-4 hidden text-sm leading-6 text-rose-300" role="alert"></div>
@@ -410,7 +412,7 @@
                                 <i data-lucide="scan-search" class="h-5 w-5"></i>
                             </div>
                             <div>
-                                <h2 class="text-lg font-semibold text-white">AI 이미지 2차 검증</h2>
+                                <h2 class="text-lg font-semibold text-white">이미지 2차 검증</h2>
                                 <span id="imageReviewStatusBadge" class="risk-badge risk-unknown mt-1 hidden">검토 전</span>
                             </div>
                         </div>
@@ -844,18 +846,18 @@
 
     function buildDetailedDescription() {
         if (["NOT_APPLICABLE", "UNABLE_TO_EVALUATE"].includes(statusKey)) {
-            return "현재 이미지는 분석 기준을 충분히 만족하지 못해 결과 해석에 제한이 있습니다. Reality Defender 응답을 기준으로 최종 상태를 표시했으며, 히트맵 또는 영역 데이터가 제공된 경우에만 참고 시각화를 표시합니다. 가능한 경우 더 선명한 원본 이미지와 출처 정보를 함께 확인하는 것이 좋습니다.";
+            return "분석에 필요한 정보가 부족해 결과를 내기 어렵습니다. 가능하면 화질이 더 좋은 원본 파일로 다시 시도하세요.";
         }
 
         if (isHighRisk()) {
-            return "분석 결과, 이미지 내 일부 영역에서 비정상적인 패턴이 감지되었습니다. 이 결과는 조작 여부를 확정하는 것이 아니라, 추가 확인이 필요한 참고 신호로 볼 수 있습니다. 특히 히트맵에서 강조되는 부분과 픽셀 패턴 차이가 나타나는 영역을 중심으로 원본 여부를 함께 검토하는 것이 좋습니다.";
+            return "일부 영역에서 주변과 다른 패턴이 감지됐습니다. 강조된 영역을 확인하고 원본 파일·출처와 비교하세요. 이 결과만으로 조작 여부를 확정할 수는 없습니다.";
         }
 
         if (isMediumRisk()) {
-            return "분석 결과, 일부 영역에서 주변과 다른 픽셀 패턴 차이가 관찰될 수 있습니다. 다만 이 결과만으로 조작 여부를 단정할 수 없으며, 추가 확인이 필요한 참고용 신호로 해석하는 것이 적절합니다. 원본 출처, 촬영 맥락, 재저장 여부를 함께 확인하는 것이 좋습니다.";
+            return "일부 픽셀 패턴이 주변과 다르게 나타났습니다. 압축이나 재저장 과정에서도 생길 수 있는 신호이므로 원본과 출처를 확인하세요.";
         }
 
-        return "분석 결과, 강한 조작 의심 신호는 크지 않습니다. 다만 AI 분석은 참고용 결과이므로 원본 출처와 촬영 맥락을 함께 확인하는 것이 좋습니다. 히트맵이나 영역 데이터가 제공된 경우에도 최종 판정 기준은 Reality Defender 결과를 우선합니다.";
+        return "뚜렷한 조작 신호는 감지되지 않았습니다. 결과는 참고용이며, 중요한 판단에는 원본과 출처 확인이 필요합니다.";
     }
 
     function renderDetailedAnalysisRows(rows) {
@@ -947,7 +949,7 @@
         hideNotice();
 
         if (mode === "original") {
-            document.getElementById("visualDescription").textContent = "원본 이미지를 기준으로 Reality Defender의 최종 분석 결과를 함께 확인합니다.";
+            document.getElementById("visualDescription").textContent = "원본 이미지와 최종 판정 결과를 표시합니다.";
             return;
         }
 
@@ -955,12 +957,12 @@
             document.getElementById("visualDescription").textContent = "응답에 포함된 세부 의심 영역 좌표를 원본 이미지 위에 표시합니다.";
             renderRegionBoxes(true);
             if (anomalyRegions.length === 0) {
-                showNotice("표시 가능한 세부 의심 영역이 없습니다. 이 경우 오버레이 탭의 전체 히트맵을 참고해주세요.");
+                showNotice("표시할 세부 의심 영역이 없습니다. 오버레이 탭에서 전체 히트맵을 확인하세요.");
             }
             return;
         }
 
-        document.getElementById("visualDescription").textContent = "원본 이미지 위에 IMD / ManTraNet 히트맵을 반투명하게 겹쳐 픽셀 패턴 차이를 참고할 수 있습니다.";
+        document.getElementById("visualDescription").textContent = "원본 이미지 위에 히트맵을 겹쳐 픽셀 패턴 차이를 표시합니다.";
         heatmapImage.style.opacity = "0.56";
         renderHeatmapOverlay();
     }
@@ -1112,7 +1114,7 @@
         document.getElementById("imageReviewConclusion").textContent = data.combinedConclusion || "";
         document.getElementById("imageReviewSummary").textContent = data.visualSummary || "";
         document.getElementById("imageReviewLimitations").textContent = data.limitations ||
-            "이미지 기반 AI 검토는 진위를 확정하는 증거가 아닙니다.";
+            "자동 분석 결과만으로 이미지의 진위를 확정할 수는 없습니다.";
 
         const indicators = document.getElementById("imageReviewIndicators");
         indicators.innerHTML = "";
@@ -1155,11 +1157,11 @@
             );
             const payload = await response.json();
             if (!response.ok || !payload.success || !payload.data) {
-                throw new Error(payload.error?.message || "AI 이미지 2차 검증을 완료하지 못했습니다.");
+                throw new Error(payload.error?.message || "이미지 2차 검증을 완료하지 못했습니다.");
             }
             renderImageReview(payload.data);
         } catch (error) {
-            errorBox.textContent = error.message || "AI 이미지 2차 검증을 완료하지 못했습니다.";
+            errorBox.textContent = error.message || "이미지 2차 검증을 완료하지 못했습니다.";
             errorBox.classList.remove("hidden");
         } finally {
             setImageReviewLoading(false);
@@ -1314,7 +1316,7 @@
         name.textContent = report.fileName || "신고 제출용 PDF";
         const meta = document.createElement("p");
         meta.className = "mt-1 text-xs text-slate-500";
-        meta.textContent = [report.regDt, report.aiReportDraftIncluded ? "AI 신고 문구 포함" : ""].filter(Boolean).join(" · ");
+        meta.textContent = [report.regDt, report.aiReportDraftIncluded ? "신고 문구 초안 포함" : ""].filter(Boolean).join(" · ");
         info.append(name, meta);
 
         const actions = document.createElement("div");
@@ -1420,7 +1422,7 @@
             errorBox.classList.remove("hidden");
         } finally {
             button.disabled = false;
-            button.innerHTML = '<i data-lucide="file-plus-2" class="h-4 w-4"></i><span>PDF 신고자료 만들기</span>';
+            button.innerHTML = '<i data-lucide="file-plus-2" class="h-4 w-4"></i><span>신고자료 PDF 만들기</span>';
             lucide.createIcons();
         }
     }
@@ -1451,7 +1453,7 @@
     document.getElementById("heatmapImage").addEventListener("error", function() {
         document.getElementById("heatmapStatusText").textContent = "로딩 실패";
         this.classList.add("hidden");
-        showNotice("히트맵 이미지를 불러오지 못했습니다. 파일 경로 또는 응답 필드를 확인해주세요.");
+        showNotice("히트맵 이미지를 불러오지 못했습니다. 파일 주소를 확인해 주세요.");
     });
 
     document.getElementById("shareButton").addEventListener("click", function() {

@@ -6,6 +6,7 @@
     response.sendRedirect(contextPath + "/login");
     return;
   }
+  request.setAttribute("activePage", "community");
 %>
 <!DOCTYPE html>
 <html lang="ko">
@@ -39,15 +40,11 @@
   </style>
 </head>
 <body class="ds-page min-h-screen bg-slate-950 text-white relative overflow-hidden">
+  <%@ include file="common/dashboard-nav.jspf" %>
   <div class="absolute inset-0">
     <div class="absolute top-20 left-1/4 h-96 w-96 rounded-full bg-gradient-to-r from-sky-600 to-cyan-600 opacity-20 blur-3xl"></div>
     <div class="absolute bottom-20 right-1/3 h-96 w-96 rounded-full bg-gradient-to-r from-cyan-600 to-blue-600 opacity-20 blur-3xl"></div>
   </div>
-
-  <button type="button" onclick="goPage('<%= contextPath %>/community')" class="fixed left-6 top-6 z-50 flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur-xl transition-all hover:bg-white/20 reveal" data-reveal>
-    <i data-lucide="arrow-left" class="h-4 w-4"></i>
-    목록으로
-  </button>
 
   <main class="relative px-4 pb-12 pt-24">
     <div class="mx-auto max-w-3xl">
@@ -60,7 +57,7 @@
               커뮤니티 글쓰기
             </p>
             <h1 class="bg-gradient-to-r from-sky-400 to-cyan-400 bg-clip-text text-4xl font-bold text-transparent">게시글 작성</h1>
-            <p class="mt-3 text-slate-400">딥페이크 사례, 검증 팁, 질문을 자연스럽게 공유할 수 있도록 제목과 내용을 작성해 주세요.</p>
+            <p class="mt-3 text-slate-400">사례, 검증 방법, 궁금한 점을 적어 주세요.</p>
           </div>
 
           <form id="postForm" class="space-y-6">

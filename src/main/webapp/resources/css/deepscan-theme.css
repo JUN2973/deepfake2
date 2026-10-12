@@ -172,13 +172,13 @@ main [class~="bg-gradient-to-r"][class~="from-cyan-600"][class~="to-blue-600"] {
 .ds-page .text-sky-400,
 .ds-page .text-sky-300 { color: #75a7ff !important; }
 
-.ds-page nav,
+.ds-page nav:not(.dashboard-global-nav),
 .ds-page > .pointer-events-none.fixed.inset-x-0.top-0 {
   border-color: var(--ds-line) !important;
   background: rgba(9, 11, 14, 0.95) !important;
 }
 
-.ds-page nav button,
+.ds-page nav:not(.dashboard-global-nav) button,
 .ds-page > .pointer-events-none.fixed.inset-x-0.top-0 button {
   border-radius: 0.625rem !important;
   border-color: var(--ds-line-strong) !important;
