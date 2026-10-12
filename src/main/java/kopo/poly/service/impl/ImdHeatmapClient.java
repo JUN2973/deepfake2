@@ -57,7 +57,9 @@ public class ImdHeatmapClient implements IHeatmapClient {
 
     private static final double HEATMAP_THRESHOLD = 0.55;
     private static final double MIN_REGION_AREA_RATIO = 0.003;
-    private static final double OVERLAY_ALPHA = 0.58;
+    private static final double MIN_OVERLAY_ALPHA = 0.45;
+    private static final double MAX_OVERLAY_ALPHA = 0.70;
+    static final Color HEATMAP_OUTLINE_COLOR = new Color(0, 229, 255, 245);
     private static final double[][] GAUSSIAN_5X5 = {
             {1, 4, 6, 4, 1},
             {4, 16, 24, 16, 4},
@@ -420,8 +422,8 @@ public class ImdHeatmapClient implements IHeatmapClient {
                     image.setRGB(x, y, 0x00000000);
                     continue;
                 }
-                int[] color = infernoColor(values[y][x]);
-                int alpha = (int) Math.round(40 + (205 * values[y][x]));
+                int[] color = highlightColor(values[y][x]);
+                int alpha = (int) Math.round(115 + (64 * clamp01(values[y][x])));
                 image.setRGB(x, y, argb(alpha, color[0], color[1], color[2]));
             }
         }
@@ -443,8 +445,9 @@ public class ImdHeatmapClient implements IHeatmapClient {
                     continue;
                 }
                 int base = image.getRGB(x, y);
-                int[] color = infernoColor(values[y][x]);
-                double alpha = OVERLAY_ALPHA * Math.max(0.25, values[y][x]);
+                int[] color = highlightColor(values[y][x]);
+                double alpha = MIN_OVERLAY_ALPHA
+                        + ((MAX_OVERLAY_ALPHA - MIN_OVERLAY_ALPHA) * clamp01(values[y][x]));
                 int r = blend((base >>> 16) & 0xff, color[0], alpha);
                 int gr = blend((base >>> 8) & 0xff, color[1], alpha);
                 int b = blend(base & 0xff, color[2], alpha);
@@ -459,7 +462,7 @@ public class ImdHeatmapClient implements IHeatmapClient {
         int height = region.length;
         int width = region[0].length;
         Graphics2D g = image.createGraphics();
-        g.setColor(new Color(255, 235, 150, 230));
+        g.setColor(HEATMAP_OUTLINE_COLOR);
         g.setStroke(new BasicStroke(Math.max(1.5f, Math.min(width, height) / 350.0f)));
         for (int y = 1; y < height - 1; y++) {
             for (int x = 1; x < width - 1; x++) {
@@ -480,18 +483,12 @@ public class ImdHeatmapClient implements IHeatmapClient {
         return Base64.getEncoder().encodeToString(out.toByteArray());
     }
 
-    private int[] infernoColor(double value) {
+    int[] highlightColor(double value) {
         double v = clamp01(value);
         int[][] stops = {
-                {0, 0, 4},
-                {31, 12, 72},
-                {85, 15, 109},
-                {136, 34, 106},
-                {186, 54, 85},
-                {227, 89, 51},
-                {249, 140, 10},
-                {249, 201, 50},
-                {252, 255, 164}
+                {190, 0, 120},
+                {255, 45, 149},
+                {255, 23, 68}
         };
         double scaled = v * (stops.length - 1);
         int index = Math.min(stops.length - 2, (int) Math.floor(scaled));
