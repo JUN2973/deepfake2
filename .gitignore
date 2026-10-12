@@ -55,3 +55,6 @@ live_news_response.html
 news_page_snapshot.html
 news_run.out.log
 news_run.err.log
+
+# Claude/Codex harness
+.harness/
