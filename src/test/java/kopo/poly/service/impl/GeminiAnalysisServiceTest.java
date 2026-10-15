@@ -11,6 +11,7 @@ import kopo.poly.service.AiAnalysisServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.mock.http.client.MockClientHttpRequest;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -30,6 +31,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.ExpectedCount.once;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.withStatus;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 class GeminiAnalysisServiceTest {
@@ -68,7 +70,8 @@ class GeminiAnalysisServiceTest {
                     String inputText = requestJson.path("contents").path(0).path("parts").path(0).path("text").asText();
                     JsonNode inputJson = objectMapper.readTree(inputText);
 
-                    assertThat(requestJson.path("generationConfig").path("maxOutputTokens").asInt()).isEqualTo(450);
+                    // 신고 문구 요청이면 기본 상한(450)에 여유 토큰(500)을 더한다.
+                    assertThat(requestJson.path("generationConfig").path("maxOutputTokens").asInt()).isEqualTo(950);
                     assertThat(requestJson.path("generationConfig").path("thinkingConfig")
                             .path("thinkingBudget").asInt()).isZero();
                     assertThat(requestJson.path("generationConfig").path("responseMimeType").asText())
@@ -124,6 +127,7 @@ class GeminiAnalysisServiceTest {
 
                     assertThat(inputJson.path("request").path("includeReportDraft").asBoolean())
                             .isFalse();
+                    assertThat(requestJson.path("generationConfig").path("maxOutputTokens").asInt()).isEqualTo(450);
                     assertThat(detectionResult.has("apiRaw")).isFalse();
                     assertThat(compactedSource.path("evidence").asText())
                             .isEqualTo("keep this evidence");
@@ -225,6 +229,62 @@ class GeminiAnalysisServiceTest {
         assertThat(result.getSummary()).isEqualTo("summary");
         assertThat(result.getRiskLevel()).isEqualTo("HIGH");
         server.verify();
+    }
+
+    @Test
+    void analyzeRetriesOn503AndFallsBackToSecondaryModel() throws Exception {
+        GeminiAnalysisService retrying = retryingService("gemini-3.1-flash-lite");
+        String base = "https://generativelanguage.googleapis.com/v1beta/models/";
+        // 주 모델 2회 모두 503 → 대체 모델 1회 성공
+        server.expect(once(), requestTo(base + "gemini-2.5-flash:generateContent"))
+                .andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+        server.expect(once(), requestTo(base + "gemini-2.5-flash:generateContent"))
+                .andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+        server.expect(once(), requestTo(base + "gemini-3.1-flash-lite:generateContent"))
+                .andExpect(request -> {
+                    JsonNode body = objectMapper.readTree(((MockClientHttpRequest) request).getBodyAsString());
+                    // 대체 모델 세대에 맞는 thinkingConfig로 바뀌어야 한다.
+                    assertThat(body.path("generationConfig").path("thinkingConfig")
+                            .path("thinkingLevel").asText()).isEqualTo("minimal");
+                })
+                .andRespond(withSuccess(providerResponse(), MediaType.APPLICATION_JSON));
+
+        AiAnalysisRequestDTO request = new AiAnalysisRequestDTO();
+        request.setVerificationId(7L);
+
+        AiAnalysisResponseDTO result = retrying.analyze(request, verification(7L));
+
+        assertThat(result.getModel()).isEqualTo("gemini-3.1-flash-lite");
+        server.verify();
+    }
+
+    @Test
+    void analyzeReturnsOverloadedCodeWhenAllRetriesFail() {
+        GeminiAnalysisService retrying = retryingService("");
+        server.expect(org.springframework.test.web.client.ExpectedCount.times(2),
+                        requestTo("https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent"))
+                .andRespond(withStatus(HttpStatus.SERVICE_UNAVAILABLE));
+
+        AiAnalysisRequestDTO request = new AiAnalysisRequestDTO();
+        request.setVerificationId(7L);
+
+        assertThatThrownBy(() -> retrying.analyze(request, verification(7L)))
+                .isInstanceOf(AiAnalysisServiceException.class)
+                .extracting(error -> ((AiAnalysisServiceException) error).getCode())
+                .isEqualTo("AI-OVERLOADED");
+        server.verify();
+    }
+
+    // 실제로 기다리지 않는(sleep 없음) 재시도 정책을 가진 서비스
+    private GeminiAnalysisService retryingService(String fallbackModel) {
+        RestClient.Builder builder = RestClient.builder()
+                .baseUrl("https://generativelanguage.googleapis.com/v1beta");
+        server = MockRestServiceServer.bindTo(builder).build();
+        return new GeminiAnalysisService(
+                builder.build(), objectMapper, resultMapper, "test-api-key", "gemini-2.5-flash", 450,
+                true, 30, 500,
+                new GeminiRetryPolicy(2, 1000, 4000, fallbackModel, millis -> { })
+        );
     }
 
     private VerifyDTO verification(Long id) {
